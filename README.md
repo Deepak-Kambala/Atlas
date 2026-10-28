@@ -51,8 +51,21 @@ atlas/
 │   ├── page.js                        # Atlas home / intro hero page
 │   ├── ml/
 │   │   ├── page.js                    # Machine Learning algorithm overview & card catalog
-│   │   └── [slug]/
-│   │       └── page.js                # Individual algorithm interactive page (SSG statically generated)
+│   │   ├── [slug]/
+│   │   │   └── page.js                # Individual algorithm interactive page (SSG statically generated)
+│   │   └── algorithms/                # Topic-based algorithm simulation modules
+│   │       ├── common.js              # Shared math, PRNG, and geometry helpers
+│   │       ├── linear-regression.js   # Linear Regression engine & metadata
+│   │       ├── logistic-regression.js # Logistic Regression engine & metadata
+│   │       ├── svm.js                 # Support Vector Machine engine & metadata
+│   │       ├── knn.js                 # k-Nearest Neighbors engine & metadata
+│   │       ├── decision-tree.js       # Decision Tree engine & metadata
+│   │       ├── naive-bayes.js         # Gaussian Naive Bayes engine & metadata
+│   │       ├── k-means.js             # K-Means Clustering engine & metadata
+│   │       ├── hierarchical-clustering.js # Hierarchical Clustering engine & metadata
+│   │       ├── dbscan.js              # DBSCAN engine & metadata
+│   │       ├── pca.js                 # Principal Component Analysis engine & metadata
+│   │       └── index.js               # Re-exports individual modules, A list, and slug lookups
 │   ├── linear-algebra/page.js         # Linear Algebra curriculum
 │   ├── calculus-optimization/page.js  # Calculus & Optimization curriculum
 │   └── probability-statistics/page.js # Probability & Statistics curriculum
@@ -66,8 +79,8 @@ atlas/
 │   ├── ThemeToggle.js                 # Theme switcher with zero-flash localStorage persistence
 │   ├── DesktopNotice.js               # Notice banner for mobile viewports
 │   └── ComingSoon.js                  # Placeholder layout for upcoming math modules
-├── lib/                               # Data & Simulation Engines
-│   ├── algorithms.js                  # Math simulation generators for all 10 ML algorithms
+├── lib/                               # Data & Curriculum
+│   ├── algorithms.js                  # Re-export bridge to topic algorithms
 │   └── content.js                     # Curriculum content, LaTeX equations, explanations, and code
 ├── next.config.js                     # Next.js configuration
 ├── package.json                       # Dependencies, scripts, and project metadata
@@ -93,5 +106,6 @@ atlas/
 
 ## Adding New Algorithms
 
-1. **Simulation Generator**: Add a step generator function and register it in `A` within `lib/algorithms.js`. It returns an array of frames containing points, decision fields, lines, and metric values.
-2. **Content & Math**: Add the corresponding curriculum entry to `C` in `lib/content.js`, matching the index in `A`. Include LaTeX formulas, hyper-parameters, strengths, and scikit-learn code.
+1. **Simulation Generator**: Create a dedicated module in `app/ml/algorithms/<algorithm-slug>.js` (or in its respective topic folder) using utilities from `./common`. Export the engine function and algorithm descriptor.
+2. **Register Algorithm**: Add the export to `app/ml/algorithms/index.js` in the ordered `A` array and `algorithmsBySlug` map.
+3. **Content & Math**: Add the corresponding curriculum entry to `C` in `lib/content.js`, matching the index in `A`. Include LaTeX formulas, hyper-parameters, strengths, and scikit-learn code.
