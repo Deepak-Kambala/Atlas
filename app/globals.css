@@ -473,15 +473,17 @@ svg rect{transition:fill .4s,opacity .4s}
 
 /* 1. Page Introduction / Hero Area - Sleek, Compact, Zero Wasted Gap */
 .home-hero-section{
-  padding:16px 0 16px;
+  padding:22px 0 20px;
   border-bottom:1px solid var(--bd);
   margin-bottom:22px;
 }
 .home-hero-grid{
   display:grid;
-  grid-template-columns:minmax(0,1.25fr) minmax(0,0.9fr);
-  gap:clamp(20px,3vw,40px);
+  grid-template-columns:minmax(0,1.22fr) minmax(0,1fr);
+  gap:clamp(24px,3.5vw,44px);
   align-items:center;
+  max-width:1080px;
+  margin:0 auto;
 }
 
 .home-hero-content{
@@ -490,12 +492,12 @@ svg rect{transition:fill .4s,opacity .4s}
 }
 .home-hero-eyebrow{
   font-family:var(--mono);
-  font-size:10px;
+  font-size:11px;
   font-weight:600;
-  letter-spacing:0.12em;
+  letter-spacing:0.1em;
   text-transform:uppercase;
   color:var(--mu);
-  margin-bottom:5px;
+  margin-bottom:6px;
   display:flex;
   align-items:center;
   gap:6px;
@@ -504,19 +506,19 @@ svg rect{transition:fill .4s,opacity .4s}
   opacity:0.6;
 }
 .home-hero-heading{
-  font-size:clamp(28px,2.6vw,36px);
-  line-height:1.15;
+  font-size:clamp(36px,3.2vw,46px);
+  line-height:1.12;
   font-weight:750;
-  letter-spacing:-0.03em;
+  letter-spacing:-0.035em;
   color:var(--tx);
-  margin:0 0 8px;
+  margin:0 0 10px;
 }
 .home-hero-desc{
-  font-size:13.5px;
-  line-height:1.55;
+  font-size:clamp(15.5px,1.2vw,17px);
+  line-height:1.58;
   color:var(--mu);
-  max-width:480px;
-  margin:0 0 14px;
+  max-width:520px;
+  margin:0 0 18px;
 }
 .home-hero-actions{
   display:flex;
@@ -530,9 +532,9 @@ svg rect{transition:fill .4s,opacity .4s}
   background:var(--cd);
   border:1px solid var(--bd);
   color:var(--tx);
-  font-size:12.5px;
+  font-size:13.5px;
   font-weight:600;
-  padding:6px 14px;
+  padding:8px 18px;
   border-radius:6px;
   text-decoration:none;
   transition:all .15s ease;
@@ -543,11 +545,12 @@ svg rect{transition:fill .4s,opacity .4s}
   transform:translateY(-1px);
 }
 
-/* 3D Coordinate Scatter & Decision Hyperplane Visual */
+/* Hero Visual Column */
 .home-hero-visual{
   display:flex;
   align-items:center;
-  justify-content:flex-end;
+  justify-content:center;
+  width:100%;
 }
 .simple-visual-container{
   width:100%;
@@ -717,10 +720,10 @@ svg rect{transition:fill .4s,opacity .4s}
    ========================================================================== */
 .git-visual-container {
   width: 100%;
-  max-width: 380px;
+  max-width: 440px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   position: relative;
   user-select: none;
 }
@@ -847,14 +850,14 @@ svg rect{transition:fill .4s,opacity .4s}
 /* Branch Labels */
 .git-label {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  letter-spacing: 0.05em;
   font-weight: 600;
   user-select: none;
 }
 .git-label-main {
   fill: #8b949e;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 :root[data-theme="light"] .git-label-main {
   fill: #6b7280;
@@ -868,7 +871,7 @@ svg rect{transition:fill .4s,opacity .4s}
 }
 .git-label-merge {
   fill: #8b949e;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 500;
   animation: gitLabelMerge 8s ease infinite;
 }
@@ -1214,13 +1217,15 @@ svg rect{transition:fill .4s,opacity .4s}
 @media(max-width:900px){
   .home-hero-grid{
     grid-template-columns:1fr;
-    gap:28px;
+    gap:22px;
+    max-width:100%;
+    margin:0;
   }
   .home-hero-visual{
     justify-content:flex-start;
   }
   .git-visual-container{
-    max-width:340px;
+    max-width:360px;
     justify-content:flex-start;
   }
   .hero-hyperplane-container{
