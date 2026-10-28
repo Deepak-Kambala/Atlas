@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import './globals.css';
 import TopNav from '../components/TopNav';
 import DesktopNotice from '../components/DesktopNotice';
+import BackgroundASCII from '../components/BackgroundASCII';
 
 export const metadata={
   title:'Atlas | Math & ML Visualizations',
@@ -30,6 +31,7 @@ export default function RootLayout({children}){
       <body>
         <div className="progress" aria-hidden="true" />
         <DesktopNotice />
+        <BackgroundASCII />
         <TopNav />
         {children}
       </body>

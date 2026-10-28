@@ -110,11 +110,9 @@ export default function TopNav() {
 
           {/* 3. Right: Utility Controls (Theme Toggle, Search, GitHub) with Circular Outlines */}
           <div className="nav-actions">
-            <ThemeToggle />
-
             {/* Quick Search Button */}
             <button
-              className="nav-action-circle search-trigger"
+              className="nav-search-btn"
               onClick={() => setSearchOpen(true)}
               aria-label="Search algorithms (Press ⌘K or /)"
               title="Search (⌘K)"
@@ -123,11 +121,15 @@ export default function TopNav() {
                 <circle cx="11" cy="11" r="7" />
                 <line x1="21" y1="21" x2="16.5" y2="16.5" />
               </svg>
+              <span className="nav-search-placeholder">Search algorithms...</span>
+              <kbd className="nav-search-kbd">⌘K</kbd>
             </button>
+
+            <ThemeToggle />
 
             {/* GitHub Repository Link */}
             <a
-              href="https://github.com"
+              href="https://github.com/Deepak-Kambala/Atlas"
               target="_blank"
               rel="noopener noreferrer"
               className="nav-action-circle github-link"
