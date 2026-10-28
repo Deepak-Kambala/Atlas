@@ -12,11 +12,11 @@ export const G = r => Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(6.2832 * r
 export const cp = v => Math.max(3, Math.min(97, v));
 
 // Number formatters for step descriptions and metrics
-export const f2 = v => (+v).toFixed(2);
-export const f3 = v => (+v).toFixed(3);
+export const f2 = v => (Number.isFinite(+v) ? (+v).toFixed(2) : '0.00');
+export const f3 = v => (Number.isFinite(+v) ? (+v).toFixed(3) : '0.000');
 
 // Statistical and geometric helpers
-export const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+export const mean = a => (a && a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0);
 export const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
 // Clustered 2D Gaussian blob generator

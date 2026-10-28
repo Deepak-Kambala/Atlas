@@ -1240,12 +1240,6 @@ svg rect{transition:fill .4s,opacity .4s}
     max-width:360px;
     justify-content:flex-start;
   }
-  .hero-hyperplane-container{
-    justify-content:flex-start;
-  }
-  .hero-3d-plot-wrap{
-    max-width:380px;
-  }
   .algo-cards-grid{
     grid-template-columns:repeat(2,1fr);
   }
@@ -1270,14 +1264,8 @@ svg rect{transition:fill .4s,opacity .4s}
   .algo-cards-grid{
     grid-template-columns:1fr;
   }
-  .hero-pillars-wrap{
-    display:none;
-  }
   .home-hero-heading{
     font-size:32px;
-  }
-  .nav-brand-text{
-    display:none;
   }
 }
 

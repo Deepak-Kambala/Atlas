@@ -3,6 +3,7 @@ const h=React.createElement,fm=v=>Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=1?v
 
 // Line chart (or bars). `mark` = x value to highlight, or a y value when hy is set.
 export default function Chart({t,xl,yl,xs,series,mark,hy,bar}){
+ if (!xs || !xs.length || !series || !series.length) return null;
  const W=320,H=190,L=46,B=34,T=8,Rt=10,pw=W-L-Rt,ph=H-T-B,n=xs.length;
  const all=series.flatMap(s=>s.y).concat(hy&&mark!=null?[mark]:[]);
  let y0=Math.min(...all),y1=Math.max(...all);if(y0>=0||bar)y0=0;if(y1===y0)y1=y0+1;

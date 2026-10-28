@@ -52,12 +52,16 @@ export default function TopNav() {
 
   // Focus input when search opens
   useEffect(() => {
+    let timer;
     if (searchOpen) {
-      setTimeout(() => searchInputRef.current?.focus(), 50);
+      timer = setTimeout(() => searchInputRef.current?.focus(), 50);
       setSelectedIndex(0);
     } else {
       setQuery('');
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [searchOpen]);
 
   // Handle arrow key navigation in search modal

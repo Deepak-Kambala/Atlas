@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Viz from './Viz';
 import Chart from './Chart';
@@ -27,15 +27,29 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
   const [spd, setSpd] = useState(3.5);
   const [copied, setCopied] = useState(false);
   const [showDiagnostic, setShowDiagnostic] = useState(false);
+  const copyTimeoutRef = useRef(null);
 
   const a = A[ai];
   const pm = a.pm ? (pv[ai] ?? a.pm[3]) : 0;
 
+  // Reset step and playback when switching algorithm route
+  useEffect(() => {
+    setI(0);
+    setPlay(false);
+  }, [ai]);
+
+  // Cleanup copy timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
   // Generate simulation frames
   const S = useMemo(() => a.gen(R(seed * 97 + ai * 13 + 5), pm), [a, ai, seed, pm]);
   const n = S.length;
-  const ix = Math.min(i, n - 1);
-  const f = S[ix];
+  const ix = Math.min(Math.max(0, i), Math.max(0, n - 1));
+  const f = S[ix] || S[0] || {};
 
   // Auto-playback timer
   useEffect(() => {
@@ -91,7 +105,8 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(meta.code);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     }
   };
 

@@ -70,14 +70,16 @@ atlas/
 │   ├── calculus-optimization/page.js  # Calculus & Optimization curriculum
 │   └── probability-statistics/page.js # Probability & Statistics curriculum
 ├── components/                        # UI and Visualizer React Components
-│   ├── Visualizer.js                  # Play/pause player, step scrubber, controls, and dual-chart container
-│   ├── Viz.js                         # Dynamic SVG canvas rendering decision fields, vectors, and points
+│   ├── AlgorithmWorkspace.js          # Dominant viewport workspace, step scrubber, toolbar, and contextual panels
+│   ├── Viz.js                         # Dynamic SVG canvas rendering decision fields, vectors, polygons, and points
 │   ├── Chart.js                       # SVG line and bar charts tracking loss and diagnostic metrics
 │   ├── Tex.js                         # KaTeX server-side math renderer and inline rich text formatter
 │   ├── Thumb.js                       # Algorithm thumbnail generator using seed-stable preview frames
-│   ├── TopNav.js                      # Persistent navigation header with dark/light theme toggle
+│   ├── TopNav.js                      # Persistent navigation header with dark/light theme toggle and Cmd+K search
 │   ├── ThemeToggle.js                 # Theme switcher with zero-flash localStorage persistence
 │   ├── DesktopNotice.js               # Notice banner for mobile viewports
+│   ├── GitBranchVisual.js             # Animated Git branching and merging SVG hero graphic
+│   ├── SimpleHeroVisual.js            # 3D optimization surface hero visual
 │   └── ComingSoon.js                  # Placeholder layout for upcoming math modules
 ├── lib/                               # Data & Curriculum
 │   ├── algorithms.js                  # Re-export bridge to topic algorithms
