@@ -712,6 +712,335 @@ svg rect{transition:fill .4s,opacity .4s}
   font-weight:700;
 }
 
+/* ==========================================================================
+   GIT BRANCHING & MERGING ANIMATED VISUALIZATION
+   ========================================================================== */
+.git-visual-container {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  user-select: none;
+}
+
+.git-branch-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Background Track Guides */
+.git-track-line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1px;
+  stroke-dasharray: 3 3;
+}
+:root[data-theme="light"] .git-track-line {
+  stroke: rgba(0, 0, 0, 0.08);
+}
+
+/* Main Branch Line */
+.git-path-main {
+  stroke: #64748b;
+  stroke-width: 1.8px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 332;
+  animation: gitMainAnim 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+:root[data-theme="light"] .git-path-main {
+  stroke: #9ca3af;
+}
+
+/* Feature Branch Line (Splits, commits, merges) */
+.git-path-feat {
+  stroke: #38bdf8;
+  stroke-width: 1.8px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 238;
+  animation: gitFeatAnim 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+:root[data-theme="light"] .git-path-feat {
+  stroke: #2563eb;
+}
+
+/* Commit Nodes - Circles */
+.git-node circle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.git-circle-main {
+  fill: #0c0d0e;
+  stroke: #94a3b8;
+  stroke-width: 1.8px;
+  transition: all 0.2s ease;
+}
+:root[data-theme="light"] .git-circle-main {
+  fill: #ffffff;
+  stroke: #4b5563;
+}
+
+.git-circle-feat {
+  fill: #0c0d0e;
+  stroke: #38bdf8;
+  stroke-width: 1.8px;
+  transition: all 0.2s ease;
+}
+:root[data-theme="light"] .git-circle-feat {
+  fill: #ffffff;
+  stroke: #2563eb;
+}
+
+.git-circle-merge-outer {
+  fill: #0c0d0e;
+  stroke: #38bdf8;
+  stroke-width: 1.6px;
+}
+:root[data-theme="light"] .git-circle-merge-outer {
+  fill: #ffffff;
+  stroke: #2563eb;
+}
+
+.git-circle-merge-inner {
+  fill: #38bdf8;
+  stroke: none;
+}
+:root[data-theme="light"] .git-circle-merge-inner {
+  fill: #2563eb;
+}
+
+/* Commit Node Animations synchronized with the path drawing */
+.node-m1 circle, .node-m2 circle {
+  opacity: 1;
+}
+
+.node-f1 circle {
+  animation: gitNodeF1 8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.node-m3 circle {
+  animation: gitNodeM3 8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.node-f2 circle {
+  animation: gitNodeF2 8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.node-merge circle {
+  animation: gitNodeMerge 8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+/* Moving Tracer Dot */
+.git-tracer-dot {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.5));
+}
+:root[data-theme="light"] .git-tracer-dot {
+  fill: #2563eb;
+  filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.35));
+}
+
+/* Branch Labels */
+.git-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  user-select: none;
+}
+.git-label-main {
+  fill: #8b949e;
+  opacity: 0.8;
+}
+:root[data-theme="light"] .git-label-main {
+  fill: #6b7280;
+}
+.git-label-feat {
+  fill: #38bdf8;
+  animation: gitLabelFeat 8s ease infinite;
+}
+:root[data-theme="light"] .git-label-feat {
+  fill: #2563eb;
+}
+.git-label-merge {
+  fill: #8b949e;
+  font-size: 9.5px;
+  font-weight: 500;
+  animation: gitLabelMerge 8s ease infinite;
+}
+:root[data-theme="light"] .git-label-merge {
+  fill: #6b7280;
+}
+
+/* ==========================================================================
+   ANIMATION KEYFRAMES (8s cycle)
+   ========================================================================== */
+
+/* 1. Feature Path: Splits (16%-32%), Extends to F2 (38%-50%), Merges (56%-68%), Holds (68%-88%), Fades (94%) */
+@keyframes gitFeatAnim {
+  0%, 14% {
+    stroke-dashoffset: 238;
+    opacity: 0;
+  }
+  16% {
+    stroke-dashoffset: 238;
+    opacity: 1;
+  }
+  32%, 38% {
+    stroke-dashoffset: 148;
+    opacity: 1;
+  }
+  50%, 56% {
+    stroke-dashoffset: 82;
+    opacity: 1;
+  }
+  68%, 88% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  94%, 100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 2. Main Path: Starts at M2 (101px of 332px -> offset 231), advances with commits to M3, Merge, and tail */
+@keyframes gitMainAnim {
+  0%, 25% {
+    stroke-dashoffset: 231;
+    opacity: 1;
+  }
+  42%, 48% {
+    stroke-dashoffset: 156;
+    opacity: 1;
+  }
+  66%, 68% {
+    stroke-dashoffset: 36;
+    opacity: 1;
+  }
+  74%, 88% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.25;
+  }
+  98%, 100% {
+    opacity: 1;
+    stroke-dashoffset: 231;
+  }
+}
+
+/* 3. Commit Node Keyframes */
+@keyframes gitNodeF1 {
+  0%, 28% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  33%, 88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes gitNodeM3 {
+  0%, 38% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  43%, 88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes gitNodeF2 {
+  0%, 47% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  52%, 88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes gitNodeMerge {
+  0%, 65% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  70%, 88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* 4. Label Keyframes */
+@keyframes gitLabelFeat {
+  0%, 16% {
+    opacity: 0;
+  }
+  24%, 88% {
+    opacity: 1;
+  }
+  94%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gitLabelMerge {
+  0%, 66% {
+    opacity: 0;
+  }
+  72%, 88% {
+    opacity: 1;
+  }
+  94%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .git-path-main,
+  .git-path-feat,
+  .node-f1 circle,
+  .node-m3 circle,
+  .node-f2 circle,
+  .node-merge circle,
+  .git-label-feat,
+  .git-label-merge {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .git-tracer-dot {
+    display: none !important;
+  }
+}
+
 /* 2. Algorithm Catalog & Content Hierarchy */
 .home-catalog-section{
   display:flex;
@@ -886,6 +1215,13 @@ svg rect{transition:fill .4s,opacity .4s}
   .home-hero-grid{
     grid-template-columns:1fr;
     gap:28px;
+  }
+  .home-hero-visual{
+    justify-content:flex-start;
+  }
+  .git-visual-container{
+    max-width:340px;
+    justify-content:flex-start;
   }
   .hero-hyperplane-container{
     justify-content:flex-start;

@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { C } from '../lib/content';
 import Thumb from './Thumb';
-import SimpleHeroVisual from './SimpleHeroVisual';
+import GitBranchVisual from './GitBranchVisual';
 
 export default function HomePage() {
   const supervised = C.map((c, i) => ({ ...c, ai: i })).filter(c => c.type === 'Supervised');
@@ -36,9 +36,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column: Clean 3D Optimization Surface */}
+          {/* Right Column: Clean Git Branching & Merging Visualization */}
           <div className="home-hero-visual">
-            <SimpleHeroVisual />
+            <GitBranchVisual />
           </div>
         </div>
       </section>
