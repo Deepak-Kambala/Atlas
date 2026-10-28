@@ -5,9 +5,41 @@ import { C } from '../lib/content';
 import Thumb from './Thumb';
 import GitBranchVisual from './GitBranchVisual';
 
+const CATEGORIES = [
+  {
+    id: 'Regression',
+    title: 'Regression',
+    desc: 'Predict continuous targets by fitting linear models, regularized loss functions, and polynomial curves.'
+  },
+  {
+    id: 'Classification',
+    title: 'Classification',
+    desc: 'Separate data into discrete classes using probabilistic models, margins, partitions, and discriminant axes.'
+  },
+  {
+    id: 'Neural Networks',
+    title: 'Neural Networks',
+    desc: 'Feed-forward multi-layer perceptrons learning non-linear representations via backpropagation.'
+  },
+  {
+    id: 'Model Evaluation',
+    title: 'Model Evaluation',
+    desc: 'Assess generalization error and avoid leakage through cross-validation and resampling.'
+  },
+  {
+    id: 'Clustering',
+    title: 'Clustering',
+    desc: 'Discover latent groupings, centroids, exemplars, and hierarchical structures in unlabeled data.'
+  },
+  {
+    id: 'Dimensionality Reduction',
+    title: 'Dimensionality Reduction',
+    desc: 'Compress high-dimensional spaces to extract principal components and visualize variance.'
+  }
+];
+
 export default function HomePage() {
-  const supervised = C.map((c, i) => ({ ...c, ai: i })).filter(c => c.type === 'Supervised');
-  const unsupervised = C.map((c, i) => ({ ...c, ai: i })).filter(c => c.type === 'Unsupervised');
+  const allWithIndex = C.map((c, i) => ({ ...c, ai: i }));
 
   const getPrimaryTask = task => {
     if (!task) return null;
@@ -27,7 +59,7 @@ export default function HomePage() {
             <h1 className="home-hero-heading">Machine Learning</h1>
             <p className="home-hero-desc">
               Explore core machine learning algorithms through interactive visualizations.
-              Adjust parameters, see how the models learn, and understand what&apos;s happening behind the scenes.
+              Adjust parameters, see how models learn step-by-step, and understand the mathematics behind the scenes.
             </p>
             <div className="home-hero-actions">
               <a href="#algorithms" className="btn-start-exploring">
@@ -43,85 +75,55 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. Algorithm Catalog & Content Hierarchy */}
+      {/* 2. Algorithm Catalog & Content Hierarchy (6 Structured Categories) */}
       <section id="algorithms" className="home-catalog-section">
-        {/* Family 1: Supervised Learning */}
-        <div className="algo-family-block">
-          <div className="algo-family-header">
-            <h2 className="algo-family-title">Supervised Learning</h2>
-            <div className="algo-family-hairline" />
-            <span className="algo-family-count">{supervised.length} ALGORITHMS</span>
-          </div>
+        {CATEGORIES.map(category => {
+          const items = allWithIndex.filter(c => c.category === category.id);
+          if (items.length === 0) return null;
 
-          <div className="algo-cards-grid">
-            {supervised.map(c => {
-              const primaryTask = getPrimaryTask(c.task);
-              return (
-                <Link key={c.slug} href={`/ml/${c.slug}`} className="algo-card">
-                  <div className="algo-card-preview-wrap">
-                    <Thumb ai={c.ai} />
-                  </div>
+          return (
+            <div key={category.id} className="algo-family-block">
+              <div className="algo-family-header">
+                <div className="algo-family-title-wrap">
+                  <h2 className="algo-family-title">{category.title}</h2>
+                  <p className="algo-family-desc">{category.desc}</p>
+                </div>
+                <div className="algo-family-hairline" />
+                <span className="algo-family-count">{items.length} ALGORITHMS</span>
+              </div>
 
-                  <div className="algo-card-badges">
-                    <span className="card-badge-pill">{c.type.toUpperCase()}</span>
-                    {primaryTask && primaryTask !== c.type.toUpperCase() && (
-                      <span className="card-badge-pill">{primaryTask}</span>
-                    )}
-                  </div>
+              <div className="algo-cards-grid">
+                {items.map(c => {
+                  const primaryTask = getPrimaryTask(c.task);
+                  return (
+                    <Link key={c.slug} href={`/ml/${c.slug}`} className="algo-card">
+                      <div className="algo-card-preview-wrap">
+                        <Thumb ai={c.ai} />
+                      </div>
 
-                  <h3 className="algo-card-name">{c.name}</h3>
-                  <p className="algo-card-tagline">{c.tag}</p>
+                      <div className="algo-card-badges">
+                        <span className="card-badge-pill">{c.type.toUpperCase()}</span>
+                        {primaryTask && primaryTask !== c.type.toUpperCase() && (
+                          <span className="card-badge-pill">{primaryTask}</span>
+                        )}
+                      </div>
 
-                  <div className="algo-card-action-bar">
-                    <span className="algo-card-link-text">
-                      <span className="link-arrow-ne">↗</span> Explore algorithm
-                    </span>
-                    <span className="algo-card-arrow-icon">→</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+                      <h3 className="algo-card-name">{c.name}</h3>
+                      <p className="algo-card-tagline">{c.tag}</p>
 
-        {/* Family 2: Unsupervised Learning */}
-        <div className="algo-family-block">
-          <div className="algo-family-header">
-            <h2 className="algo-family-title">Unsupervised Learning</h2>
-            <div className="algo-family-hairline" />
-            <span className="algo-family-count">{unsupervised.length} ALGORITHMS</span>
-          </div>
-
-          <div className="algo-cards-grid">
-            {unsupervised.map(c => {
-              const primaryTask = getPrimaryTask(c.task);
-              return (
-                <Link key={c.slug} href={`/ml/${c.slug}`} className="algo-card">
-                  <div className="algo-card-preview-wrap">
-                    <Thumb ai={c.ai} />
-                  </div>
-
-                  <div className="algo-card-badges">
-                    <span className="card-badge-pill">{c.type.toUpperCase()}</span>
-                    {primaryTask && primaryTask !== c.type.toUpperCase() && (
-                      <span className="card-badge-pill">{primaryTask}</span>
-                    )}
-                  </div>
-
-                  <h3 className="algo-card-name">{c.name}</h3>
-                  <p className="algo-card-tagline">{c.tag}</p>
-
-                  <div className="algo-card-action-bar">
-                    <span className="algo-card-link-text">
-                      <span className="link-arrow-ne">↗</span> Explore algorithm
-                    </span>
-                    <span className="algo-card-arrow-icon">→</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+                      <div className="algo-card-action-bar">
+                        <span className="algo-card-link-text">
+                          <span className="link-arrow-ne">↗</span> Explore algorithm
+                        </span>
+                        <span className="algo-card-arrow-icon">→</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </section>
     </div>
   );

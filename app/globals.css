@@ -1060,6 +1060,18 @@ svg rect{transition:fill .4s,opacity .4s}
   align-items:center;
   gap:14px;
 }
+.algo-family-title-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.algo-family-desc{
+  font-size:12px;
+  color:var(--mu);
+  margin:0;
+  max-width:540px;
+  line-height:1.4;
+}
 .algo-family-title{
   font-size:16px;
   font-weight:650;

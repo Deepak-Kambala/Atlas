@@ -3,38 +3,59 @@
  * Re-exports individual algorithm modules and exports the ordered master list A.
  */
 
-export * from './common';
-export * from './linear-regression';
-export * from './logistic-regression';
-export * from './svm';
-export * from './knn';
-export * from './decision-tree';
-export * from './naive-bayes';
-export * from './k-means';
-export * from './hierarchical-clustering';
-export * from './dbscan';
-export * from './pca';
+export * from './common.js';
+export * from './linear-regression.js';
+export * from './multiple-linear-regression.js';
+export * from './ridge-regression.js';
+export * from './bias-variance.js';
+export * from './logistic-regression.js';
+export * from './svm.js';
+export * from './knn.js';
+export * from './decision-tree.js';
+export * from './naive-bayes.js';
+export * from './lda.js';
+export * from './mlp.js';
+export * from './cross-validation.js';
+export * from './k-means.js';
+export * from './k-medoids.js';
+export * from './hierarchical-clustering.js';
+export * from './dbscan.js';
+export * from './pca.js';
 
-import { linearRegression } from './linear-regression';
-import { logisticRegression } from './logistic-regression';
-import { svm } from './svm';
-import { knn } from './knn';
-import { decisionTree } from './decision-tree';
-import { naiveBayes } from './naive-bayes';
-import { kmeans } from './k-means';
-import { hierarchicalClustering } from './hierarchical-clustering';
-import { dbscan } from './dbscan';
-import { pca } from './pca';
+import { linearRegression } from './linear-regression.js';
+import { multipleLinearRegression } from './multiple-linear-regression.js';
+import { ridgeRegression } from './ridge-regression.js';
+import { biasVarianceTradeoff } from './bias-variance.js';
+import { logisticRegression } from './logistic-regression.js';
+import { svm } from './svm.js';
+import { knn } from './knn.js';
+import { decisionTree } from './decision-tree.js';
+import { naiveBayes } from './naive-bayes.js';
+import { ldaClassifier } from './lda.js';
+import { mlp } from './mlp.js';
+import { crossValidation } from './cross-validation.js';
+import { kmeans } from './k-means.js';
+import { kmedoidsCluster } from './k-medoids.js';
+import { hierarchicalClustering } from './hierarchical-clustering.js';
+import { dbscan } from './dbscan.js';
+import { pca } from './pca.js';
 
 // Ordered array matching lib/content.js
 export const A = [
   linearRegression,
+  multipleLinearRegression,
+  ridgeRegression,
+  biasVarianceTradeoff,
   logisticRegression,
   svm,
   knn,
   decisionTree,
   naiveBayes,
+  ldaClassifier,
+  mlp,
+  crossValidation,
   kmeans,
+  kmedoidsCluster,
   hierarchicalClustering,
   dbscan,
   pca
@@ -43,12 +64,19 @@ export const A = [
 // Keyed dictionary by slug for direct lookups
 export const algorithmsBySlug = {
   'linear-regression': linearRegression,
+  'multiple-linear-regression': multipleLinearRegression,
+  'ridge-regression': ridgeRegression,
+  'bias-variance': biasVarianceTradeoff,
   'logistic-regression': logisticRegression,
   svm: svm,
   knn: knn,
   'decision-tree': decisionTree,
   'naive-bayes': naiveBayes,
+  lda: ldaClassifier,
+  mlp: mlp,
+  'cross-validation': crossValidation,
   'k-means': kmeans,
+  'k-medoids': kmedoidsCluster,
   'hierarchical-clustering': hierarchicalClustering,
   dbscan: dbscan,
   pca: pca
