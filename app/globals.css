@@ -2851,7 +2851,7 @@ svg rect {
   gap: 16px;
   padding: 16px 0 22px;
   border-bottom: 1px solid var(--bd);
-  margin-bottom: 28px;
+  margin-bottom: 34px;
   flex-wrap: wrap;
 }
 
@@ -3479,68 +3479,110 @@ svg rect {
 }
 
 /* --------------------------------------------------------------------------
-   COLUMN 1: Fixed Left Sidebar Navigation (~230px)
+   COLUMN 1: Fixed Left Sidebar Navigation (~256px)
    -------------------------------------------------------------------------- */
 .workspace-sidebar {
-  width: 236px;
-  min-width: 236px;
-  max-width: 236px;
+  width: 256px;
+  min-width: 256px;
+  max-width: 256px;
   height: 100%;
   border-right: 1px solid var(--bd);
   background: var(--bg);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 14px 12px;
+  padding: 16px 16px;
   overflow-y: auto;
   flex-shrink: 0;
 }
 
 .sidebar-header {
+  padding-bottom: 14px;
   margin-bottom: 12px;
+  border-bottom: 1px solid var(--bd);
 }
 
-.sidebar-category {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.sidebar-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-family: var(--sans);
+  font-weight: 500;
   color: var(--mu);
-  margin-bottom: 4px;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: color 0.15s ease;
+  line-height: 1;
+}
+
+.sidebar-back-link:hover {
+  color: var(--tx);
+}
+
+.sidebar-back-arrow {
+  font-size: 11px;
+  transition: transform 0.15s ease;
+}
+
+.sidebar-back-link:hover .sidebar-back-arrow {
+  transform: translateX(-2px);
 }
 
 .sidebar-title {
-  font-size: 19px;
-  font-weight: 700;
+  font-size: 23px;
+  font-weight: 750;
   letter-spacing: -0.025em;
   color: var(--tx);
-  margin: 0 0 4px;
+  margin: 2px 0 8px;
   line-height: 1.2;
 }
 
 .sidebar-tag {
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12.5px;
+  line-height: 1.48;
   color: var(--mu);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
+  opacity: 0.9;
 }
 
 .sidebar-badges {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--bd);
+  align-items: center;
 }
 
-.sidebar-badges .badge {
-  font-size: 11px;
+.sidebar-badge {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding: 2.5px 8px;
-  border-radius: 4px;
+  border-radius: 99px;
   background: var(--cd);
   border: 1px solid var(--bd);
-  color: var(--tx);
+  color: var(--mu);
+  line-height: 1.35;
+}
+
+.sidebar-nav-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-nav-heading {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mu);
+  opacity: 0.65;
+  padding: 0 6px 8px;
 }
 
 .sidebar-nav {
@@ -3640,9 +3682,9 @@ svg rect {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 12px 16px;
+  padding: 16px 22px 18px;
   overflow: hidden;
-  gap: 10px;
+  gap: 14px;
   background: var(--bg);
 }
 
@@ -3653,6 +3695,7 @@ svg rect {
   justify-content: space-between;
   flex-shrink: 0;
   gap: 12px;
+  padding-bottom: 2px;
 }
 
 .center-header-copy {
@@ -3910,7 +3953,7 @@ svg rect {
 }
 
 .panel-header-bar {
-  padding: 10px 14px;
+  padding: 13px 18px;
   border-bottom: 1px solid var(--bd);
   display: flex;
   align-items: center;
@@ -3930,7 +3973,7 @@ svg rect {
 
 .panel-back-to-demo {
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 2.5px 9px;
   border-radius: 4px;
   border: 1px solid var(--bd);
   background: var(--cd);
@@ -3947,21 +3990,21 @@ svg rect {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 14px;
+  padding: 18px 18px 24px;
 }
 
 /* Contextual View 1: Demo Telemetry & Happening */
 .demo-panel-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .telemetry-card {
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 8px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
 }
@@ -3973,7 +4016,7 @@ svg rect {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mu);
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .telemetry-number {
@@ -3989,12 +4032,12 @@ svg rect {
 .telemetry-sub {
   font-size: 12.5px;
   color: var(--mu);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .sparkline-container {
   width: 100%;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .sparkline-svg {
@@ -4006,8 +4049,8 @@ svg rect {
 .happening-card {
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 8px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
 }
@@ -4089,8 +4132,8 @@ svg rect {
 .math-entry-box {
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 7px;
-  padding: 10px 12px;
+  border-radius: 9px;
+  padding: 12px 14px;
 }
 
 .math-entry-title {
@@ -4104,7 +4147,7 @@ svg rect {
   background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 5px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   margin-bottom: 6px;
   overflow-x: auto;
 }
@@ -4119,13 +4162,13 @@ svg rect {
 .panel-steps-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .steps-list-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .step-item-card {
@@ -4134,8 +4177,8 @@ svg rect {
   gap: 10px;
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 8px;
+  padding: 10px 12px;
   cursor: pointer;
   transition: all .15s ease;
 }
@@ -4189,14 +4232,14 @@ svg rect {
 .panel-params-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .param-item-box {
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 7px;
-  padding: 10px 12px;
+  border-radius: 9px;
+  padding: 12px 14px;
 }
 
 .param-item-title {

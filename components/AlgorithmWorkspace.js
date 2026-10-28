@@ -152,34 +152,40 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
   return (
     <div className="workspace-shell">
       {/* =========================================================================
-          COLUMN 1: Fixed Left Sidebar Navigation (240px)
+          COLUMN 1: Fixed Left Sidebar Navigation (256px)
           ========================================================================= */}
       <aside className="workspace-sidebar">
         <div className="sidebar-header">
-          <div className="sidebar-category">MACHINE LEARNING</div>
+          <Link href="/ml" className="sidebar-back-link">
+            <span className="sidebar-back-arrow">←</span>
+            <span>Machine Learning</span>
+          </Link>
           <h1 className="sidebar-title">{meta.name}</h1>
           <p className="sidebar-tag">{meta.tag}</p>
           <div className="sidebar-badges">
-            <span className="badge">{meta.type}</span>
-            <span className="badge">{meta.task}</span>
+            <span className="sidebar-badge">{meta.type}</span>
+            <span className="sidebar-badge">{meta.task}</span>
           </div>
         </div>
 
-        <nav className="sidebar-nav" aria-label="Algorithm sections">
-          {SECTIONS.map(sec => {
-            const isActive = activeTab === sec.id;
-            return (
-              <button
-                key={sec.id}
-                className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
-                onClick={() => setActiveTab(sec.id)}
-              >
-                <span className="nav-num">{sec.num}</span>
-                <span className="nav-label">{sec.label}</span>
-              </button>
-            );
-          })}
-        </nav>
+        <div className="sidebar-nav-section">
+          <div className="sidebar-nav-heading">Sections</div>
+          <nav className="sidebar-nav" aria-label="Algorithm sections">
+            {SECTIONS.map(sec => {
+              const isActive = activeTab === sec.id;
+              return (
+                <button
+                  key={sec.id}
+                  className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(sec.id)}
+                >
+                  <span className="nav-num">{sec.num}</span>
+                  <span className="nav-label">{sec.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
         <div className="sidebar-footer">
           <span className="sidebar-footer-hint">Select a section to explore</span>
@@ -206,7 +212,7 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
         <header className="workspace-center-header">
           <div className="center-header-copy">
             <h2 className="center-action-title">
-              Watch {meta.name.toLowerCase()} learn
+              Watch {meta.name} learn
             </h2>
             <p className="center-action-sub">
               Follow each update in real time. Scrub or play to inspect the algorithm.
