@@ -556,6 +556,11 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
               <div className="steps-list-wrap">
                 {meta.steps.map((s, stepIdx) => {
                   const isCurrent = stepIdx === ix;
+                  const isObject = typeof s === 'object' && s !== null;
+                  const title = isObject ? (s.title || s[0]) : null;
+                  const text = isObject ? (s.text || s.desc || s[1]) : s;
+                  const detail = isObject ? (s.detail || s[2]) : null;
+
                   return (
                     <div
                       key={stepIdx}
@@ -570,7 +575,15 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                     >
                       <div className="step-item-num">{stepIdx + 1}</div>
                       <div className="step-item-body">
-                        <Rich t={s} />
+                        {title && <div className="step-item-title">{title}</div>}
+                        <div className="step-item-desc">
+                          <Rich t={text} />
+                        </div>
+                        {detail && (
+                          <div className="step-item-detail">
+                            <Rich t={detail} />
+                          </div>
+                        )}
                       </div>
                       {isCurrent && <span className="step-active-indicator">Current</span>}
                     </div>

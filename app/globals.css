@@ -4305,6 +4305,29 @@ svg rect {
   flex: 1;
 }
 
+.step-item-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+
+.step-item-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tx);
+}
+
+.step-item-detail {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--mu);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--bd);
+}
+
 .step-active-indicator {
   font-size: 9.5px;
   font-family: var(--mono);
