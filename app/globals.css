@@ -4372,18 +4372,126 @@ svg rect {
 .panel-use-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
-.tradeoffs-group,
+.tradeoffs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tradeoffs-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tradeoff-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.tradeoff-badge.pro {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.tradeoff-badge.con {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tradeoffs-group-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.tradeoffs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tradeoff-card {
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 11px 13px;
+  transition: border-color .15s ease;
+}
+
+.tradeoff-card.pro-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.tradeoff-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.tradeoff-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tradeoff-icon.pro-icon {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.tradeoff-icon.con-icon {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.tradeoff-card-body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tx);
+  flex: 1;
+}
+
+.tradeoff-card.has-visual {
+  padding-bottom: 14px;
+}
+
+.limitation-embedded-visual {
+  margin-top: 10px;
+  width: 100%;
+}
+
 .use-group {
   background: var(--cd);
   border: 1px solid var(--bd);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 12px 14px;
 }
 
-.tradeoffs-group-title,
 .use-group-title {
   font-size: 13.5px;
   font-weight: 650;
@@ -4392,7 +4500,6 @@ svg rect {
   letter-spacing: -0.01em;
 }
 
-.tradeoffs-ul,
 .use-guidelines-ul {
   margin: 0;
   padding-left: 16px;
@@ -4401,7 +4508,6 @@ svg rect {
   color: var(--tx);
 }
 
-.tradeoffs-ul li,
 .use-guidelines-ul li {
   margin-bottom: 6px;
 }

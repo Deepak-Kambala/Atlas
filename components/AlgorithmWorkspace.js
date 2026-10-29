@@ -613,19 +613,28 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
             <div className="panel-tradeoffs-stack">
               <h3 className="panel-heading">Trade-offs</h3>
               <div className="tradeoffs-group strengths">
-                <h4 className="tradeoffs-group-title">✓ Strengths</h4>
-                <ul className="tradeoffs-ul">
+                <div className="tradeoffs-header-row">
+                  <span className="tradeoff-badge pro">PROS</span>
+                  <h4 className="tradeoffs-group-title">Key Strengths</h4>
+                </div>
+                <div className="tradeoffs-list">
                   {meta.pros.map((pro, pIdx) => (
-                    <li key={pIdx}>
-                      <Rich t={pro} />
-                    </li>
+                    <div key={pIdx} className="tradeoff-card pro-card">
+                      <span className="tradeoff-icon pro-icon">✓</span>
+                      <div className="tradeoff-card-body">
+                        <Rich t={pro} />
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="tradeoffs-group weaknesses">
-                <h4 className="tradeoffs-group-title">✕ Limitations</h4>
-                <ul className="tradeoffs-ul">
+                <div className="tradeoffs-header-row">
+                  <span className="tradeoff-badge con">CONS</span>
+                  <h4 className="tradeoffs-group-title">Limitations &amp; Failure Modes</h4>
+                </div>
+                <div className="tradeoffs-list">
                   {meta.cons.map((con, cIdx) => {
                     const text = typeof con === 'string' ? con : con.text;
                     const isSeedLimitation =
@@ -655,17 +664,22 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                       : null;
 
                     return (
-                      <li key={cIdx} className={VisualComponent ? 'tradeoff-item-with-visual' : ''}>
-                        <Rich t={text} />
+                      <div key={cIdx} className={`tradeoff-card con-card ${VisualComponent ? 'has-visual' : ''}`}>
+                        <div className="tradeoff-card-header">
+                          <span className="tradeoff-icon con-icon">✕</span>
+                          <div className="tradeoff-card-body">
+                            <Rich t={text} />
+                          </div>
+                        </div>
                         {VisualComponent && (
                           <div className="limitation-embedded-visual">
                             <VisualComponent />
                           </div>
                         )}
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             </div>
           )}
