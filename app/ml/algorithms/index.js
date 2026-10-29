@@ -34,7 +34,7 @@ import { naiveBayes } from './naive-bayes/index.js';
 import { ldaClassifier } from './lda/index.js';
 import { mlp } from './mlp/index.js';
 import { crossValidation } from './cross-validation/index.js';
-import { kmeans, KMeansSeedSensitivity } from './k-means/index.js';
+import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex } from './k-means/index.js';
 import { kmedoidsCluster } from './k-medoids/index.js';
 import { hierarchicalClustering } from './hierarchical-clustering/index.js';
 import { dbscan } from './dbscan/index.js';
@@ -43,7 +43,9 @@ import { pca } from './pca/index.js';
 // Map of algorithm-specific visual components (for limitations, interactive modules, etc.)
 export const algorithmVisuals = {
   'k-means': {
-    seedSensitivity: KMeansSeedSensitivity
+    seedSensitivity: KMeansSeedSensitivity,
+    outliers: KMeansOutliers,
+    nonConvex: KMeansNonConvex
   }
 };
 

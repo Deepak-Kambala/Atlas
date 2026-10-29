@@ -564,12 +564,32 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                         ? con.toLowerCase().includes('initial seed')
                         : con.id === 'initial-seeds');
 
+                    const isOutlierLimitation =
+                      meta.slug === 'k-means' &&
+                      (typeof con === 'string'
+                        ? con.toLowerCase().includes('outlier')
+                        : con.id === 'outliers');
+
+                    const isNonConvexLimitation =
+                      meta.slug === 'k-means' &&
+                      (typeof con === 'string'
+                        ? con.toLowerCase().includes('non-spherical') || con.toLowerCase().includes('hyper-ellipsoid')
+                        : con.id === 'non-spherical');
+
+                    const VisualComponent = isSeedLimitation
+                      ? algorithmVisuals[meta.slug]?.seedSensitivity
+                      : isOutlierLimitation
+                      ? algorithmVisuals[meta.slug]?.outliers
+                      : isNonConvexLimitation
+                      ? algorithmVisuals[meta.slug]?.nonConvex
+                      : null;
+
                     return (
-                      <li key={cIdx} className={isSeedLimitation ? 'tradeoff-item-with-visual' : ''}>
+                      <li key={cIdx} className={VisualComponent ? 'tradeoff-item-with-visual' : ''}>
                         <Rich t={text} />
-                        {isSeedLimitation && (
+                        {VisualComponent && (
                           <div className="limitation-embedded-visual">
-                            <KMeansSeedSensitivity />
+                            <VisualComponent />
                           </div>
                         )}
                       </li>

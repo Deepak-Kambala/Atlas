@@ -4102,6 +4102,7 @@ svg rect {
   line-height: 1.6;
   color: var(--tx);
   margin: 0;
+  white-space: pre-line;
 }
 
 .panel-meta-tags {
@@ -5380,4 +5381,12 @@ svg rect {
 
 .chalk-bullet-item b {
   color: var(--tx);
+}
+
+
+.kmeans-wide-svg {
+  width: 100%;
+  max-width: 270px;
+  height: auto;
+  display: block;
 }
