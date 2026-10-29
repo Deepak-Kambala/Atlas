@@ -4375,24 +4375,27 @@ svg rect {
   gap: 12px;
 }
 
-.tradeoffs-group {
+.tradeoffs-group,
+.use-group {
   background: var(--cd);
   border: 1px solid var(--bd);
   border-radius: 7px;
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
 
-.tradeoffs-group-title {
+.tradeoffs-group-title,
+.use-group-title {
   font-size: 13.5px;
   font-weight: 650;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--tx);
+  letter-spacing: -0.01em;
 }
 
 .tradeoffs-ul,
 .use-guidelines-ul {
   margin: 0;
-  padding-left: 14px;
+  padding-left: 16px;
   font-size: 13px;
   line-height: 1.6;
   color: var(--tx);

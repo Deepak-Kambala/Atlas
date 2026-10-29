@@ -674,13 +674,56 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           {activeTab === 'use' && (
             <div className="panel-use-stack">
               <h3 className="panel-heading">When to Use</h3>
-              <ul className="use-guidelines-ul">
-                {meta.use.map((u, uIdx) => (
-                  <li key={uIdx}>
-                    <Rich t={u} />
-                  </li>
-                ))}
-              </ul>
+              {Array.isArray(meta.use) && (() => {
+                const useItems = meta.use.filter(item => {
+                  const str = typeof item === 'string' ? item : item.text || '';
+                  return !str.toLowerCase().startsWith('avoid') && !str.toLowerCase().startsWith('**avoid');
+                });
+                const avoidItems = meta.use.filter(item => {
+                  const str = typeof item === 'string' ? item : item.text || '';
+                  return str.toLowerCase().startsWith('avoid') || str.toLowerCase().startsWith('**avoid');
+                });
+
+                if (useItems.length > 0 && avoidItems.length > 0) {
+                  return (
+                    <>
+                      <div className="use-group recommended">
+                        <h4 className="use-group-title">✓ Best Suited For</h4>
+                        <ul className="use-guidelines-ul">
+                          {useItems.map((u, uIdx) => (
+                            <li key={uIdx}>
+                              <Rich t={typeof u === 'string' ? u : u.text} />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="use-group not-recommended">
+                        <h4 className="use-group-title">✕ When to Avoid &amp; Alternatives</h4>
+                        <ul className="use-guidelines-ul">
+                          {avoidItems.map((a, aIdx) => (
+                            <li key={aIdx}>
+                              <Rich t={typeof a === 'string' ? a : a.text} />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  );
+                }
+
+                return (
+                  <div className="use-group">
+                    <ul className="use-guidelines-ul">
+                      {meta.use.map((u, uIdx) => (
+                        <li key={uIdx}>
+                          <Rich t={typeof u === 'string' ? u : u.text} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
