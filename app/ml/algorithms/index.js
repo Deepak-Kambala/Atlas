@@ -34,7 +34,7 @@ import { naiveBayes } from './naive-bayes/index.js';
 import { ldaClassifier } from './lda/index.js';
 import { mlp } from './mlp/index.js';
 import { crossValidation } from './cross-validation/index.js';
-import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex } from './k-means/index.js';
+import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex, KMeansElbowMethod } from './k-means/index.js';
 import { kmedoidsCluster } from './k-medoids/index.js';
 import { hierarchicalClustering } from './hierarchical-clustering/index.js';
 import { dbscan } from './dbscan/index.js';
@@ -45,7 +45,8 @@ export const algorithmVisuals = {
   'k-means': {
     seedSensitivity: KMeansSeedSensitivity,
     outliers: KMeansOutliers,
-    nonConvex: KMeansNonConvex
+    nonConvex: KMeansNonConvex,
+    elbowMethod: KMeansElbowMethod
   }
 };
 

@@ -3871,6 +3871,21 @@ svg rect {
   white-space: nowrap;
 }
 
+.tb-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  padding: 0;
+}
+
+.tb-icon-btn svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
 .tb-btn:hover:not(:disabled) {
   border-color: var(--tx);
 }
@@ -3885,7 +3900,11 @@ svg rect {
   color: var(--on);
   font-weight: 600;
   border-color: var(--ac);
-  min-width: 68px;
+}
+
+.tb-btn.primary-play.tb-icon-btn {
+  width: 34px;
+  min-width: 34px;
 }
 
 .tb-btn.primary-play:hover:not(:disabled) {
@@ -3893,8 +3912,15 @@ svg rect {
 }
 
 .reset-icon-btn {
-  padding: 4px 8px;
   font-size: 13px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--bd);
+  flex-shrink: 0;
+  margin: 0 4px;
 }
 
 .toolbar-scrubber-group,
@@ -3902,30 +3928,50 @@ svg rect {
 .toolbar-speed-group {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .toolbar-scrubber-group {
   flex: 1;
-  min-width: 100px;
-  max-width: 240px;
+  min-width: 130px;
+  max-width: 220px;
+}
+
+.toolbar-scrubber-group input[type="range"] {
+  flex: 1;
+  min-width: 60px;
+}
+
+.toolbar-param-group {
+  flex-shrink: 0;
+}
+
+.toolbar-param-group input[type="range"] {
+  width: 75px;
+}
+
+.toolbar-speed-group {
+  flex-shrink: 0;
+}
+
+.toolbar-speed-group input[type="range"] {
+  width: 65px;
 }
 
 .tb-label {
   color: var(--mu);
   white-space: nowrap;
-  font-size: 11px;
+  font-size: 11.5px;
+  font-family: var(--mono);
 }
 
 .tb-label b {
   color: var(--tx);
+  font-weight: 600;
 }
 
-.toolbar-scrubber-group input[type="range"],
-.toolbar-param-group input[type="range"],
-.toolbar-speed-group input[type="range"] {
+.workspace-toolbar input[type="range"] {
   accent-color: var(--tx);
   cursor: pointer;
   height: 4px;
@@ -5389,4 +5435,181 @@ svg rect {
   max-width: 270px;
   height: auto;
   display: block;
+}
+
+
+/* ==========================================================================
+   K-Means Elbow Method Interactive Card (Demo Panel)
+   ========================================================================== */
+
+.kmeans-elbow-card {
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kmeans-elbow-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.kmeans-elbow-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+  margin: 0;
+}
+
+.kmeans-elbow-badge {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--tx);
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.kmeans-elbow-intro {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--tx);
+  margin: 0;
+}
+
+.kmeans-elbow-chart-wrap {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 8px 6px 4px;
+}
+
+.kmeans-elbow-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.kmeans-elbow-interactive-pt {
+  transition: transform .15s ease;
+}
+
+.kmeans-elbow-interactive-pt:hover circle:last-child {
+  r: 5.5px;
+  stroke-width: 2.2px;
+}
+
+.kmeans-elbow-btn-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.kmeans-elbow-bar-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--mu);
+}
+
+.kmeans-elbow-pills {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3px;
+  width: 100%;
+}
+
+.kmeans-elbow-pill-btn {
+  font-size: 9px;
+  font-family: var(--mono);
+  font-weight: 600;
+  padding: 3px 2px;
+  border-radius: 4px;
+  border: 1px solid var(--bd);
+  background: var(--bg);
+  color: var(--mu);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
+  transition: all .15s ease;
+}
+
+.kmeans-elbow-pill-btn:hover {
+  color: var(--tx);
+  border-color: var(--tx);
+}
+
+.kmeans-elbow-pill-btn.active {
+  background: var(--tx);
+  color: var(--bg);
+  border-color: var(--tx);
+}
+
+.kmeans-elbow-pill-btn.is-elbow {
+  flex: 1.8;
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.kmeans-elbow-pill-btn.is-elbow.active {
+  background: #22c55e;
+  color: #000;
+  border-color: #22c55e;
+}
+
+.kmeans-elbow-behavior-box {
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 11px;
+  line-height: 1.5;
+  border: 1px solid var(--bd);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kmeans-elbow-behavior-box.underfit {
+  border-left: 3px solid #f87171;
+}
+
+.kmeans-elbow-behavior-box.optimal {
+  border-left: 3px solid #22c55e;
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.kmeans-elbow-behavior-box.overfit {
+  border-left: 3px solid #a855f7;
+}
+
+.behavior-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.behavior-tag {
+  font-weight: 700;
+  font-size: 10.5px;
+  color: var(--tx);
+}
+
+.behavior-inertia {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--mu);
+}
+
+.behavior-desc {
+  margin: 0;
+  color: var(--tx);
+  font-size: 11px;
 }

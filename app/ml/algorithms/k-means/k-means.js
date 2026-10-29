@@ -20,13 +20,13 @@ export function kmeansEngine(r, K) {
   const cen = c => c.map((o, k) => ({ x: o.x, y: o.y, c: k, big: 1 }));
   const S = [
     {
-      t: 'The data',
-      d: `Unlabelled points: there are no answers to learn from. K-Means will try to discover K = ${K} groups on its own.`,
+      t: 'Unlabeled Data',
+      d: `We start with unlabelled observations scattered in feature space. Without any target labels, K-Means will discover K = ${K} natural clusters purely by analyzing the spatial distances between points.`,
       pts: g
     },
     {
-      t: 'Pick starting centroids',
-      d: `Choose ${K} random data points as the first centroids (large dots). A different random start can give a different result, so try “New data”.`,
+      t: 'Initialize Starting Centroids',
+      d: `Pick ${K} random data points to serve as our initial centroids (represented by the larger dots). Centroid placement is crucial: different random seeds can lead to completely different clusterings.`,
       pts: [...g, ...cen(C)]
     }
   ];
@@ -42,24 +42,26 @@ export function kmeansEngine(r, K) {
 
     if (key === prev) {
       S.push({
-        t: 'Converged',
+        t: 'Convergence Reached',
         v: inr,
         x: it,
-        d: `Assignments did not change, so the centroids would not move either. Final inertia (sum of squared distances) = ${Math.round(
+        d: `Points did not switch clusters between rounds, so the centroids remain stationary. The iterative process has completed. Final inertia (sum of squared distances to centroids) = ${Math.round(
           inr
-        )}. K-Means always stops, but maybe at a local optimum.`,
+        )}.`,
+        math: 'J = \\sum_{k=1}^{K} \\sum_{\\mathbf{x} \\in C_k} \\lVert\\mathbf{x} - \\boldsymbol{\\mu}_k\\rVert^2',
         pts: [...as, ...cen(C)]
       });
       break;
     }
 
     S.push({
-      t: `Round ${it}: assign`,
+      t: `Round ${it}: Assign Points to Closest Centroid`,
       v: inr,
       x: it,
-      d: `Every point joins its nearest centroid and takes its colour. Inertia (sum of squared distances to centroids) = ${Math.round(
+      d: `Every point measures its Euclidean distance to all ${K} centroids and joins whichever one is closest, adopting its cluster color. Total squared distance (inertia) is currently ${Math.round(
         inr
       )}.`,
+      math: 'C_k = \\{\\mathbf{x} : \\lVert\\mathbf{x} - \\boldsymbol{\\mu}_k\\rVert \\le \\lVert\\mathbf{x} - \\boldsymbol{\\mu}_j\\rVert \\quad \\forall j\\}',
       pts: [...as, ...cen(C)],
       lines: as.map(p => ({
         a: [p.x, p.y],
@@ -75,8 +77,9 @@ export function kmeansEngine(r, K) {
     });
 
     S.push({
-      t: `Round ${it}: update`,
-      d: 'Each centroid moves to the average position of the points assigned to it (white lines show the move). Then we assign again.',
+      t: `Round ${it}: Move Centroids to Cluster Averages`,
+      d: 'Now that clusters are assigned, each centroid moves to the average position of the points belonging to it. The white tracking lines show how far each centroid shifted.',
+      math: '\\boldsymbol{\\mu}_k = \\frac{1}{|C_k|} \\sum_{\\mathbf{x} \\in C_k} \\mathbf{x}',
       pts: [...as, ...cen(NC)],
       lines: C.map((o, k) => ({
         a: [o.x, o.y],
@@ -98,6 +101,6 @@ export const kmeans = {
   n: 'K-Means',
   g: 'Unsupervised',
   gen: kmeansEngine,
-  pm: ['K', 2, 5, 3],
+  pm: ['K', 1, 6, 3],
   i: 'Splits data into K groups around moving centroids.'
 };

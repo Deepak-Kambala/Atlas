@@ -139,15 +139,10 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
     };
   }, [pr, ix]);
 
-  // Contextual mathematical formula helper for step
-  const contextualFormula = useMemo(() => {
-    if (meta.math && meta.math.length > 0) {
-      if (ix === 0 && meta.math[0]) return meta.math[0][1];
-      if (meta.math[2]) return meta.math[2][1];
-      if (meta.math[1]) return meta.math[1][1];
-    }
-    return null;
-  }, [meta.math, ix]);
+  // Contextual mathematical formula helper for step:
+  // Only display if the current frame explicitly specifies a relevant formula (f.math).
+  // Steps that don't need a formula (like data overview or random initialization) remain clean.
+  const contextualFormula = f?.math || null;
 
   return (
     <div className="workspace-shell">
@@ -267,39 +262,65 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
         <div className="workspace-toolbar">
           <div className="toolbar-playback-btns">
             <button
-              className="tb-btn primary-play"
+              className="tb-btn tb-icon-btn"
+              onClick={() => setI(Math.max(0, ix - 1))}
+              disabled={ix === 0}
+              title="Step backward (←)"
+              aria-label="Step backward"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+              </svg>
+            </button>
+            <button
+              className="tb-btn primary-play tb-icon-btn"
               onClick={() => {
                 if (!play && ix >= n - 1) setI(0);
                 setPlay(!play);
               }}
-              title="Space to play/pause"
+              title="Play / Pause (Space)"
+              aria-label={play ? 'Pause' : 'Play'}
             >
-              {play ? '⏸ Pause' : '▶ Play'}
+              {play ? (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
             </button>
             <button
-              className="tb-btn"
-              onClick={() => setI(Math.max(0, ix - 1))}
-              disabled={ix === 0}
-              title="Step backward (←)"
-            >
-              ← Back
-            </button>
-            <button
-              className="tb-btn"
+              className="tb-btn tb-icon-btn"
               onClick={() => setI(Math.min(n - 1, ix + 1))}
               disabled={ix === n - 1}
               title="Step forward (→)"
+              aria-label="Step forward"
             >
-              Next →
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+              </svg>
             </button>
-            <button className="tb-btn reset-icon-btn" onClick={reset} title="Restart from Step 1">
-              ↺
+            <button
+              className="tb-btn tb-icon-btn reset-icon-btn"
+              onClick={reset}
+              title="Restart from Step 1"
+              aria-label="Restart from Step 1"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
+              </svg>
             </button>
           </div>
 
+          <div className="toolbar-divider" />
+
           {/* Timeline Step Scrubber */}
           <div className="toolbar-scrubber-group">
-            <span className="tb-label">Step</span>
+            <span className="tb-label">
+              Step <b>{ix + 1}</b>/{n}
+            </span>
             <input
               type="range"
               min={0}
@@ -315,28 +336,33 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
 
           {/* Parameter Tuning Control (if supported by algorithm) */}
           {a.pm && (
-            <div className="toolbar-param-group">
-              <span className="tb-label">
-                {a.pm[0]}: <b>{pm}</b>
-              </span>
-              <input
-                type="range"
-                min={a.pm[1]}
-                max={a.pm[2]}
-                value={pm}
-                onChange={e => {
-                  setPv({ ...pv, [ai]: +e.target.value });
-                  setI(0);
-                  setPlay(false);
-                }}
-                aria-label={a.pm[0]}
-              />
-            </div>
+            <>
+              <div className="toolbar-divider" />
+              <div className="toolbar-param-group">
+                <span className="tb-label">
+                  {a.pm[0]} = <b>{pm}</b>
+                </span>
+                <input
+                  type="range"
+                  min={a.pm[1]}
+                  max={a.pm[2]}
+                  value={pm}
+                  onChange={e => {
+                    setPv({ ...pv, [ai]: +e.target.value });
+                    setI(0);
+                    setPlay(false);
+                  }}
+                  aria-label={a.pm[0]}
+                />
+              </div>
+            </>
           )}
+
+          <div className="toolbar-divider" />
 
           {/* Speed slider */}
           <div className="toolbar-speed-group">
-            <span className="tb-label">{spd}s / step</span>
+            <span className="tb-label">{spd}s/step</span>
             <input
               type="range"
               min={1}
@@ -446,6 +472,20 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                   </div>
                 )}
               </div>
+
+              {/* Algorithm-Specific Interactive Telemetry (e.g. Elbow Method for K-Means) */}
+              {meta.slug === 'k-means' && algorithmVisuals['k-means']?.elbowMethod && (
+                <div className="demo-elbow-container">
+                  {React.createElement(algorithmVisuals['k-means'].elbowMethod, {
+                    activeK: pm,
+                    onSelectK: newK => {
+                      setPv({ ...pv, [ai]: newK });
+                      setI(0);
+                      setPlay(false);
+                    }
+                  })}
+                </div>
+              )}
             </div>
           )}
 
