@@ -37,7 +37,7 @@ export default function KMeansOutliers() {
     <div className="kmeans-sensitivity-container">
       {/* Controls */}
       <div className="kmeans-control-bar">
-        <div className="kmeans-view-switch">
+        <div className="kmeans-unified-bar">
           <button
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'compare' ? 'active' : ''}`}
@@ -49,32 +49,34 @@ export default function KMeansOutliers() {
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'undesirable' ? 'active' : ''}`}
             onClick={() => setActiveTab('undesirable')}
+            title="View (A) Undesirable clusters"
           >
-            (A) K-Means
+            (A)
           </button>
           <button
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'ideal' ? 'active' : ''}`}
             onClick={() => setActiveTab('ideal')}
+            title="View (B) Ideal clusters"
           >
-            (B) Ideal
+            (B)
+          </button>
+          <span className="kmeans-bar-divider" />
+          <button
+            type="button"
+            className="kmeans-tab-btn kmeans-enlarge-tab-btn"
+            onClick={() => setIsModalOpen(true)}
+            title="Open enlarged view"
+          >
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            Enlarge
           </button>
         </div>
-
-        <button
-          type="button"
-          className="kmeans-enlarge-btn"
-          onClick={() => setIsModalOpen(true)}
-          title="Open whiteboard view full size"
-        >
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 3 21 3 21 9" />
-            <polyline points="9 21 3 21 3 15" />
-            <line x1="21" y1="3" x2="14" y2="10" />
-            <line x1="3" y1="21" x2="10" y2="14" />
-          </svg>
-          Enlarge
-        </button>
       </div>
 
       {/* Diagrams Grid */}
@@ -91,13 +93,13 @@ export default function KMeansOutliers() {
               <svg viewBox="0 0 168 96" className="kmeans-wide-svg" aria-label="Undesirable clusters with outlier">
                 <defs>
                   <marker id="arr-outlier-a" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                    <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--tx)" opacity="0.85" />
+                    <path d="M 0 1 L 5 3 L 0 5 z" fill="#ffffff" />
                   </marker>
                 </defs>
 
                 {/* Coordinate Axes */}
-                <line x1="12" y1="88" x2="162" y2="88" stroke="var(--bd)" strokeWidth="1.2" />
-                <line x1="12" y1="88" x2="12" y2="8" stroke="var(--bd)" strokeWidth="1.2" />
+                <line x1="12" y1="88" x2="162" y2="88" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                <line x1="12" y1="88" x2="12" y2="8" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
 
                 {/* Cluster 1 Envelope (Left) */}
                 <rect
@@ -106,48 +108,51 @@ export default function KMeansOutliers() {
                   width="36"
                   height="60"
                   rx="14"
-                  fill="rgba(255, 255, 255, 0.04)"
-                  stroke="var(--tx)"
-                  strokeWidth="1.2"
+                  fill="rgba(56, 189, 248, 0.08)"
+                  stroke="#38bdf8"
+                  strokeWidth="1.3"
                 />
 
                 {/* Cluster 2 + Outlier Elongated Envelope (Right) */}
                 {/* Tapered path enclosing middle cluster and stretching all the way to outlier */}
                 <path
-                  d="M 58 22 C 64 18, 76 20, 80 25 L 152 56 C 156 59, 156 65, 150 68 L 78 80 C 66 84, 58 78, 57 68 Z"
-                  fill="rgba(250, 204, 21, 0.08)"
-                  stroke="var(--tx)"
-                  strokeWidth="1.2"
+                  d="M 58 22 C 70 20, 78 22, 80 26 L 148 56 C 153 58, 153 66, 148 68 L 80 76 C 78 80, 70 82, 58 80 C 52 78, 48 70, 48 51 C 48 32, 52 24, 58 22 Z"
+                  fill="rgba(250, 204, 21, 0.09)"
+                  stroke="#facc15"
+                  strokeWidth="1.4"
                 />
 
                 {/* Cluster 1 Points */}
                 {CLUSTER_1_POINTS.map((p, idx) => (
-                  <circle key={`c1-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="var(--tx)" stroke="var(--bg)" strokeWidth="0.8" />
+                  <circle key={`c1-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
                 ))}
 
                 {/* Cluster 1 Centroid (+) */}
-                <g stroke="var(--mu)" strokeWidth="1.2">
-                  <line x1="32" y1="52" x2="36" y2="52" />
-                  <line x1="34" y1="50" x2="34" y2="54" />
+                <g stroke="#38bdf8" strokeWidth="1.8">
+                  <line x1="31" y1="52" x2="37" y2="52" />
+                  <line x1="34" y1="49" x2="34" y2="55" />
                 </g>
 
                 {/* Cluster 2 Points */}
                 {CLUSTER_2_POINTS.map((p, idx) => (
-                  <circle key={`c2-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="var(--tx)" stroke="var(--bg)" strokeWidth="0.8" />
+                  <circle key={`c2-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#c084fc" stroke="#ffffff" strokeWidth="0.8" />
                 ))}
 
                 {/* Outlier Point */}
-                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="2.4" fill="#f87171" stroke="var(--tx)" strokeWidth="1" />
+                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="3" fill="#ef4444" stroke="#ffffff" strokeWidth="1" />
+                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="5.5" fill="none" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="2 2" />
 
                 {/* Dragged Centroid (+) in empty space in yellow */}
-                <g stroke="#facc15" strokeWidth="1.8">
-                  <line x1="98" y1="52" x2="106" y2="52" />
-                  <line x1="102" y1="48" x2="102" y2="56" />
+                <circle cx="102" cy="52" r="8" fill="#facc15" opacity="0.18" />
+                <g stroke="#facc15" strokeWidth="2.2" strokeLinecap="round">
+                  <line x1="97" y1="52" x2="107" y2="52" />
+                  <line x1="102" y1="47" x2="102" y2="57" />
                 </g>
+                <text x="102" y="42" textAnchor="middle" fontSize="7.5" fill="#facc15" fontWeight="700">Centroid</text>
 
                 {/* Outlier text and arrow */}
-                <text x="142" y="24" fontSize="8.5" fill="var(--tx)" textAnchor="middle" fontWeight="600">outlier</text>
-                <line x1="142" y1="28" x2="142" y2="54" stroke="var(--tx)" strokeWidth="1" markerEnd="url(#arr-outlier-a)" />
+                <text x="142" y="22" fontSize="9" fill="#ffffff" textAnchor="middle" fontWeight="700" letterSpacing="0.02em">outlier</text>
+                <line x1="142" y1="26" x2="142" y2="52" stroke="#ffffff" strokeWidth="1.2" markerEnd="url(#arr-outlier-a)" />
               </svg>
             </div>
 
@@ -172,13 +177,13 @@ export default function KMeansOutliers() {
               <svg viewBox="0 0 168 96" className="kmeans-wide-svg" aria-label="Ideal clusters separating outlier">
                 <defs>
                   <marker id="arr-outlier-b" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                    <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--tx)" opacity="0.85" />
+                    <path d="M 0 1 L 5 3 L 0 5 z" fill="#ffffff" />
                   </marker>
                 </defs>
 
                 {/* Coordinate Axes */}
-                <line x1="12" y1="88" x2="162" y2="88" stroke="var(--bd)" strokeWidth="1.2" />
-                <line x1="12" y1="88" x2="12" y2="8" stroke="var(--bd)" strokeWidth="1.2" />
+                <line x1="12" y1="88" x2="162" y2="88" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                <line x1="12" y1="88" x2="12" y2="8" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
 
                 {/* Cluster 1 Envelope */}
                 <rect
@@ -189,7 +194,7 @@ export default function KMeansOutliers() {
                   rx="14"
                   fill="rgba(56, 189, 248, 0.08)"
                   stroke="#38bdf8"
-                  strokeWidth="1.2"
+                  strokeWidth="1.3"
                 />
 
                 {/* Cluster 2 Envelope (Separated from outlier) */}
@@ -201,37 +206,38 @@ export default function KMeansOutliers() {
                   rx="14"
                   fill="rgba(192, 132, 252, 0.08)"
                   stroke="#c084fc"
-                  strokeWidth="1.2"
+                  strokeWidth="1.3"
                 />
 
                 {/* Cluster 1 Points */}
                 {CLUSTER_1_POINTS.map((p, idx) => (
-                  <circle key={`c1-b-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="#38bdf8" stroke="var(--bg)" strokeWidth="0.8" />
+                  <circle key={`c1-b-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
                 ))}
 
                 {/* Cluster 1 Centroid (+) */}
-                <g stroke="#38bdf8" strokeWidth="1.4">
-                  <line x1="32" y1="52" x2="36" y2="52" />
-                  <line x1="34" y1="50" x2="34" y2="54" />
+                <g stroke="#38bdf8" strokeWidth="1.8">
+                  <line x1="31" y1="52" x2="37" y2="52" />
+                  <line x1="34" y1="49" x2="34" y2="55" />
                 </g>
 
                 {/* Cluster 2 Points */}
                 {CLUSTER_2_POINTS.map((p, idx) => (
-                  <circle key={`c2-b-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="#c084fc" stroke="var(--bg)" strokeWidth="0.8" />
+                  <circle key={`c2-b-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#c084fc" stroke="#ffffff" strokeWidth="0.8" />
                 ))}
 
                 {/* Cluster 2 Centroid (+) placed at actual center */}
-                <g stroke="#c084fc" strokeWidth="1.4">
-                  <line x1="64" y1="50" x2="68" y2="50" />
-                  <line x1="66" y1="48" x2="66" y2="52" />
+                <g stroke="#c084fc" strokeWidth="1.8">
+                  <line x1="63" y1="50" x2="69" y2="50" />
+                  <line x1="66" y1="47" x2="66" y2="53" />
                 </g>
 
                 {/* Outlier Point (Isolated anomaly) */}
-                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="2.4" fill="none" stroke="#f87171" strokeWidth="1.5" />
+                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="3" fill="#ef4444" stroke="#ffffff" strokeWidth="1" />
+                <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="5.5" fill="none" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="2 2" />
 
                 {/* Outlier text and arrow */}
-                <text x="142" y="24" fontSize="8.5" fill="var(--tx)" textAnchor="middle" fontWeight="600">outlier</text>
-                <line x1="142" y1="28" x2="142" y2="54" stroke="var(--tx)" strokeWidth="1" markerEnd="url(#arr-outlier-b)" />
+                <text x="142" y="22" fontSize="9" fill="#ffffff" textAnchor="middle" fontWeight="700" letterSpacing="0.02em">outlier</text>
+                <line x1="142" y1="26" x2="142" y2="52" stroke="#ffffff" strokeWidth="1.2" markerEnd="url(#arr-outlier-b)" />
               </svg>
             </div>
 
@@ -270,30 +276,33 @@ export default function KMeansOutliers() {
                     <svg viewBox="0 0 168 96" className="kmeans-wide-svg">
                       <defs>
                         <marker id="arr-outlier-m1" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                          <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--tx)" opacity="0.85" />
+                          <path d="M 0 1 L 5 3 L 0 5 z" fill="#ffffff" />
                         </marker>
                       </defs>
-                      <line x1="12" y1="88" x2="162" y2="88" stroke="var(--bd)" strokeWidth="1.2" />
-                      <line x1="12" y1="88" x2="12" y2="8" stroke="var(--bd)" strokeWidth="1.2" />
-                      <rect x="16" y="20" width="36" height="60" rx="14" fill="rgba(255, 255, 255, 0.04)" stroke="var(--tx)" strokeWidth="1.2" />
-                      <path d="M 58 22 C 64 18, 76 20, 80 25 L 152 56 C 156 59, 156 65, 150 68 L 78 80 C 66 84, 58 78, 57 68 Z" fill="rgba(250, 204, 21, 0.08)" stroke="var(--tx)" strokeWidth="1.2" />
+                      <line x1="12" y1="88" x2="162" y2="88" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <line x1="12" y1="88" x2="12" y2="8" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <rect x="16" y="20" width="36" height="60" rx="14" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" strokeWidth="1.3" />
+                      <path d="M 58 22 C 70 20, 78 22, 80 26 L 148 56 C 153 58, 153 66, 148 68 L 80 76 C 78 80, 70 82, 58 80 C 52 78, 48 70, 48 51 C 48 32, 52 24, 58 22 Z" fill="rgba(250, 204, 21, 0.09)" stroke="#facc15" strokeWidth="1.4" />
                       {CLUSTER_1_POINTS.map((p, idx) => (
-                        <circle key={`m-c1-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="var(--tx)" stroke="var(--bg)" strokeWidth="0.8" />
+                        <circle key={`m-c1-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
                       ))}
-                      <g stroke="var(--mu)" strokeWidth="1.2">
-                        <line x1="32" y1="52" x2="36" y2="52" />
-                        <line x1="34" y1="50" x2="34" y2="54" />
+                      <g stroke="#38bdf8" strokeWidth="1.8">
+                        <line x1="31" y1="52" x2="37" y2="52" />
+                        <line x1="34" y1="49" x2="34" y2="55" />
                       </g>
                       {CLUSTER_2_POINTS.map((p, idx) => (
-                        <circle key={`m-c2-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="var(--tx)" stroke="var(--bg)" strokeWidth="0.8" />
+                        <circle key={`m-c2-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#c084fc" stroke="#ffffff" strokeWidth="0.8" />
                       ))}
-                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="2.4" fill="#f87171" stroke="var(--tx)" strokeWidth="1" />
-                      <g stroke="#facc15" strokeWidth="1.8">
-                        <line x1="98" y1="52" x2="106" y2="52" />
-                        <line x1="102" y1="48" x2="102" y2="56" />
+                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="3" fill="#ef4444" stroke="#ffffff" strokeWidth="1" />
+                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="5.5" fill="none" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="2 2" />
+                      <circle cx="102" cy="52" r="8" fill="#facc15" opacity="0.18" />
+                      <g stroke="#facc15" strokeWidth="2.2" strokeLinecap="round">
+                        <line x1="97" y1="52" x2="107" y2="52" />
+                        <line x1="102" y1="47" x2="102" y2="57" />
                       </g>
-                      <text x="142" y="24" fontSize="8.5" fill="var(--tx)" textAnchor="middle" fontWeight="600">outlier</text>
-                      <line x1="142" y1="28" x2="142" y2="54" stroke="var(--tx)" strokeWidth="1" markerEnd="url(#arr-outlier-m1)" />
+                      <text x="102" y="42" textAnchor="middle" fontSize="7.5" fill="#facc15" fontWeight="700">Centroid</text>
+                      <text x="142" y="22" fontSize="9" fill="#ffffff" textAnchor="middle" fontWeight="700" letterSpacing="0.02em">outlier</text>
+                      <line x1="142" y1="26" x2="142" y2="52" stroke="#ffffff" strokeWidth="1.2" markerEnd="url(#arr-outlier-m1)" />
                     </svg>
                   </div>
                   <div className="kmeans-wb-result-arrow">
@@ -308,30 +317,31 @@ export default function KMeansOutliers() {
                     <svg viewBox="0 0 168 96" className="kmeans-wide-svg">
                       <defs>
                         <marker id="arr-outlier-m2" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                          <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--tx)" opacity="0.85" />
+                          <path d="M 0 1 L 5 3 L 0 5 z" fill="#ffffff" />
                         </marker>
                       </defs>
-                      <line x1="12" y1="88" x2="162" y2="88" stroke="var(--bd)" strokeWidth="1.2" />
-                      <line x1="12" y1="88" x2="12" y2="8" stroke="var(--bd)" strokeWidth="1.2" />
-                      <rect x="16" y="20" width="36" height="60" rx="14" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" strokeWidth="1.2" />
-                      <rect x="56" y="20" width="32" height="60" rx="14" fill="rgba(192, 132, 252, 0.08)" stroke="#c084fc" strokeWidth="1.2" />
+                      <line x1="12" y1="88" x2="162" y2="88" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <line x1="12" y1="88" x2="12" y2="8" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <rect x="16" y="20" width="36" height="60" rx="14" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" strokeWidth="1.3" />
+                      <rect x="56" y="20" width="32" height="60" rx="14" fill="rgba(192, 132, 252, 0.08)" stroke="#c084fc" strokeWidth="1.3" />
                       {CLUSTER_1_POINTS.map((p, idx) => (
-                        <circle key={`m-c1b-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="#38bdf8" stroke="var(--bg)" strokeWidth="0.8" />
+                        <circle key={`m-c1b-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
                       ))}
-                      <g stroke="#38bdf8" strokeWidth="1.4">
-                        <line x1="32" y1="52" x2="36" y2="52" />
-                        <line x1="34" y1="50" x2="34" y2="54" />
+                      <g stroke="#38bdf8" strokeWidth="1.8">
+                        <line x1="31" y1="52" x2="37" y2="52" />
+                        <line x1="34" y1="49" x2="34" y2="55" />
                       </g>
                       {CLUSTER_2_POINTS.map((p, idx) => (
-                        <circle key={`m-c2b-${idx}`} cx={p.x} cy={p.y} r="2.2" fill="#c084fc" stroke="var(--bg)" strokeWidth="0.8" />
+                        <circle key={`m-c2b-${idx}`} cx={p.x} cy={p.y} r="2.3" fill="#c084fc" stroke="#ffffff" strokeWidth="0.8" />
                       ))}
-                      <g stroke="#c084fc" strokeWidth="1.4">
-                        <line x1="64" y1="50" x2="68" y2="50" />
-                        <line x1="66" y1="48" x2="66" y2="52" />
+                      <g stroke="#c084fc" strokeWidth="1.8">
+                        <line x1="63" y1="50" x2="69" y2="50" />
+                        <line x1="66" y1="47" x2="66" y2="53" />
                       </g>
-                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="2.4" fill="none" stroke="#f87171" strokeWidth="1.5" />
-                      <text x="142" y="24" fontSize="8.5" fill="var(--tx)" textAnchor="middle" fontWeight="600">outlier</text>
-                      <line x1="142" y1="28" x2="142" y2="54" stroke="var(--tx)" strokeWidth="1" markerEnd="url(#arr-outlier-m2)" />
+                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="3" fill="#ef4444" stroke="#ffffff" strokeWidth="1" />
+                      <circle cx={OUTLIER_POINT.x} cy={OUTLIER_POINT.y} r="5.5" fill="none" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="2 2" />
+                      <text x="142" y="22" fontSize="9" fill="#ffffff" textAnchor="middle" fontWeight="700" letterSpacing="0.02em">outlier</text>
+                      <line x1="142" y1="26" x2="142" y2="52" stroke="#ffffff" strokeWidth="1.2" markerEnd="url(#arr-outlier-m2)" />
                     </svg>
                   </div>
                   <div className="kmeans-wb-result-arrow good-arrow">

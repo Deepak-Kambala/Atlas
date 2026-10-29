@@ -163,28 +163,19 @@ const KMEANS_DIVIDER_Y = 118.5;
 
 export default function KMeansNonConvex() {
   const [activeTab, setActiveTab] = useState('compare'); // 'compare' | 'natural' | 'kmeans'
-  const [colorMode, setColorMode] = useState('colored'); // 'colored' | 'chalk'
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const renderPoint = (p, idx, isKmeansView) => {
-    let fill = '#ffffff';
-    let stroke = '#000000';
+    let fill = '#38bdf8';
+    let stroke = 'rgba(255, 255, 255, 0.4)';
 
-    if (colorMode === 'colored') {
-      if (isKmeansView) {
-        // Partitioned by K-Means top vs bottom
-        const isTop = p.y <= KMEANS_DIVIDER_Y;
-        fill = isTop ? '#38bdf8' : '#c084fc';
-        stroke = 'var(--bg)';
-      } else {
-        // Natural ground truth clusters
-        fill = p.naturalCluster === 1 ? '#38bdf8' : '#c084fc';
-        stroke = 'var(--bg)';
-      }
+    if (isKmeansView) {
+      // Partitioned by K-Means top vs bottom
+      const isTop = p.y <= KMEANS_DIVIDER_Y;
+      fill = isTop ? '#38bdf8' : '#c084fc';
     } else {
-      // Donut / whiteboard chalk ring matching image
-      fill = 'var(--bg)';
-      stroke = '#ffffff';
+      // Natural ground truth clusters
+      fill = p.naturalCluster === 1 ? '#38bdf8' : '#c084fc';
     }
 
     return (
@@ -204,7 +195,7 @@ export default function KMeansNonConvex() {
     <div className="kmeans-sensitivity-container">
       {/* Controls */}
       <div className="kmeans-control-bar">
-        <div className="kmeans-view-switch">
+        <div className="kmeans-unified-bar">
           <button
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'compare' ? 'active' : ''}`}
@@ -216,35 +207,26 @@ export default function KMeansNonConvex() {
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'natural' ? 'active' : ''}`}
             onClick={() => setActiveTab('natural')}
+            title="View (A) Natural clusters"
           >
-            (A) Natural
+            (A)
           </button>
           <button
             type="button"
             className={`kmeans-tab-btn ${activeTab === 'kmeans' ? 'active' : ''}`}
             onClick={() => setActiveTab('kmeans')}
+            title="View (B) K-Means clusters"
           >
-            (B) K-Means
+            (B)
           </button>
-        </div>
-
-        <div style={{ display: 'flex', gap: '4px' }}>
+          <span className="kmeans-bar-divider" />
           <button
             type="button"
-            className="kmeans-enlarge-btn"
-            onClick={() => setColorMode(m => (m === 'colored' ? 'chalk' : 'colored'))}
-            title="Toggle cluster color coding or whiteboard chalk rings"
-          >
-            {colorMode === 'colored' ? 'Chalk' : 'Color'}
-          </button>
-
-          <button
-            type="button"
-            className="kmeans-enlarge-btn"
+            className="kmeans-tab-btn kmeans-enlarge-tab-btn"
             onClick={() => setIsModalOpen(true)}
-            title="Open whiteboard view full size"
+            title="Open enlarged view"
           >
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 3 21 3 21 9" />
               <polyline points="9 21 3 21 3 15" />
               <line x1="21" y1="3" x2="14" y2="10" />
@@ -269,13 +251,13 @@ export default function KMeansNonConvex() {
               <svg viewBox="0 0 195 210" className="kmeans-wide-svg" aria-label="Two natural non-convex clusters">
                 <defs>
                   <marker id="arr-axis-a" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                    <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--mu)" opacity="0.75" />
+                    <path d="M 0 1 L 5 3 L 0 5 z" fill="rgba(255, 255, 255, 0.5)" />
                   </marker>
                 </defs>
 
                 {/* Coordinate Axes */}
-                <line x1="15" y1="198" x2="190" y2="198" stroke="var(--bd)" strokeWidth="1.2" markerEnd="url(#arr-axis-a)" />
-                <line x1="15" y1="198" x2="15" y2="10" stroke="var(--bd)" strokeWidth="1.2" markerEnd="url(#arr-axis-a)" />
+                <line x1="15" y1="198" x2="190" y2="198" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" markerEnd="url(#arr-axis-a)" />
+                <line x1="15" y1="198" x2="15" y2="10" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" markerEnd="url(#arr-axis-a)" />
 
                 {/* Natural Data Points (114 points) */}
                 {ALL_POINTS.map((p, idx) => renderPoint(p, idx, false))}
@@ -303,13 +285,13 @@ export default function KMeansNonConvex() {
               <svg viewBox="0 0 195 210" className="kmeans-wide-svg" aria-label="K-means linear split failure">
                 <defs>
                   <marker id="arr-axis-b" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto">
-                    <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--mu)" opacity="0.75" />
+                    <path d="M 0 1 L 5 3 L 0 5 z" fill="rgba(255, 255, 255, 0.5)" />
                   </marker>
                 </defs>
 
                 {/* Coordinate Axes */}
-                <line x1="15" y1="198" x2="190" y2="198" stroke="var(--bd)" strokeWidth="1.2" markerEnd="url(#arr-axis-b)" />
-                <line x1="15" y1="198" x2="15" y2="10" stroke="var(--bd)" strokeWidth="1.2" markerEnd="url(#arr-axis-b)" />
+                <line x1="15" y1="198" x2="190" y2="198" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" markerEnd="url(#arr-axis-b)" />
+                <line x1="15" y1="198" x2="15" y2="10" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" markerEnd="url(#arr-axis-b)" />
 
                 {/* Top Cluster Capsule (Balloon shape matching the original drawing) */}
                 <path
@@ -386,8 +368,8 @@ export default function KMeansNonConvex() {
                   <div className="kmeans-wb-plot-box">
                     <div className="kmeans-wb-plot-caption">114 points across two curved manifolds</div>
                     <svg viewBox="0 0 195 210" className="kmeans-wide-svg">
-                      <line x1="15" y1="198" x2="190" y2="198" stroke="var(--bd)" strokeWidth="1.2" />
-                      <line x1="15" y1="198" x2="15" y2="10" stroke="var(--bd)" strokeWidth="1.2" />
+                      <line x1="15" y1="198" x2="190" y2="198" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <line x1="15" y1="198" x2="15" y2="10" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
                       {ALL_POINTS.map((p, idx) => renderPoint(p, idx, false))}
                     </svg>
                   </div>
@@ -402,8 +384,8 @@ export default function KMeansNonConvex() {
                   <div className="kmeans-wb-plot-box">
                     <div className="kmeans-wb-plot-caption">Linear boundary &amp; balloon / bowl capsules</div>
                     <svg viewBox="0 0 195 210" className="kmeans-wide-svg">
-                      <line x1="15" y1="198" x2="190" y2="198" stroke="var(--bd)" strokeWidth="1.2" />
-                      <line x1="15" y1="198" x2="15" y2="10" stroke="var(--bd)" strokeWidth="1.2" />
+                      <line x1="15" y1="198" x2="190" y2="198" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
+                      <line x1="15" y1="198" x2="15" y2="10" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.2" />
                       <path
                         d="M 54 116 C 50 78, 62 38, 102 20 C 145 16, 178 35, 175 75 C 174 100, 168 116, 150 116 Z"
                         fill="rgba(56, 189, 248, 0.08)"

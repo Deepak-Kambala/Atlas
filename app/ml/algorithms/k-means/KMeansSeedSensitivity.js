@@ -134,7 +134,7 @@ function ClusterPlot({
             markerHeight="4"
             orient="auto"
           >
-            <path d="M 0 1 L 5 3 L 0 5 z" fill="var(--mu)" opacity="0.75" />
+            <path d="M 0 1 L 5 3 L 0 5 z" fill="rgba(255, 255, 255, 0.5)" />
           </marker>
         </defs>
 
@@ -144,7 +144,7 @@ function ClusterPlot({
           y1="120"
           x2="140"
           y2="120"
-          stroke="var(--bd)"
+          stroke="rgba(255, 255, 255, 0.25)"
           strokeWidth="1.2"
           markerEnd="url(#km-axis-arr)"
         />
@@ -153,7 +153,7 @@ function ClusterPlot({
           y1="120"
           x2="18"
           y2="14"
-          stroke="var(--bd)"
+          stroke="rgba(255, 255, 255, 0.25)"
           strokeWidth="1.2"
           markerEnd="url(#km-axis-arr)"
         />
@@ -279,44 +279,46 @@ export default function KMeansSeedSensitivity() {
     <div className="kmeans-sensitivity-container">
       {/* Control Tabs */}
       <div className="kmeans-control-bar">
-        <div className="kmeans-view-switch">
+        <div className="kmeans-unified-bar">
           <button
             type="button"
             className={`kmeans-tab-btn ${activeView === 'compare' ? 'active' : ''}`}
             onClick={() => setActiveView('compare')}
           >
-            Compare Both
+            Compare
           </button>
           <button
             type="button"
             className={`kmeans-tab-btn ${activeView === 'init1' ? 'active' : ''}`}
             onClick={() => setActiveView('init1')}
+            title="View (A) Bad seeds / Local min"
           >
-            Init 1: Local Min
+            (A)
           </button>
           <button
             type="button"
             className={`kmeans-tab-btn ${activeView === 'init2' ? 'active' : ''}`}
             onClick={() => setActiveView('init2')}
+            title="View (B) Good seeds / Global min"
           >
-            Init 2: Global Min
+            (B)
+          </button>
+          <span className="kmeans-bar-divider" />
+          <button
+            type="button"
+            className="kmeans-tab-btn kmeans-enlarge-tab-btn"
+            onClick={() => setIsModalOpen(true)}
+            title="Open enlarged view"
+          >
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            Enlarge
           </button>
         </div>
-
-        <button
-          type="button"
-          className="kmeans-enlarge-btn"
-          onClick={() => setIsModalOpen(true)}
-          title="Open whiteboard view full size"
-        >
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 3 21 3 21 9" />
-            <polyline points="9 21 3 21 3 15" />
-            <line x1="21" y1="3" x2="14" y2="10" />
-            <line x1="3" y1="21" x2="10" y2="14" />
-          </svg>
-          Enlarge
-        </button>
       </div>
 
       {/* Embedded Diagrams View */}
