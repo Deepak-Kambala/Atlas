@@ -7,20 +7,35 @@ export default function Tex({f,inline}){
   return <span className={inline?'tex':'tex block'} dangerouslySetInnerHTML={{__html:html}}/>;
 }
 
-// Plain text with optional inline LaTeX between $...$ and **bold** formatting
-export function Rich({t}){
+// Plain text with inline LaTeX ($...$) and markdown **bold** formatting (supports nested math in bold)
+export function Rich({ t }) {
   if (!t) return null;
+
+  const renderMath = (str, prefix) => {
+    return str.split(/\$([^$]+)\$/g).map((seg, idx) => {
+      if (idx % 2 === 1) {
+        return <Tex key={`${prefix}-tex-${idx}`} f={seg} inline />;
+      }
+      return seg;
+    });
+  };
+
+  const parts = t.split(/(\*\*(?:[^*]|\*(?!\*))+?\*\*)/g);
+
   return (
     <>
-      {t.split(/\$([^$]+)\$/g).map((seg, i) => {
-        if (i % 2 === 1) {
-          return <Tex key={i} f={seg} inline />;
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+          const inner = part.slice(2, -2);
+          return (
+            <strong key={`b-${i}`}>
+              {renderMath(inner, `b-${i}`)}
+            </strong>
+          );
         }
-        const parts = seg.split(/\*\*([^*]+)\*\*/g);
-        if (parts.length === 1) return seg;
         return (
-          <React.Fragment key={i}>
-            {parts.map((sub, j) => (j % 2 === 1 ? <strong key={j}>{sub}</strong> : sub))}
+          <React.Fragment key={`t-${i}`}>
+            {renderMath(part, `t-${i}`)}
           </React.Fragment>
         );
       })}

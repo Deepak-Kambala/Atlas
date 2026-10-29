@@ -514,7 +514,7 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           {activeTab === 'math' && (
             <div className="panel-math-stack">
               <h3 className="panel-heading">Formulations &amp; Gradients</h3>
-              {meta.math.map(([title, latex, note]) => (
+              {meta.math.map(([title, latex, note, breakdown]) => (
                 <div className="math-entry-box" key={title}>
                   <div className="math-entry-title">{title}</div>
                   <div className="math-latex-render">
@@ -523,6 +523,23 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                   <div className="math-entry-note">
                     <Rich t={note} />
                   </div>
+                  {breakdown && (
+                    <div className="math-entry-breakdown">
+                      {Array.isArray(breakdown) ? (
+                        <ul className="math-breakdown-list">
+                          {breakdown.map((item, bIdx) => (
+                            <li key={bIdx} className="math-breakdown-item">
+                              <Rich t={item} />
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="math-breakdown-text">
+                          <Rich t={breakdown} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
               <div className="math-entry-box">
