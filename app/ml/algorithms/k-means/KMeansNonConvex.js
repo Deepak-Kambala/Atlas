@@ -202,18 +202,6 @@ export default function KMeansNonConvex() {
 
   return (
     <div className="kmeans-sensitivity-container">
-      {/* Meta Header */}
-      <div className="kmeans-sensitivity-meta-box">
-        <div className="kmeans-meta-badge">
-          <span className="kmeans-badge-dot" />
-          NON-HYPER-ELLIPSOIDAL GEOMETRIES
-        </div>
-        <p className="kmeans-sensitivity-note">
-          <strong>The k-means algorithm is not suitable for discovering clusters that are not hyper-ellipsoids (or hyper-spheres).</strong>{' '}
-          Because its Voronoi decision boundaries are linear hyperplanes, it slices across non-convex and curved manifolds.
-        </p>
-      </div>
-
       {/* Controls */}
       <div className="kmeans-control-bar">
         <div className="kmeans-view-switch">

@@ -277,18 +277,6 @@ export default function KMeansSeedSensitivity() {
 
   return (
     <div className="kmeans-sensitivity-container">
-      {/* Visual Header / Callout */}
-      <div className="kmeans-sensitivity-meta-box">
-        <div className="kmeans-meta-badge">
-          <span className="kmeans-badge-dot" />
-          NON-CONVEX LOSS LANDSCAPE
-        </div>
-        <p className="kmeans-sensitivity-note">
-          <strong>K-Means loss function is not convex</strong>, hence Lloyd&apos;s gradient-descent
-          updates can easily get trapped in a <em>suboptimal local minimum</em> depending on random seed placement.
-        </p>
-      </div>
-
       {/* Control Tabs */}
       <div className="kmeans-control-bar">
         <div className="kmeans-view-switch">

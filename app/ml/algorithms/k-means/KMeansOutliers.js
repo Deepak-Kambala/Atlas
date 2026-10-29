@@ -35,19 +35,6 @@ export default function KMeansOutliers() {
 
   return (
     <div className="kmeans-sensitivity-container">
-      {/* Meta Header */}
-      <div className="kmeans-sensitivity-meta-box">
-        <div className="kmeans-meta-badge">
-          <span className="kmeans-badge-dot" />
-          SQUARED ERROR PENALTY · L2 NORM
-        </div>
-        <p className="kmeans-sensitivity-note">
-          <strong>Extreme sensitivity to outliers</strong>: Because K-Means minimizes squared Euclidean distances (
-          <Tex f="\sum \|\mathbf{x} - \boldsymbol{\mu}\|^2" inline />), a single extreme outlier drastically
-          drags the centroid into empty space, forcing natural clusters to merge or distort.
-        </p>
-      </div>
-
       {/* Controls */}
       <div className="kmeans-control-bar">
         <div className="kmeans-view-switch">

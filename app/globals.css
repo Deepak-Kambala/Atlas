@@ -4652,57 +4652,18 @@ svg rect {
 
 .limitation-embedded-visual {
   margin-top: 10px;
-  margin-left: -14px;
-  width: calc(100% + 14px);
+  width: 100%;
 }
 
 .kmeans-sensitivity-container {
-  background: var(--bg);
-  border: 1px solid var(--bd);
-  border-radius: 8px;
-  padding: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   font-size: 11.5px;
-}
-
-.kmeans-sensitivity-meta-box {
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 8px 10px;
-}
-
-.kmeans-meta-badge {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #f87171;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 4px;
-}
-
-:root[data-theme="light"] .kmeans-meta-badge {
-  color: #dc2626;
-}
-
-.kmeans-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  display: inline-block;
-}
-
-.kmeans-sensitivity-note {
-  margin: 0;
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--tx);
+  width: 100%;
 }
 
 .kmeans-control-bar {
@@ -4710,11 +4671,12 @@ svg rect {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+  margin-bottom: 2px;
 }
 
 .kmeans-view-switch {
   display: flex;
-  background: var(--cd);
+  background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 5px;
   padding: 2px;
@@ -4725,10 +4687,10 @@ svg rect {
   border: none;
   background: transparent;
   color: var(--mu);
-  font-size: 9.5px;
-  font-family: var(--sans);
+  font-size: 10px;
+  font-family: var(--mono);
   font-weight: 600;
-  padding: 2.5px 7px;
+  padding: 2.5px 8px;
   border-radius: 3px;
   cursor: pointer;
   transition: all .15s ease;
@@ -4739,9 +4701,9 @@ svg rect {
 }
 
 .kmeans-tab-btn.active {
-  background: var(--bg);
+  background: var(--cd);
   color: var(--tx);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .kmeans-enlarge-btn {
@@ -4749,9 +4711,10 @@ svg rect {
   align-items: center;
   gap: 4px;
   font-size: 10px;
+  font-family: var(--mono);
   font-weight: 600;
   color: var(--mu);
-  background: var(--cd);
+  background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 4px;
   padding: 2.5px 8px;
@@ -4771,28 +4734,28 @@ svg rect {
 }
 
 .kmeans-case-column {
-  background: var(--cd);
+  background: var(--bg);
   border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 8px;
+  padding: 9px 10px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
 .kmeans-case-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 4px;
 }
 
 .kmeans-case-tag {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
+  padding: 2px 7px;
+  border-radius: 4px;
   font-family: var(--mono);
 }
 
@@ -4819,7 +4782,7 @@ svg rect {
 }
 
 .kmeans-case-sub {
-  font-size: 9.5px;
+  font-size: 10px;
   color: var(--mu);
 }
 
@@ -4844,10 +4807,9 @@ svg rect {
 }
 
 .kmeans-subplot-card {
-  background: var(--bg);
-  border: 1px solid var(--bd);
-  border-radius: 5px;
-  padding: 5px;
+  background: transparent;
+  border: none;
+  padding: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -5119,297 +5081,6 @@ svg rect {
 }
 
 .chalk-bullet-item b {
-  color: var(--tx);
-}
-
-
-/* ==========================================================================
-   K-Means Seed Sensitivity & Local Minima Limitation Visual
-   ========================================================================== */
-
-.tradeoff-item-with-visual {
-  margin-bottom: 12px;
-}
-
-.limitation-embedded-visual {
-  margin-top: 10px;
-  margin-left: -14px;
-  width: calc(100% + 14px);
-}
-
-.kmeans-sensitivity-container {
-  background: var(--bg);
-  border: 1px solid var(--bd);
-  border-radius: 8px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 11.5px;
-}
-
-.kmeans-sensitivity-meta-box {
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 8px 10px;
-}
-
-.kmeans-meta-badge {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #f87171;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 4px;
-}
-
-:root[data-theme="light"] .kmeans-meta-badge {
-  color: #dc2626;
-}
-
-.kmeans-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  display: inline-block;
-}
-
-.kmeans-sensitivity-note {
-  margin: 0;
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--tx);
-}
-
-.kmeans-control-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-.kmeans-view-switch {
-  display: flex;
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 5px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.kmeans-tab-btn {
-  border: none;
-  background: transparent;
-  color: var(--mu);
-  font-size: 9.5px;
-  font-family: var(--sans);
-  font-weight: 600;
-  padding: 2.5px 7px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-
-.kmeans-tab-btn:hover {
-  color: var(--tx);
-}
-
-.kmeans-tab-btn.active {
-  background: var(--bg);
-  color: var(--tx);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-.kmeans-enlarge-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--mu);
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 4px;
-  padding: 2.5px 8px;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-
-.kmeans-enlarge-btn:hover {
-  color: var(--tx);
-  border-color: var(--tx);
-}
-
-.kmeans-diagrams-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.kmeans-case-column {
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.kmeans-case-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.kmeans-case-tag {
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-family: var(--mono);
-}
-
-.kmeans-case-tag.local-tag {
-  background: rgba(239, 68, 68, 0.12);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-}
-
-:root[data-theme="light"] .kmeans-case-tag.local-tag {
-  color: #dc2626;
-  background: rgba(239, 68, 68, 0.08);
-}
-
-.kmeans-case-tag.optimal-tag {
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.25);
-}
-
-:root[data-theme="light"] .kmeans-case-tag.optimal-tag {
-  color: #16a34a;
-  background: rgba(34, 197, 94, 0.08);
-}
-
-.kmeans-case-sub {
-  font-size: 9.5px;
-  color: var(--mu);
-}
-
-.kmeans-case-stages {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.kmeans-stage-divider {
-  font-size: 11px;
-  color: var(--mu);
-  line-height: 1;
-}
-
-.kmeans-iter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  width: 100%;
-}
-
-.kmeans-subplot-card {
-  background: var(--bg);
-  border: 1px solid var(--bd);
-  border-radius: 5px;
-  padding: 5px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.kmeans-subplot-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2px;
-  padding: 0 2px;
-}
-
-.kmeans-subplot-title {
-  font-size: 9px;
-  font-weight: 650;
-  color: var(--tx);
-}
-
-.kmeans-subplot-sub {
-  font-size: 8px;
-  color: var(--mu);
-}
-
-.kmeans-mini-svg {
-  width: 100%;
-  max-width: 135px;
-  height: auto;
-  display: block;
-}
-
-.kmeans-final-result {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 8px;
-  border-radius: 5px;
-  font-size: 9.5px;
-  line-height: 1.35;
-}
-
-.kmeans-final-result.bad-result {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.kmeans-final-result.good-result {
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.kmeans-result-arrow {
-  font-size: 10px;
-  color: var(--mu);
-}
-
-.kmeans-result-title {
-  font-weight: 700;
-  color: var(--tx);
-  font-size: 9.5px;
-}
-
-.kmeans-result-desc {
-  color: var(--mu);
-  font-size: 9px;
-}
-
-.kmeans-takeaway-footer {
-  font-size: 9.5px;
-  color: var(--mu);
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  border-radius: 5px;
-  padding: 6px 8px;
-  line-height: 1.4;
-}
-
-.kmeans-takeaway-label {
-  font-weight: 650;
   color: var(--tx);
 }
 
@@ -5606,9 +5277,11 @@ svg rect {
 
 .kmeans-wide-svg {
   width: 100%;
-  max-width: 270px;
   height: auto;
   display: block;
+  background: #000000;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 
