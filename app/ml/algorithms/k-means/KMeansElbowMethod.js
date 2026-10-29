@@ -209,7 +209,7 @@ export default function KMeansElbowMethod({ activeK = 3, onSelectK }) {
       <div className={`kmeans-elbow-behavior-box ${activeK < 3 ? 'underfit' : activeK === 3 ? 'optimal' : 'overfit'}`}>
         <div className="behavior-title-row">
           <span className="behavior-tag">
-            {activeK < 3 ? 'Underfitting (K < 3)' : activeK === 3 ? 'Optimal Balance (Elbow K = 3)' : 'Over-Clustering (K > 3)'}
+            {activeK < 3 ? 'Underfitting (K < 3)' : activeK === 3 ? 'Optimal Elbow (K = 3)' : 'Overfitting (K > 3)'}
           </span>
           <span className="behavior-inertia">Inertia: {activeItem.inertia.toLocaleString()}</span>
         </div>

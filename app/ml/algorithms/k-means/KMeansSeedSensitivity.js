@@ -342,7 +342,7 @@ export default function KMeansSeedSensitivity() {
               <div className="kmeans-iter-row">
                 <ClusterPlot
                   title="Iteration 1"
-                  subLabel="Horizontal cut"
+                  subLabel="Horizontal"
                   stage="iter1"
                   mode="init1"
                 />
@@ -356,10 +356,9 @@ export default function KMeansSeedSensitivity() {
             </div>
 
             <div className="kmeans-final-result bad-result">
-              <span className="kmeans-result-arrow">↓</span>
-              <span className="kmeans-result-title">Final Answer: Init 1</span>
+              <span className="kmeans-result-title">✕ Suboptimal Minimum:</span>
               <span className="kmeans-result-desc">
-                Trapped in poor local minimum (splits top vs bottom instead of true vertical groups).
+                Trapped in poor local minimum (splits horizontal bands instead of natural vertical groups).
               </span>
             </div>
           </div>
@@ -384,13 +383,13 @@ export default function KMeansSeedSensitivity() {
               <div className="kmeans-iter-row">
                 <ClusterPlot
                   title="Iteration 1"
-                  subLabel="Vertical partition"
+                  subLabel="Vertical"
                   stage="iter1"
                   mode="init2"
                 />
                 <ClusterPlot
                   title="Iteration 2"
-                  subLabel="Optimal centers"
+                  subLabel="Converged"
                   stage="iter2"
                   mode="init2"
                 />
@@ -398,10 +397,9 @@ export default function KMeansSeedSensitivity() {
             </div>
 
             <div className="kmeans-final-result good-result">
-              <span className="kmeans-result-arrow">↓</span>
-              <span className="kmeans-result-title">Final Answer: Init 2</span>
+              <span className="kmeans-result-title">✓ Global Optimum:</span>
               <span className="kmeans-result-desc">
-                Achieves global optimum (recovers natural vertical clusters).
+                Achieves true global optimum (cleanly recovers natural vertical clusters).
               </span>
             </div>
           </div>
