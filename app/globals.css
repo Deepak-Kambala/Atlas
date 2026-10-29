@@ -4076,7 +4076,7 @@ svg rect {
 }
 
 .telemetry-sub {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--mu);
   margin-bottom: 10px;
 }
@@ -4102,7 +4102,7 @@ svg rect {
 }
 
 .happening-step-title {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 650;
   color: var(--tx);
   margin: 4px 0 6px;
@@ -4119,7 +4119,7 @@ svg rect {
 
 .happening-step-math {
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--tx);
   padding: 6px 10px;
   border-radius: 5px;
@@ -4161,7 +4161,8 @@ svg rect {
 }
 
 .meta-tag-item {
-  font-size: 12.5px;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--mu);
 }
 
@@ -4184,8 +4185,9 @@ svg rect {
 }
 
 .math-entry-title {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 650;
+  letter-spacing: -0.01em;
   color: var(--tx);
   margin-bottom: 6px;
 }
@@ -4201,7 +4203,8 @@ svg rect {
 
 .math-entry-note {
   font-size: 13px;
-  color: var(--mu);
+  color: var(--tx);
+  opacity: 0.95;
   line-height: 1.6;
 }
 
@@ -4291,7 +4294,7 @@ svg rect {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--tx);
   flex-shrink: 0;
@@ -4306,8 +4309,8 @@ svg rect {
 }
 
 .step-item-title {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 650;
   color: var(--tx);
   margin-bottom: 4px;
   letter-spacing: -0.01em;
@@ -4320,9 +4323,10 @@ svg rect {
 }
 
 .step-item-detail {
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: var(--mu);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tx);
+  opacity: 0.92;
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px dashed var(--bd);
@@ -4355,15 +4359,17 @@ svg rect {
 }
 
 .param-item-title {
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 650;
   color: var(--tx);
   margin-bottom: 4px;
+  letter-spacing: -0.01em;
 }
 
 .param-item-text {
   font-size: 13px;
-  color: var(--mu);
+  color: var(--tx);
+  opacity: 0.95;
   line-height: 1.6;
 }
 
@@ -4389,7 +4395,7 @@ svg rect {
 
 .tradeoff-badge {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -4410,8 +4416,8 @@ svg rect {
 }
 
 .tradeoffs-group-title {
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 650;
   color: var(--tx);
   letter-spacing: -0.01em;
   margin: 0;
@@ -4451,7 +4457,7 @@ svg rect {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
@@ -4493,7 +4499,7 @@ svg rect {
 }
 
 .use-group-title {
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 650;
   margin: 0 0 8px;
   color: var(--tx);
@@ -4510,6 +4516,8 @@ svg rect {
 
 .use-guidelines-ul li {
   margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 /* Contextual View 8: Code */
@@ -4527,7 +4535,7 @@ svg rect {
 
 .code-lang-tag {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--mu);
 }
 
@@ -4549,8 +4557,8 @@ svg rect {
 .code-display-block {
   margin: 0;
   padding: 10px 12px;
-  font-size: 11.5px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.6;
   font-family: var(--mono);
   background: var(--cd);
   border: 1px solid var(--bd);
@@ -5343,8 +5351,8 @@ svg rect {
 }
 
 .kmeans-elbow-title {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--tx);
   margin: 0;
@@ -5352,17 +5360,17 @@ svg rect {
 
 .kmeans-elbow-badge {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--tx);
   background: var(--bg);
   border: 1px solid var(--bd);
-  padding: 2px 7px;
+  padding: 2.5px 8px;
   border-radius: 4px;
 }
 
 .kmeans-elbow-intro {
-  font-size: 11.5px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--tx);
   margin: 0;
 }
@@ -5397,7 +5405,7 @@ svg rect {
 }
 
 .kmeans-elbow-bar-label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--mu);
 }
@@ -5410,10 +5418,10 @@ svg rect {
 }
 
 .kmeans-elbow-pill-btn {
-  font-size: 9px;
+  font-size: 10px;
   font-family: var(--mono);
   font-weight: 600;
-  padding: 3px 2px;
+  padding: 4px 3px;
   border-radius: 4px;
   border: 1px solid var(--bd);
   background: var(--bg);
@@ -5449,14 +5457,14 @@ svg rect {
 
 .kmeans-elbow-behavior-box {
   border-radius: 6px;
-  padding: 9px 11px;
-  font-size: 11px;
-  line-height: 1.5;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
   border: 1px solid var(--bd);
   background: var(--bg);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .kmeans-elbow-behavior-box.underfit {
@@ -5480,18 +5488,19 @@ svg rect {
 
 .behavior-tag {
   font-weight: 700;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--tx);
 }
 
 .behavior-inertia {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--mu);
 }
 
 .behavior-desc {
   margin: 0;
   color: var(--tx);
-  font-size: 11px;
+  font-size: 13px;
+  line-height: 1.6;
 }
