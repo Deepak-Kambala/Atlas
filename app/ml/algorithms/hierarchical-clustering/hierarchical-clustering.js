@@ -1,4 +1,4 @@
-import { blobs, dist } from './common';
+import { blobs, dist } from '../common';
 
 /**
  * Hierarchical Clustering Simulation Engine

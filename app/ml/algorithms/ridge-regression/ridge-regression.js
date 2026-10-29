@@ -1,4 +1,4 @@
-import { G, cp, f2, f3, mean } from './common';
+import { G, cp, f2, f3, mean } from '../common';
 
 /**
  * Ridge Regression Simulation Engine (L2 Regularization)

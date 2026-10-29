@@ -1,4 +1,4 @@
-import { cp, G, dist } from './common';
+import { cp, G, dist } from '../common';
 
 /**
  * DBSCAN (Density-Based Spatial Clustering of Applications with Noise) Simulation Engine

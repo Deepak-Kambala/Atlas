@@ -1,4 +1,4 @@
-import { G, cp, f2, f3, mean } from './common';
+import { G, cp, f2, f3, mean } from '../common';
 
 /**
  * Multi-layer Perceptron (MLP) Neural Network Simulation Engine

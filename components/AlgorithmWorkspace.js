@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Viz from './Viz';
 import Chart from './Chart';
 import Tex, { Rich } from './Tex';
-import { A, R } from '../lib/algorithms';
+import { A, R, algorithmVisuals, KMeansSeedSensitivity } from '../lib/algorithms';
 
 const SECTIONS = [
   { id: 'intuition', num: '01', label: 'Intuition' },
@@ -556,11 +556,25 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
               <div className="tradeoffs-group weaknesses">
                 <h4 className="tradeoffs-group-title">✕ Limitations</h4>
                 <ul className="tradeoffs-ul">
-                  {meta.cons.map((con, cIdx) => (
-                    <li key={cIdx}>
-                      <Rich t={con} />
-                    </li>
-                  ))}
+                  {meta.cons.map((con, cIdx) => {
+                    const text = typeof con === 'string' ? con : con.text;
+                    const isSeedLimitation =
+                      meta.slug === 'k-means' &&
+                      (typeof con === 'string'
+                        ? con.toLowerCase().includes('initial seed')
+                        : con.id === 'initial-seeds');
+
+                    return (
+                      <li key={cIdx} className={isSeedLimitation ? 'tradeoff-item-with-visual' : ''}>
+                        <Rich t={text} />
+                        {isSeedLimitation && (
+                          <div className="limitation-embedded-visual">
+                            <KMeansSeedSensitivity />
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { blobs, mean, f3 } from './common';
+import { blobs, mean, f3 } from '../common';
 
 /**
  * Logistic Regression Simulation Engine

@@ -1,4 +1,4 @@
-import { blobs, f3 } from './common';
+import { blobs, f3 } from '../common';
 
 /**
  * Decision Tree Simulation Engine

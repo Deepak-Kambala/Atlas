@@ -1,4 +1,4 @@
-import { blobs, dist, f2, f3, mean } from './common';
+import { blobs, dist, f2, f3, mean } from '../common';
 
 /**
  * k-Medoids Clustering (PAM - Partitioning Around Medoids) Simulation Engine

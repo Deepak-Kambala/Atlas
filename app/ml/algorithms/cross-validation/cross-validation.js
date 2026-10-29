@@ -1,4 +1,4 @@
-import { G, cp, f2, f3, mean } from './common';
+import { G, cp, f2, f3, mean } from '../common';
 
 /**
  * k-Fold Cross-Validation & LOO Simulation Engine

@@ -1,4 +1,4 @@
-import { blobs, mean } from './common';
+import { blobs, mean } from '../common';
 
 /**
  * Gaussian Naive Bayes Simulation Engine

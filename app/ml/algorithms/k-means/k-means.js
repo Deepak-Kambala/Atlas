@@ -1,4 +1,4 @@
-import { blobs, dist, mean } from './common';
+import { blobs, dist, mean } from '../common';
 
 /**
  * K-Means Clustering Simulation Engine

@@ -1,4 +1,4 @@
-import { cp, G, mean } from './common';
+import { cp, G, mean } from '../common';
 
 /**
  * Principal Component Analysis (PCA) Simulation Engine

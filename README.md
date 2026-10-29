@@ -55,16 +55,14 @@ atlas/
 │   │   │   └── page.js                # Individual algorithm interactive page (SSG statically generated)
 │   │   └── algorithms/                # Topic-based algorithm simulation modules
 │   │       ├── common.js              # Shared math, PRNG, and geometry helpers
-│   │       ├── linear-regression.js   # Linear Regression engine & metadata
-│   │       ├── logistic-regression.js # Logistic Regression engine & metadata
-│   │       ├── svm.js                 # Support Vector Machine engine & metadata
-│   │       ├── knn.js                 # k-Nearest Neighbors engine & metadata
-│   │       ├── decision-tree.js       # Decision Tree engine & metadata
-│   │       ├── naive-bayes.js         # Gaussian Naive Bayes engine & metadata
-│   │       ├── k-means.js             # K-Means Clustering engine & metadata
-│   │       ├── hierarchical-clustering.js # Hierarchical Clustering engine & metadata
-│   │       ├── dbscan.js              # DBSCAN engine & metadata
-│   │       ├── pca.js                 # Principal Component Analysis engine & metadata
+│   │       ├── k-means/               # K-Means algorithm directory
+│   │       │   ├── k-means.js         # K-Means simulation engine & metadata
+│   │       │   ├── KMeansSeedSensitivity.js # Interactive seed sensitivity & local minima visual
+│   │       │   └── index.js           # Directory export entrypoint
+│   │       ├── linear-regression/     # Linear Regression directory
+│   │       ├── logistic-regression/   # Logistic Regression directory
+│   │       ├── svm/                   # Support Vector Machine directory
+│   │       ├── ...                    # Dedicated directory per algorithm
 │   │       └── index.js               # Re-exports individual modules, A list, and slug lookups
 │   ├── linear-algebra/page.js         # Linear Algebra curriculum
 │   ├── calculus-optimization/page.js  # Calculus & Optimization curriculum
@@ -108,6 +106,6 @@ atlas/
 
 ## Adding New Algorithms
 
-1. **Simulation Generator**: Create a dedicated module in `app/ml/algorithms/<algorithm-slug>.js` (or in its respective topic folder) using utilities from `./common`. Export the engine function and algorithm descriptor.
+1. **Simulation Generator & Visuals**: Create a dedicated folder in `app/ml/algorithms/<algorithm-slug>/` containing `<algorithm-slug>.js`, any algorithm-specific visuals, and an `index.js` exporting them. Use utilities from `../common`.
 2. **Register Algorithm**: Add the export to `app/ml/algorithms/index.js` in the ordered `A` array and `algorithmsBySlug` map.
 3. **Content & Math**: Add the corresponding curriculum entry to `C` in `lib/content.js`, matching the index in `A`. Include LaTeX formulas, hyper-parameters, strengths, and scikit-learn code.

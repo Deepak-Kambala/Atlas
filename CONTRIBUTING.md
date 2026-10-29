@@ -63,13 +63,13 @@ npm run build
 
 Adding a new algorithm or topic involves three structured steps:
 
-### Step 1: Create the Simulation Engine
-Create a new file in `app/ml/algorithms/<your-slug>.js`.
+### Step 1: Create the Algorithm Directory and Engine
+Create a new directory in `app/ml/algorithms/<your-slug>/` containing `<your-slug>.js`, any dedicated visuals or submodules, and an `index.js`.
 
 Your module should export a generator function that accepts a deterministic PRNG `r` (and optional parameter value `param`) and returns an array of frame objects:
 
 ```javascript
-import { cp, f2, f3, mean } from './common';
+import { cp, f2, f3, mean } from '../common';
 
 export function myAlgorithmEngine(r, param = 0) {
   // 1. Generate deterministic sample points
@@ -104,13 +104,13 @@ export const myAlgorithm = {
 
 ### Step 2: Register in the Algorithms Catalog
 In `app/ml/algorithms/index.js`:
-1. Re-export your file:
+1. Re-export your directory:
    ```javascript
-   export * from './my-algorithm.js';
+   export * from './my-algorithm/index.js';
    ```
 2. Import the object and append it to `A` and `algorithmsBySlug`:
    ```javascript
-   import { myAlgorithm } from './my-algorithm.js';
+   import { myAlgorithm } from './my-algorithm/index.js';
 
    export const A = [
      // ...

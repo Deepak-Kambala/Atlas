@@ -1,4 +1,4 @@
-import { G, cp, f2, f3, mean, dist } from './common';
+import { G, cp, f2, f3, mean, dist } from '../common';
 
 /**
  * Linear Discriminant Analysis (LDA) Simulation Engine
