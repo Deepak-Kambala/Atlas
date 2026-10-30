@@ -486,6 +486,20 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                   })}
                 </div>
               )}
+
+              {/* Algorithm-Specific Interactive Module for K-Medoids */}
+              {meta.slug === 'k-medoids' && algorithmVisuals['k-medoids']?.interactiveDemo && (
+                <div className="demo-kmedoids-container">
+                  {React.createElement(algorithmVisuals['k-medoids'].interactiveDemo, {
+                    activeK: pm,
+                    onSelectK: newK => {
+                      setPv({ ...pv, [ai]: newK });
+                      setI(0);
+                      setPlay(false);
+                    }
+                  })}
+                </div>
+              )}
             </div>
           )}
 

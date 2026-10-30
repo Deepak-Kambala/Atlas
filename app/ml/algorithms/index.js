@@ -35,7 +35,7 @@ import { ldaClassifier } from './lda/index.js';
 import { mlp } from './mlp/index.js';
 import { crossValidation } from './cross-validation/index.js';
 import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex, KMeansElbowMethod } from './k-means/index.js';
-import { kmedoidsCluster } from './k-medoids/index.js';
+import { kmedoidsCluster, KMedoidsInteractive } from './k-medoids/index.js';
 import { hierarchicalClustering } from './hierarchical-clustering/index.js';
 import { dbscan } from './dbscan/index.js';
 import { pca } from './pca/index.js';
@@ -47,6 +47,9 @@ export const algorithmVisuals = {
     outliers: KMeansOutliers,
     nonConvex: KMeansNonConvex,
     elbowMethod: KMeansElbowMethod
+  },
+  'k-medoids': {
+    interactiveDemo: KMedoidsInteractive
   }
 };
 
