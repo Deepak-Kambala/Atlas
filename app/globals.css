@@ -6633,3 +6633,444 @@ svg rect {
   color: var(--tx);
   margin: 0;
 }
+
+/* =========================================================================
+   Hierarchical Clustering Interactive Dendrogram Component
+   ========================================================================= */
+
+.demo-hierarchical-container {
+  margin-top: 14px;
+}
+
+.hier-interactive-card {
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hier-tab-bar {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 3px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hier-tab-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mu);
+  cursor: pointer;
+  transition: all .15s ease;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hier-tab-btn:hover {
+  color: var(--tx);
+}
+
+.hier-tab-btn.active {
+  background: var(--cd);
+  color: var(--tx);
+  border-color: var(--bd);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.hier-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hier-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hier-card-title {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+  margin: 0;
+}
+
+.hier-card-sub {
+  font-size: 11px;
+  color: var(--mu);
+  display: block;
+  margin-top: 1px;
+}
+
+.hier-pill-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--tx);
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hier-pill-badge.primary {
+  border-color: #ec4899;
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.08);
+}
+
+.hier-card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mu);
+  margin: 0;
+}
+
+.hier-card-desc b {
+  color: var(--tx);
+}
+
+.hier-svg-wrap {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 8px 6px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hier-dendro-svg {
+  width: 100%;
+  height: auto;
+  max-height: 230px;
+  display: block;
+  user-select: none;
+}
+
+.hier-branch-group:hover .hier-branch-path {
+  stroke-width: 2.2px !important;
+  stroke: var(--p1) !important;
+  opacity: 1 !important;
+}
+
+.hier-status-card {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hier-status-badge {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-bottom: 2px;
+}
+
+.hier-status-badge.initial {
+  color: var(--mu);
+}
+
+.hier-status-badge.merge {
+  color: var(--p1);
+}
+
+.hier-status-badge.complete {
+  color: var(--p2);
+}
+
+.hier-status-text {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--tx);
+  margin: 0;
+}
+
+.hier-step-meta-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--bd);
+  font-size: 11px;
+  color: var(--mu);
+}
+
+.hier-step-meta-row b {
+  color: var(--tx);
+}
+
+.hier-playback-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hier-mini-btn {
+  padding: 5px 8px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border: 1px solid var(--bd);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--tx);
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+
+.hier-mini-btn:hover:not(:disabled) {
+  border-color: var(--p1);
+  color: var(--p1);
+}
+
+.hier-mini-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hier-step-slider {
+  flex: 1;
+  accent-color: var(--p1);
+  height: 4px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.hier-slider-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 9px 12px;
+}
+
+.hier-slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-family: var(--sans);
+  color: var(--tx);
+}
+
+.hier-slider-title {
+  font-weight: 600;
+}
+
+.hier-slider-val {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: #ec4899;
+}
+
+.hier-range-slider {
+  accent-color: #ec4899;
+  width: 100%;
+  cursor: pointer;
+}
+
+.hier-presets-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hier-presets-label {
+  font-size: 11px;
+  color: var(--mu);
+  font-weight: 600;
+}
+
+.hier-preset-chip {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border: 1px solid var(--bd);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--tx);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.hier-preset-chip:hover {
+  border-color: var(--tx);
+}
+
+.hier-preset-chip.active {
+  background: rgba(236, 72, 153, 0.12);
+  border-color: #ec4899;
+  color: #ec4899;
+}
+
+.hier-clusters-telemetry {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hier-clusters-telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hier-k-badge {
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: #ec4899;
+}
+
+.hier-meta-hint {
+  font-size: 11px;
+  color: var(--mu);
+}
+
+.hier-cluster-chips-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hier-cluster-chip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--cd);
+  border: 1px solid;
+  border-radius: 5px;
+  font-size: 11.5px;
+}
+
+.hier-cluster-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hier-cluster-chip-title {
+  font-weight: 700;
+  color: var(--tx);
+  font-family: var(--mono);
+}
+
+.hier-cluster-chip-members {
+  font-family: var(--mono);
+  color: var(--mu);
+  font-size: 11px;
+}
+
+.hier-linkage-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hier-linkage-card {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all .15s ease;
+}
+
+.hier-linkage-card:hover {
+  border-color: var(--p1);
+}
+
+.hier-linkage-card.selected {
+  border-color: var(--p1);
+  background: rgba(245, 159, 0, 0.05);
+  box-shadow: 0 0 0 1px var(--p1);
+}
+
+.hier-linkage-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hier-linkage-tag {
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.hier-linkage-badge {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  color: var(--mu);
+}
+
+.hier-linkage-card.selected .hier-linkage-badge {
+  color: var(--p1);
+  border-color: var(--p1);
+}
+
+.hier-linkage-math {
+  font-size: 11.5px;
+  color: var(--tx);
+  padding: 2px 0;
+}
+
+.hier-linkage-desc {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--mu);
+  margin: 0;
+}
+
+.hier-linkage-desc b {
+  color: var(--tx);
+}

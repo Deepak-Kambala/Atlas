@@ -256,6 +256,8 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
               ? '◉ Double Ring: Real Medoids · ◌ Points: Cluster Members · ⨂ Red: Distant Outliers'
               : meta.slug === 'dbscan'
               ? '● Solid: Core Points · ◌ Hollow: Border Points · ⨂ Red: Noise / Outliers'
+              : meta.slug === 'hierarchical-clustering'
+              ? '● P0–P14: Data Points · — Amber: Active Merge · Dendrogram constructed in parallel'
               : meta.type === 'Supervised'
               ? 'Training data · Current model fit'
               : 'Unlabelled data · Clustering iteration'}
@@ -501,6 +503,28 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                       setI(0);
                       setPlay(false);
                     }
+                  })}
+                </div>
+              )}
+
+              {/* Algorithm-Specific Interactive Module for Hierarchical Clustering */}
+              {meta.slug === 'hierarchical-clustering' && algorithmVisuals['hierarchical-clustering']?.interactiveDemo && (
+                <div className="demo-hierarchical-container">
+                  {React.createElement(algorithmVisuals['hierarchical-clustering'].interactiveDemo, {
+                    currentStep: ix,
+                    totalSteps: n,
+                    onStepChange: newStep => {
+                      setI(newStep);
+                      setPlay(false);
+                    },
+                    activeLinkage: pm,
+                    onSelectLinkage: newL => {
+                      setPv({ ...pv, [ai]: newL });
+                      setI(0);
+                      setPlay(false);
+                    },
+                    frames: S,
+                    frame: f
                   })}
                 </div>
               )}

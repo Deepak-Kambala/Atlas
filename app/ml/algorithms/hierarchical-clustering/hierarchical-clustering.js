@@ -14,7 +14,22 @@ export function hierEngine(r, linkageParam = 1) {
     4: 'Divisive Top-Down (Recursive Bisection)'
   };
 
-  const P = blobs(r, [[24, 30], [68, 26], [50, 76]], 5, 8).map(p => ({ ...p, c: 5 }));
+  // 15 canonical points across 3 natural blobs (5 per blob) with persistent point IDs
+  const P = blobs(r, [[24, 30], [68, 26], [50, 76]], 5, 8).map((p, i) => ({
+    ...p,
+    id: i,
+    c: 5
+  }));
+
+  // Point ID text annotations for the 2D canvas
+  const pointLabels = P.map((p, i) => ({
+    x: p.x + 2.4,
+    y: p.y - 1.2,
+    text: `P${i}`,
+    col: '--mu',
+    size: 2.1,
+    opacity: 0.7
+  }));
 
   // Mode 4: Divisive Top-Down Clustering
   if (mode === 4) {
@@ -22,14 +37,17 @@ export function hierEngine(r, linkageParam = 1) {
     const S = [
       {
         t: 'Divisive Top-Down (All in 1 Cluster)',
-        d: `Divisive clustering begins with the entire dataset in a single cluster and iteratively bisects the cluster with the largest diameter. Mode: ${modeNames[mode]}.`,
+        d: `Divisive clustering begins with the entire dataset in a single cluster and iteratively bisects the cluster with the largest diameter. Active: ${modeNames[mode]}.`,
+        math: `\\text{Initial: } 1 \\text{ Root Cluster containing all } 15 \\text{ points}`,
         pts: P.map(p => ({ ...p, c: 0 })),
-        texts: [{ x: 50, y: 94, text: 'Top-down: 1 Root Cluster', col: '--mu', size: 3.2 }]
+        texts: [
+          { x: 50, y: 94, text: 'Top-down: 1 Root Cluster', col: '--mu', size: 3.2 },
+          ...pointLabels
+        ]
       }
     ];
 
     while (clusters.length < P.length) {
-      // Find cluster with largest diameter
       let worstClusterIdx = 0, maxDiam = -1;
       clusters.forEach((cl, idx) => {
         if (cl.length <= 1) return;
@@ -48,7 +66,6 @@ export function hierEngine(r, linkageParam = 1) {
       if (maxDiam <= 0) break;
 
       const target = clusters[worstClusterIdx];
-      // Bisect by finding the two furthest points in target
       let seedA = target[0], seedB = target[1], maxD = -1;
       for (let i = 0; i < target.length; i++) {
         for (let j = i + 1; j < target.length; j++) {
@@ -79,9 +96,13 @@ export function hierEngine(r, linkageParam = 1) {
         t: `Divisive Split: ${clusters.length} Clusters`,
         v: maxDiam,
         x: S.length,
-        d: `Split cluster of diameter ${maxDiam.toFixed(1)} into two subgroups. Total clusters: ${clusters.length}.`,
+        d: `Bisected cluster of diameter ${maxDiam.toFixed(1)} into two subgroups. Total clusters: ${clusters.length}.`,
+        math: `\\text{Diameter: } \\max d(a, b) = ${maxDiam.toFixed(1)} \\implies \\text{Split into } ${clusters.length} \\text{ groups}`,
         pts: P.map((p, i) => ({ ...p, c: colorMap[i] })),
-        texts: [{ x: 50, y: 94, text: `Clusters: ${clusters.length}`, col: '--mu', size: 3 }]
+        texts: [
+          { x: 50, y: 94, text: `Clusters: ${clusters.length}`, col: '--mu', size: 3 },
+          ...pointLabels
+        ]
       });
     }
 
@@ -115,10 +136,14 @@ export function hierEngine(r, linkageParam = 1) {
 
   const S = [
     {
-      t: '1. The Dataset (Bottom-Up)',
-      d: `Agglomerative hierarchical clustering begins with every sample as an individual cluster, then successively merges the closest pair. Active strategy: ${modeNames[mode]}.`,
+      t: '1. The Initial Dataset (15 Clusters)',
+      d: `Agglomerative hierarchical clustering begins with every sample as its own cluster (leaves of the dendrogram). In each step, the two closest clusters merge and add a horizontal rung at distance height d. Strategy: ${modeNames[mode]}.`,
+      math: `\\text{Initial: } 15 \\text{ singleton clusters, Dendrogram Height } d = 0`,
       pts: P,
-      texts: [{ x: 50, y: 94, text: modeNames[mode], col: '--mu', size: 3.2 }]
+      texts: [
+        { x: 50, y: 94, text: `${modeNames[mode]} · Initial State`, col: '--mu', size: 3.2 },
+        ...pointLabels
+      ]
     }
   ];
 
@@ -145,20 +170,37 @@ export function hierEngine(r, linkageParam = 1) {
     const n = CL.length;
 
     S.push({
-      t: `Merge ${S.length}: Distance ${bestDist.toFixed(1)}`,
+      t: `Merge ${S.length}: Linkage Distance d = ${bestDist.toFixed(1)}`,
       v: bestDist,
       x: S.length,
       d:
-        `Joined two closest clusters with ${modeNames[mode]} gap = ${bestDist.toFixed(1)}. ${n} cluster${
+        `Joined two closest clusters with ${modeNames[mode]} gap d = ${bestDist.toFixed(1)}. ${n} cluster${
           n > 1 ? 's' : ''
         } remaining.` +
         (n === 3 ? ' Reached the 3 natural foundational groups before major cross-cluster merges.' : '') +
-        (n === 1 ? ' All samples merged into root. The sequence of heights builds the dendrogram.' : ''),
+        (n === 1 ? ' All samples merged into root. The complete sequence of merge heights forms the dendrogram tree!' : ''),
+      math: `\\text{Merge \\#}${S.length}: \\text{ Distance } d = ${bestDist.toFixed(1)} \\implies ${n} \\text{ Clusters Remaining}`,
       pts: col(),
-      lines: links.map((l, k) => (k === links.length - 1 ? { ...l, w: 1.4, col: '--ac' } : l)),
-      texts: [{ x: 50, y: 94, text: `${n} clusters remaining`, col: '--mu', size: 3 }]
+      lines: links.map((l, k) => (k === links.length - 1 ? { ...l, w: 1.4, col: '--p1' } : l)),
+      texts: [
+        { x: 50, y: 94, text: `${n} clusters remaining`, col: '--mu', size: 3 },
+        ...pointLabels
+      ]
     });
   }
+
+  // Diagnostic Merge Distance Profile (Scree curve)
+  S.curve = {
+    t: `Merge Distance Profile (Hierarchical Linkage)`,
+    xl: 'Merge Step (Bottom-Up)',
+    yl: 'Distance Height (d)',
+    x: S.map((_, idx) => idx).slice(1),
+    s: [{
+      n: 'Linkage Distance',
+      y: S.slice(1).map(f => f.v),
+      col: '--p1'
+    }]
+  };
 
   return S;
 }

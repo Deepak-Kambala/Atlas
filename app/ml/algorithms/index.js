@@ -36,7 +36,7 @@ import { mlp } from './mlp/index.js';
 import { crossValidation } from './cross-validation/index.js';
 import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex, KMeansElbowMethod } from './k-means/index.js';
 import { kmedoidsCluster, KMedoidsInteractive } from './k-medoids/index.js';
-import { hierarchicalClustering } from './hierarchical-clustering/index.js';
+import { hierarchicalClustering, HierarchicalInteractive } from './hierarchical-clustering/index.js';
 import { dbscan, DBSCANInteractive } from './dbscan/index.js';
 import { pca } from './pca/index.js';
 
@@ -50,6 +50,9 @@ export const algorithmVisuals = {
   },
   'k-medoids': {
     interactiveDemo: KMedoidsInteractive
+  },
+  'hierarchical-clustering': {
+    interactiveDemo: HierarchicalInteractive
   },
   'dbscan': {
     interactiveDemo: DBSCANInteractive
