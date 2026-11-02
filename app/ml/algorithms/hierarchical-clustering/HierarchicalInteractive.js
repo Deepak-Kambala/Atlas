@@ -658,27 +658,30 @@ export default function HierarchicalInteractive({
 
           {/* Quick Presets */}
           <div className="hier-presets-row">
-            <span className="hier-presets-label">Target Clusters:</span>
+            <span className="hier-presets-label">Target:</span>
             <button
               type="button"
               className={`hier-preset-chip ${cutClusters.length === 3 ? 'active' : ''}`}
               onClick={() => setCutThreshold(24)}
+              title="Cut for 3 natural clusters"
             >
-              ★ 3 Natural Clusters
+              ★ 3 Natural
             </button>
             <button
               type="button"
               className={`hier-preset-chip ${cutClusters.length === 2 ? 'active' : ''}`}
               onClick={() => setCutThreshold(Math.min(maxD * 0.9, root.dist - 1))}
+              title="Cut for 2 macro clusters"
             >
-              2 Macro Clusters
+              2 Macro
             </button>
             <button
               type="button"
               className={`hier-preset-chip ${cutClusters.length === 4 ? 'active' : ''}`}
               onClick={() => setCutThreshold(14)}
+              title="Cut for 4 fine clusters"
             >
-              4 Fine Clusters
+              4 Fine
             </button>
           </div>
 
