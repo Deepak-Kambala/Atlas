@@ -409,6 +409,8 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
             />
           </div>
 
+          <div className="toolbar-divider" />
+
           <button
             className="tb-btn new-data-btn"
             onClick={() => {

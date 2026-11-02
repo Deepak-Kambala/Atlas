@@ -4068,18 +4068,19 @@ svg rect {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
   width: 100%;
 }
 
 .hier-linkage-bar-label {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--mu);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .hier-linkage-pill-group {
@@ -4088,13 +4089,18 @@ svg rect {
   background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 7px;
-  padding: 2px;
-  gap: 2px;
+  padding: 2.5px;
+  gap: 3px;
+  flex: 0 1 540px;
+  width: 100%;
 }
 
 .hier-linkage-pill-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
   gap: 4px;
   padding: 4px 10px;
   font-size: 11.5px;
@@ -4228,34 +4234,35 @@ svg rect {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
 }
 
 .toolbar-scrubber-group {
-  flex: 1;
-  min-width: 130px;
-  max-width: 220px;
+  flex: 1 1 200px;
+  min-width: 140px;
 }
 
 .toolbar-scrubber-group input[type="range"] {
   flex: 1;
-  min-width: 60px;
+  min-width: 80px;
+  width: 100%;
 }
 
 .toolbar-param-group {
-  flex-shrink: 0;
+  flex: 0 1 auto;
+  min-width: 130px;
 }
 
 .toolbar-param-group input[type="range"] {
-  width: 75px;
+  width: 85px;
 }
 
 .toolbar-speed-group {
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  min-width: 110px;
 }
 
 .toolbar-speed-group input[type="range"] {
-  width: 65px;
+  width: 70px;
 }
 
 .tb-label {
@@ -4277,7 +4284,7 @@ svg rect {
 }
 
 .new-data-btn {
-  margin-left: auto;
+  margin-left: 0;
   flex-shrink: 0;
 }
 
