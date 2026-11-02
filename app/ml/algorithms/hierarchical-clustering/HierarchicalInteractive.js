@@ -224,6 +224,10 @@ export default function HierarchicalInteractive({
 
   const { root, merges, orderedLeafIds, maxD, yCoord, padLeft, padTop, width, height } = dendro;
 
+  const sliderMin = 1;
+  const sliderMax = Math.max(2, Math.floor(maxD * 0.98));
+  const sliderPct = Math.max(0, Math.min(100, ((cutThreshold - sliderMin) / (sliderMax - sliderMin || 1)) * 100));
+
   // Determine which linkage mode name is active
   const linkageNames = {
     1: 'Single Linkage (Min)',
@@ -631,15 +635,25 @@ export default function HierarchicalInteractive({
               <span className="hier-slider-title">Cut Line Threshold (τ):</span>
               <span className="hier-slider-val">{cutThreshold.toFixed(1)} px</span>
             </div>
-            <input
-              type="range"
-              min="1"
-              max={Math.floor(maxD * 0.98)}
-              step="0.5"
-              value={cutThreshold}
-              onChange={e => setCutThreshold(Number(e.target.value))}
-              className="hier-range-slider"
-            />
+            <div className="hier-slider-track-wrap">
+              <input
+                type="range"
+                min={sliderMin}
+                max={sliderMax}
+                step="0.5"
+                value={cutThreshold}
+                onChange={e => setCutThreshold(Number(e.target.value))}
+                className="hier-range-slider"
+                style={{
+                  background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${sliderPct}%, var(--bd) ${sliderPct}%, var(--bd) 100%)`
+                }}
+                aria-label="Cut Line Threshold"
+              />
+            </div>
+            <div className="hier-slider-scale-row">
+              <span>Bottom (Leaves: 0px)</span>
+              <span>Top (Root: {sliderMax.toFixed(0)}px)</span>
+            </div>
           </div>
 
           {/* Quick Presets */}
