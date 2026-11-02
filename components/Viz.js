@@ -99,11 +99,12 @@ export default function Viz({ f }) {
           cy: 100 - c.y,
           rx: c.rx,
           ry: c.ry,
-          style: c.fill
+          style: (c.fill || c.rawFill)
             ? {
-                fill: `var(${c.fill})`,
-                stroke: `var(${c.col || '--mu'})`,
+                fill: c.rawFill || `var(${c.fill})`,
+                stroke: c.rawCol || (c.col ? `var(${c.col})` : 'var(--mu)'),
                 strokeWidth: c.w || 0.6,
+                strokeDasharray: c.dash,
                 opacity: c.opacity ?? 1
               }
             : st(c.col, c.w || 0.6, c.dash || '2 1.5')

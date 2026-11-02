@@ -2,40 +2,34 @@
 
 import React, { useState, useMemo } from 'react';
 import Tex from '../../../../components/Tex';
+import {
+  STATQUEST_C1_BLOB,
+  STATQUEST_C1_TAIL,
+  STATQUEST_C2,
+  STATQUEST_NOISE
+} from './dbscan';
 
-// Canonical 2-cluster dataset: 16 points in Cluster 1, 16 points in Cluster 2, 5 Noise points
-const CLUSTER_1_POINTS = [
-  { id: 0, x: 28, y: 50 }, { id: 1, x: 32, y: 52 }, { id: 2, x: 30, y: 46 }, { id: 3, x: 34, y: 48 },
-  { id: 4, x: 26, y: 46 }, { id: 5, x: 31, y: 56 }, { id: 6, x: 36, y: 53 }, { id: 7, x: 27, y: 54 },
-  { id: 8, x: 35, y: 44 }, { id: 9, x: 24, y: 50 }, { id: 10, x: 38, y: 49 }, { id: 11, x: 33, y: 40 },
-  { id: 12, x: 22, y: 45 }, { id: 13, x: 39, y: 57 }, { id: 14, x: 29, y: 62 }, { id: 15, x: 42, y: 46 }
+// Combine into canonical StatQuest 74-point dataset
+const ALL_POINTS = [
+  ...STATQUEST_C1_BLOB.map((p, idx) => ({ ...p, id: idx, group: 'c1' })),
+  ...STATQUEST_C1_TAIL.map((p, idx) => ({ ...p, id: idx + STATQUEST_C1_BLOB.length, group: 'c1' })),
+  ...STATQUEST_C2.map((p, idx) => ({ ...p, id: idx + STATQUEST_C1_BLOB.length + STATQUEST_C1_TAIL.length, group: 'c2' })),
+  ...STATQUEST_NOISE.map((p, idx) => ({ ...p, id: idx + STATQUEST_C1_BLOB.length + STATQUEST_C1_TAIL.length + STATQUEST_C2.length, group: 'noise' }))
 ];
 
-const CLUSTER_2_POINTS = [
-  { id: 16, x: 68, y: 50 }, { id: 17, x: 72, y: 52 }, { id: 18, x: 70, y: 46 }, { id: 19, x: 74, y: 48 },
-  { id: 20, x: 66, y: 46 }, { id: 21, x: 71, y: 56 }, { id: 22, x: 76, y: 53 }, { id: 23, x: 67, y: 54 },
-  { id: 24, x: 75, y: 44 }, { id: 25, x: 64, y: 50 }, { id: 26, x: 78, y: 49 }, { id: 27, x: 73, y: 40 },
-  { id: 28, x: 62, y: 45 }, { id: 29, x: 79, y: 57 }, { id: 30, x: 69, y: 62 }, { id: 31, x: 82, y: 46 }
-];
-
-const NOISE_POINTS = [
-  { id: 32, x: 12, y: 82 }, { id: 33, x: 88, y: 85 }, { id: 34, x: 50, y: 88 }, { id: 35, x: 15, y: 18 }, { id: 36, x: 85, y: 16 }
-];
-
-const ALL_POINTS = [...CLUSTER_1_POINTS, ...CLUSTER_2_POINTS, ...NOISE_POINTS];
-
-export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
+export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const [activeTab, setActiveTab] = useState('inspect'); // 'inspect' | 'types' | 'clusters'
-  const [eps, setEps] = useState(typeof activeEps === 'number' ? activeEps : 7.5);
-  const [selectedPointId, setSelectedPointId] = useState(1); // Default to a core point (id: 1)
-  const minPts = 4;
+  const [eps, setEps] = useState(typeof activeEps === 'number' ? activeEps : 8.5);
+  const [selectedPointId, setSelectedPointId] = useState(10); // Default to a core point in the blob (id: 10)
+  const minPts = 4; // 4 other points
 
   const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
 
-  // Compute neighborhoods and classifications for all points
+  // Compute neighborhoods and classifications for all 74 points
   const { neighborhoods, isCore, isBorder, isNoise, clusterLabels, numClusters } = useMemo(() => {
     const P = ALL_POINTS;
-    const nb = P.map(p => P.reduce((acc, q, j) => (dist(p, q) <= eps ? acc.concat(j) : acc), []));
+    // count other points within eps
+    const nb = P.map((p, i) => P.reduce((acc, q, j) => (j !== i && dist(p, q) <= eps ? acc.concat(j) : acc), []));
     const core = nb.map(a => a.length >= minPts);
 
     // Connected components of core points
@@ -49,10 +43,12 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
       while (q.length) {
         const u = q.shift();
         if (!core[u]) continue;
-        nb[u].forEach(v => {
-          if (L[v] < 0) {
-            L[v] = nc;
-            q.push(v);
+        P.forEach((_, v) => {
+          if (dist(P[u], P[v]) <= eps) {
+            if (L[v] < 0) {
+              L[v] = nc;
+              q.push(v);
+            }
           }
         });
       }
@@ -72,7 +68,7 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
     };
   }, [eps]);
 
-  const selectedPoint = ALL_POINTS.find(p => p.id === selectedPointId) || ALL_POINTS[1];
+  const selectedPoint = ALL_POINTS.find(p => p.id === selectedPointId) || ALL_POINTS[10];
   const selectedNb = neighborhoods[selectedPoint.id] || [];
   const selectedIsCore = isCore[selectedPoint.id];
   const selectedIsBorder = isBorder[selectedPoint.id];
@@ -117,84 +113,75 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
       </div>
 
       {/* =========================================================================
-          TAB 1: Inspect ε-Circle on Any Point
+          TAB 1: Inspect Orange ε-Circle on Any Point (StatQuest Style)
           ========================================================================= */}
       {activeTab === 'inspect' && (
         <div className="dbscan-tab-content">
           <div className="dbscan-card-header">
-            <h4 className="dbscan-card-title">Inspect ε-Neighborhood Circle</h4>
+            <h4 className="dbscan-card-title">Inspect Orange ε-Circle</h4>
             <span className="dbscan-pill-badge">
               Radius ε: <b>{eps.toFixed(1)}px</b>
             </span>
           </div>
 
           <p className="dbscan-card-desc">
-            <b>Click any point below</b> to draw its ε-neighborhood circle. A point needs at least <b>MinPts = 4</b> neighbors inside its circle to become a Core Point.
+            <b>Click any point below</b> to draw its orange neighborhood circle. A point needs at least <b>MinPts = 4 other points</b> inside its circle to become a Core Point.
           </p>
 
-          {/* Quick preset buttons */}
+          {/* Quick preset buttons matching StatQuest walkthrough */}
           <div className="dbscan-preset-pills">
             <button
               type="button"
-              className={`dbscan-preset-btn ${selectedPointId === 1 ? 'active' : ''}`}
-              onClick={() => setSelectedPointId(1)}
+              className={`dbscan-preset-btn ${selectedPointId === 10 ? 'active' : ''}`}
+              onClick={() => setSelectedPointId(10)}
             >
-              ● Core Sample (#1)
+              ● Core Sample (#10)
             </button>
             <button
               type="button"
-              className={`dbscan-preset-btn ${selectedPointId === 15 ? 'active' : ''}`}
-              onClick={() => setSelectedPointId(15)}
+              className={`dbscan-preset-btn ${selectedPointId === 31 ? 'active' : ''}`}
+              onClick={() => setSelectedPointId(31)}
             >
-              ◌ Border Sample (#15)
+              ◌ Border Sample (#31)
             </button>
             <button
               type="button"
-              className={`dbscan-preset-btn ${selectedPointId === 34 ? 'active' : ''}`}
-              onClick={() => setSelectedPointId(34)}
+              className={`dbscan-preset-btn ${selectedPointId === 73 ? 'active' : ''}`}
+              onClick={() => setSelectedPointId(73)}
             >
-              ⨂ Noise Sample (#34)
+              ⨂ Noise Sample (#73)
             </button>
           </div>
 
           {/* Interactive SVG Canvas */}
           <div className="dbscan-svg-container">
-            <svg viewBox="5 10 90 85" className="dbscan-svg" aria-label="Interactive DBSCAN circle inspector">
-              {/* Subtle grid */}
-              <line x1="10" y1="50" x2="90" y2="50" stroke="var(--bd)" strokeWidth="0.4" strokeDasharray="2 3" opacity="0.6" />
-              <line x1="50" y1="15" x2="50" y2="85" stroke="var(--bd)" strokeWidth="0.4" strokeDasharray="2 3" opacity="0.6" />
+            <svg viewBox="5 8 94 85" className="dbscan-svg" aria-label="StatQuest DBSCAN interactive circle inspector">
+              {/* Subtle background coordinate grid */}
+              <line x1="10" y1="50" x2="94" y2="50" stroke="var(--bd)" strokeWidth="0.4" strokeDasharray="2 3" opacity="0.5" />
+              <line x1="50" y1="10" x2="50" y2="90" stroke="var(--bd)" strokeWidth="0.4" strokeDasharray="2 3" opacity="0.5" />
 
-              {/* Connecting lines from selected point to neighbors inside circle */}
-              {selectedNb
-                .filter(j => j !== selectedPoint.id)
-                .map(j => (
-                  <line
-                    key={`line-${j}`}
-                    x1={selectedPoint.x}
-                    y1={100 - selectedPoint.y}
-                    x2={ALL_POINTS[j].x}
-                    y2={100 - ALL_POINTS[j].y}
-                    stroke={selectedIsCore ? 'var(--p2)' : selectedIsBorder ? 'var(--p3)' : 'var(--p6)'}
-                    strokeWidth="0.5"
-                    strokeDasharray="1.5 1.5"
-                  />
-                ))}
+              {/* Connecting dashed lines from selected point to neighbors inside circle */}
+              {selectedNb.map(j => (
+                <line
+                  key={`line-${j}`}
+                  x1={selectedPoint.x}
+                  y1={100 - selectedPoint.y}
+                  x2={ALL_POINTS[j].x}
+                  y2={100 - ALL_POINTS[j].y}
+                  stroke={selectedIsCore ? 'var(--p0)' : selectedIsBorder ? 'var(--p3)' : 'var(--p6)'}
+                  strokeWidth="0.6"
+                  strokeDasharray="1.5 1.5"
+                />
+              ))}
 
-              {/* The ε-neighborhood circle */}
+              {/* The StatQuest Orange Translucent ε-Circle */}
               <circle
                 cx={selectedPoint.x}
                 cy={100 - selectedPoint.y}
                 r={eps}
-                fill={
-                  selectedIsCore
-                    ? 'rgba(81, 207, 102, 0.08)'
-                    : selectedIsBorder
-                    ? 'rgba(255, 192, 72, 0.08)'
-                    : 'rgba(255, 107, 107, 0.08)'
-                }
-                stroke={selectedIsCore ? 'var(--p2)' : selectedIsBorder ? 'var(--p3)' : 'var(--p6)'}
+                fill="rgba(255, 175, 55, 0.42)"
+                stroke="#f59f00"
                 strokeWidth="1.2"
-                strokeDasharray="2 2"
               />
 
               {/* Data points */}
@@ -228,16 +215,16 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
                       fill={
                         isSelected
                           ? selectedIsCore
-                            ? 'var(--p2)'
+                            ? 'var(--p0)' // Red/orange core center like StatQuest Image 3
                             : selectedIsBorder
-                            ? 'var(--p3)'
-                            : 'var(--p6)'
+                            ? 'var(--tx)'
+                            : 'var(--mu)'
                           : inCircle
                           ? 'var(--tx)'
                           : 'var(--cd)'
                       }
                       stroke="var(--tx)"
-                      strokeWidth={isSelected ? '0.8' : inCircle ? '0.5' : '0.3'}
+                      strokeWidth={isSelected ? '0.8' : inCircle ? '0.5' : '0.25'}
                     />
                   </g>
                 );
@@ -248,13 +235,13 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
           {/* Interactive Slider */}
           <div className="dbscan-slider-control-group">
             <div className="dbscan-slider-label-row">
-              <span className="dbscan-slider-title">Adjust Neighborhood Radius (ε):</span>
+              <span className="dbscan-slider-title">Adjust Circle Radius (ε):</span>
               <span className="dbscan-slider-val">{eps.toFixed(1)} px</span>
             </div>
             <input
               type="range"
-              min="4"
-              max="12"
+              min="5"
+              max="14"
               step="0.5"
               value={eps}
               onChange={e => handleEpsChange(Number(e.target.value))}
@@ -274,26 +261,26 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
                 {selectedIsCore
                   ? '● CORE POINT'
                   : selectedIsBorder
-                  ? '◌ BORDER POINT'
+                  ? '◌ BORDER POINT (NON-CORE)'
                   : '⨂ NOISE OUTLIER'}
               </span>
               <span className="dbscan-count-badge">
-                Neighbors in circle: <b>{selectedNb.length}</b> (MinPts = 4)
+                Neighbors in circle: <b>{selectedNb.length} other points</b> (MinPts = 4)
               </span>
             </div>
 
             <p className="dbscan-status-text">
               {selectedIsCore ? (
                 <>
-                  Point #{selectedPoint.id} has <b>{selectedNb.length} neighbors</b> ($\ge 4$). Its neighborhood is dense enough to initiate and expand a cluster.
+                  Point #{selectedPoint.id} overlaps <b>{selectedNb.length} other points</b> ($\ge 4$). Because it reaches at least 4 neighbors, its center turns red and it initiates a cluster!
                 </>
               ) : selectedIsBorder ? (
                 <>
-                  Point #{selectedPoint.id} has only <b>{selectedNb.length} neighbors</b> ($&lt; 4$). However, it touches a Core Point, so it forms the edge of the cluster!
+                  Point #{selectedPoint.id} overlaps only <b>{selectedNb.length} other points</b> ($&lt; 4$). It is a Non-Core point, but because it overlaps a Core Point&apos;s circle, it joins the cluster edge.
                 </>
               ) : (
                 <>
-                  Point #{selectedPoint.id} has only <b>{selectedNb.length} neighbor</b> ($&lt; 4$) and does not touch any Core Point. DBSCAN isolates it as Noise.
+                  Point #{selectedPoint.id} overlaps only <b>{selectedNb.length} other points</b> ($&lt; 4$) and does not touch any Core Point. DBSCAN marks it as isolated Noise.
                 </>
               )}
             </p>
@@ -314,7 +301,7 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
           </div>
 
           <p className="dbscan-card-desc">
-            DBSCAN assigns every point into one of three distinct roles based on density and neighborhood reachability.
+            DBSCAN assigns every point into one of three roles based on orange circle overlap and density connectivity.
           </p>
 
           <div className="dbscan-type-grid">
@@ -325,38 +312,38 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
                 <span className="dbscan-type-count">{coreCount} pts</span>
               </div>
               <div className="dbscan-type-math">
-                <Tex f="|N_\varepsilon(\mathbf{p})| \ge \text{MinPts}" inline />
+                <Tex f="|N_\varepsilon(\mathbf{p})| \ge 4 \text{ other points}" inline />
               </div>
               <p className="dbscan-type-desc">
-                Dense centers of clusters with at least 4 neighbors within ε radius.
+                Dense interior points whose orange circles overlap at least 4 other points. They form the backbone of clusters.
               </p>
             </div>
 
             <div className="dbscan-type-card border">
               <div className="dbscan-type-header">
                 <span className="dbscan-type-dot border" />
-                <span className="dbscan-type-title">Border Points</span>
+                <span className="dbscan-type-title">Non-Core / Border Points</span>
                 <span className="dbscan-type-count">{borderCount} pts</span>
               </div>
               <div className="dbscan-type-math">
-                <Tex f="|N_\varepsilon(\mathbf{p})| < \text{MinPts} \land \text{Core nearby}" inline />
+                <Tex f="|N_\varepsilon(\mathbf{p})| < 4 \land \text{Touches Core Circle}" inline />
               </div>
               <p className="dbscan-type-desc">
-                Perimeter points with &lt; 4 neighbors, but within ε radius of a core point.
+                Perimeter points with &lt; 4 neighbors that fall inside a Core Point&apos;s orange circle. They join the cluster at the end.
               </p>
             </div>
 
             <div className="dbscan-type-card noise">
               <div className="dbscan-type-header">
                 <span className="dbscan-type-dot noise" />
-                <span className="dbscan-type-title">Noise Points</span>
+                <span className="dbscan-type-title">Noise Outliers</span>
                 <span className="dbscan-type-count">{noiseCount} pts</span>
               </div>
               <div className="dbscan-type-math">
-                <Tex f="|N_\varepsilon(\mathbf{p})| < \text{MinPts} \land \text{No Core}" inline />
+                <Tex f="|N_\varepsilon(\mathbf{p})| < 4 \land \text{Never Touches Core}" inline />
               </div>
               <p className="dbscan-type-desc">
-                Isolated points with &lt; 4 neighbors and no reachable core points.
+                Isolated points that never overlap any Core Point&apos;s orange circle. DBSCAN safely flags them as noise.
               </p>
             </div>
           </div>
@@ -364,7 +351,7 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
       )}
 
       {/* =========================================================================
-          TAB 3: Final 2 Clusters Discovered
+          TAB 3: Final 2 Clusters Discovered (StatQuest Image 1)
           ========================================================================= */}
       {activeTab === 'clusters' && (
         <div className="dbscan-tab-content">
@@ -376,33 +363,33 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
           </div>
 
           <p className="dbscan-card-desc">
-            DBSCAN connected overlapping core points to discover exactly <b>2 natural clusters</b> without needing K=2 specified in advance!
+            DBSCAN chained through overlapping orange circles to discover exactly <b>2 natural clusters</b> (Green &amp; Blue), leaving the 5 noise points isolated!
           </p>
 
           <div className="dbscan-cluster-stat-grid">
             <div className="dbscan-cluster-box c1">
-              <div className="dbscan-cluster-title">Cluster 1 (Left)</div>
-              <div className="dbscan-cluster-val">16 Points</div>
-              <div className="dbscan-cluster-sub">11 Core + 5 Border points</div>
+              <div className="dbscan-cluster-title">Cluster 1: Green Sweeping Hook</div>
+              <div className="dbscan-cluster-val">53 Points</div>
+              <div className="dbscan-cluster-sub">Dense blob + sweeping curved tail</div>
             </div>
 
             <div className="dbscan-cluster-box c2">
-              <div className="dbscan-cluster-title">Cluster 2 (Right)</div>
+              <div className="dbscan-cluster-title">Cluster 2: Blue Compact Circle</div>
               <div className="dbscan-cluster-val">16 Points</div>
-              <div className="dbscan-cluster-sub">11 Core + 5 Border points</div>
+              <div className="dbscan-cluster-sub">Separate upper-right cluster</div>
             </div>
 
             <div className="dbscan-cluster-box noise">
-              <div className="dbscan-cluster-title">Noise / Outliers</div>
+              <div className="dbscan-cluster-title">Noise Points: Grey Outliers</div>
               <div className="dbscan-cluster-val">5 Points</div>
-              <div className="dbscan-cluster-sub">Isolated from both clusters</div>
+              <div className="dbscan-cluster-sub">Isolated points that never touch any core circle</div>
             </div>
           </div>
 
           <div className="dbscan-insight-box">
-            <span className="dbscan-insight-tag">KEY ADVANTAGE OVER K-MEANS</span>
+            <span className="dbscan-insight-tag">WHY K-MEANS FAILS HERE</span>
             <p className="dbscan-insight-text">
-              Notice that the gap between the two clusters is larger than ε ({eps}px), so they never merge into one. Meanwhile, the 5 red noise points are completely ignored rather than dragging the cluster centers!
+              K-Means assumes spherical clusters and has no concept of noise. It would artificially slice the sweeping green hook into two halves and drag cluster centers out toward the 5 grey outliers. DBSCAN follows density chains naturally and isolates noise completely!
             </p>
           </div>
         </div>
@@ -410,4 +397,3 @@ export default function DBSCANInteractive({ activeEps = 7.5, onSelectEps }) {
     </div>
   );
 }
-
