@@ -994,7 +994,7 @@ main {
   margin-bottom: 10px
 }
 
-input[type=range] {
+.row input[type=range] {
   flex: 1;
   min-width: 110px;
   accent-color: var(--ac)
@@ -4285,32 +4285,36 @@ svg rect {
 }
 
 .toolbar-scrubber-group {
-  flex: 1 1 200px;
-  min-width: 140px;
+  flex: 1 1 auto;
+  min-width: 120px;
 }
 
 .toolbar-scrubber-group input[type="range"] {
-  flex: 1;
-  min-width: 80px;
+  flex: 1 1 auto;
+  min-width: 60px;
   width: 100%;
 }
 
 .toolbar-param-group {
-  flex: 0 1 auto;
-  min-width: 130px;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .toolbar-param-group input[type="range"] {
-  width: 85px;
+  width: 85px !important;
+  min-width: 0 !important;
+  flex: 0 0 85px !important;
 }
 
 .toolbar-speed-group {
   flex: 0 0 auto;
-  min-width: 110px;
+  min-width: 0;
 }
 
 .toolbar-speed-group input[type="range"] {
-  width: 70px;
+  width: 70px !important;
+  min-width: 0 !important;
+  flex: 0 0 70px !important;
 }
 
 .tb-label {
@@ -4336,6 +4340,7 @@ svg rect {
   padding: 0;
   margin: 0;
   border: none;
+  min-width: 0;
 }
 
 .workspace-toolbar input[type="range"]:active {
