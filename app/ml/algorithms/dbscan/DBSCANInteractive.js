@@ -238,16 +238,25 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
               <span className="dbscan-slider-title">Adjust Circle Radius (ε):</span>
               <span className="dbscan-slider-val">{eps.toFixed(1)} px</span>
             </div>
-            <input
-              type="range"
-              min="5"
-              max="14"
-              step="0.5"
-              value={eps}
-              onChange={e => handleEpsChange(Number(e.target.value))}
-              className="dbscan-slider"
-              aria-label="Neighborhood radius eps slider"
-            />
+            <div className="dbscan-slider-track-wrap">
+              <input
+                type="range"
+                min="5"
+                max="14"
+                step="0.5"
+                value={eps}
+                onChange={e => handleEpsChange(Number(e.target.value))}
+                className="dbscan-slider"
+                style={{
+                  background: `linear-gradient(to right, var(--p1) 0%, var(--p1) ${((eps - 5) / (14 - 5)) * 100}%, var(--bd) ${((eps - 5) / (14 - 5)) * 100}%, var(--bd) 100%)`
+                }}
+                aria-label="Neighborhood radius eps slider"
+              />
+            </div>
+            <div className="dbscan-slider-scale-row">
+              <span>Tight Radius (5.0px)</span>
+              <span>Expansive Radius (14.0px)</span>
+            </div>
           </div>
 
           {/* Status Box for Selected Point */}

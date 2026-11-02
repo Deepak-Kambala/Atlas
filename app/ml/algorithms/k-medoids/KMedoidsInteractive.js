@@ -147,17 +147,26 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           <div className="kmedoids-slider-control-group">
             <div className="kmedoids-slider-label-row">
               <span className="kmedoids-slider-title">Drag Outlier Position:</span>
-              <span className="kmedoids-slider-val">{outlierDist} px</span>
+              <span className="kmedoids-slider-val">+{outlierDist} px</span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="95"
-              value={outlierDist}
-              onChange={e => setOutlierDist(Number(e.target.value))}
-              className="kmedoids-slider"
-              aria-label="Outlier distance slider"
-            />
+            <div className="kmedoids-slider-track-wrap">
+              <input
+                type="range"
+                min="0"
+                max="95"
+                value={outlierDist}
+                onChange={e => setOutlierDist(Number(e.target.value))}
+                className="kmedoids-slider"
+                style={{
+                  background: `linear-gradient(to right, var(--p6) 0%, var(--p6) ${(outlierDist / 95) * 100}%, var(--bd) ${(outlierDist / 95) * 100}%, var(--bd) 100%)`
+                }}
+                aria-label="Outlier distance slider"
+              />
+            </div>
+            <div className="kmedoids-slider-scale-row">
+              <span>Cluster Core (+0px)</span>
+              <span>Extreme Outlier (+95px)</span>
+            </div>
           </div>
 
           {/* Visual Legend Bar above SVG */}
