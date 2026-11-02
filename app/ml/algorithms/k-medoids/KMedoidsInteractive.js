@@ -99,7 +99,7 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
 
   return (
     <div className="kmedoids-interactive-card">
-      <div className="telemetry-eyebrow">INTERACTIVE EXPLORER · K-MEDOIDS</div>
+      <div className="telemetry-eyebrow">INTERACTIVE EXPLORER · K-MEDOIDS (PAM)</div>
 
       {/* Navigation Tabs */}
       <div className="kmedoids-tab-bar">
@@ -108,21 +108,21 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           className={`kmedoids-tab-btn ${activeTab === 'outliers' ? 'active' : ''}`}
           onClick={() => setActiveTab('outliers')}
         >
-          Outlier Shield
+          Outliers
         </button>
         <button
           type="button"
           className={`kmedoids-tab-btn ${activeTab === 'swap' ? 'active' : ''}`}
           onClick={() => setActiveTab('swap')}
         >
-          Captain Swap Test
+          PAM Swap
         </button>
         <button
           type="button"
           className={`kmedoids-tab-btn ${activeTab === 'metric' ? 'active' : ''}`}
           onClick={() => setActiveTab('metric')}
         >
-          Distance Metrics
+          Metrics
         </button>
       </div>
 
@@ -132,9 +132,9 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
       {activeTab === 'outliers' && (
         <div className="kmedoids-tab-content">
           <div className="kmedoids-card-header">
-            <h4 className="kmedoids-card-title">Centroid vs. Medoid: Outlier Test</h4>
+            <h4 className="kmedoids-card-title">Centroid vs. Medoid</h4>
             <span className="kmedoids-pill-badge">
-              Outlier Distance: <b>+{outlierDist}px</b>
+              Offset: <b>+{outlierDist}px</b>
             </span>
           </div>
 
@@ -388,14 +388,14 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
       {activeTab === 'swap' && (
         <div className="kmedoids-tab-content">
           <div className="kmedoids-card-header">
-            <h4 className="kmedoids-card-title">Captain Swap Tester</h4>
+            <h4 className="kmedoids-card-title">PAM Swap Test</h4>
             <span className="kmedoids-pill-badge">
               Selected: <b>Point #{currentCandidate.id}</b>
             </span>
           </div>
 
           <p className="kmedoids-card-desc">
-            <b>Click any numbered point</b> to test it as the cluster captain. The spider lines calculate walking distance to all members. The true medoid minimizes this total distance.
+            <b>Click any numbered point</b> to test PAM’s swap phase. The spider lines calculate walking distance to all members. The true medoid minimizes this total distance.
           </p>
 
           {/* Interactive SVG Canvas with numbers INSIDE circles (No colliding text) */}
@@ -522,7 +522,7 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
       {activeTab === 'metric' && (
         <div className="kmedoids-tab-content">
           <div className="kmedoids-card-header">
-            <h4 className="kmedoids-card-title">Distance Metric Flexibility</h4>
+            <h4 className="kmedoids-card-title">Distance Metrics</h4>
             <div className="kmedoids-metric-pills">
               <button
                 type="button"
