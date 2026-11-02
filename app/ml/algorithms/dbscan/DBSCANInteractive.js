@@ -17,10 +17,10 @@ const CLUSTER_COLORS = [
 
 export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const [activeTab, setActiveTab] = useState('inspect'); // 'inspect' | 'expansion' | 'reachability' | 'kdist'
-  const [datasetKey, setDatasetKey] = useState('statquest');
+  const [datasetKey, setDatasetKey] = useState('hook');
   const [eps, setEps] = useState(typeof activeEps === 'number' ? activeEps : 8.5);
   const [minPts, setMinPts] = useState(4);
-  const [selectedPointId, setSelectedPointId] = useState(10); // Center point in StatQuest blob
+  const [selectedPointId, setSelectedPointId] = useState(10); // Center point in curved hook blob
 
   // Tab 2: Step-by-Step Chain Reaction state
   const [stepIdx, setStepIdx] = useState(0);
@@ -37,19 +37,19 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const [hoveredKDistId, setHoveredKDistId] = useState(null);
 
   // Active dataset
-  const activeDataset = DATASETS[datasetKey] || DATASETS.statquest;
+  const activeDataset = DATASETS[datasetKey] || DATASETS.hook;
   const points = activeDataset.points;
 
   // Sync eps with parent workspace if provided
   useEffect(() => {
-    if (typeof activeEps === 'number' && Math.abs(activeEps - eps) > 0.05 && datasetKey === 'statquest') {
+    if (typeof activeEps === 'number' && Math.abs(activeEps - eps) > 0.05 && datasetKey === 'hook') {
       setEps(activeEps);
     }
   }, [activeEps, datasetKey]);
 
   const handleEpsChange = val => {
     setEps(val);
-    if (onSelectEps && datasetKey === 'statquest') onSelectEps(val);
+    if (onSelectEps && datasetKey === 'hook') onSelectEps(val);
   };
 
   const handleDatasetChange = key => {
@@ -63,7 +63,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       setPtBId(ds.points[Math.min(ds.points.length - 1, 20)]?.id ?? 1);
       setStepIdx(0);
       setIsPlaying(false);
-      if (onSelectEps && key === 'statquest') onSelectEps(ds.defaultEps);
+      if (onSelectEps && key === 'hook') onSelectEps(ds.defaultEps);
     }
   };
 

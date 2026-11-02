@@ -12,8 +12,8 @@ import { cp, G, dist } from '../common';
  * 5. Chain Reaction: Core points pull in their neighbors; crowded neighbors pull in theirs, growing any shape!
  */
 
-// 1. StatQuest 74-point Reference Coordinates
-export const STATQUEST_C1_BLOB = [
+// 1. Benchmark 74-point Reference Coordinates
+export const C1_BLOB = [
   { x: 35, y: 72 }, { x: 39, y: 74 }, { x: 43, y: 76 }, { x: 47, y: 75 }, { x: 51, y: 74 }, { x: 55, y: 75 }, { x: 59, y: 76 },
   { x: 34, y: 66 }, { x: 38, y: 68 }, { x: 42, y: 70 }, { x: 46, y: 69 }, { x: 50, y: 69 }, { x: 54, y: 68 }, { x: 58, y: 68 },
   { x: 36, y: 60 }, { x: 40, y: 62 }, { x: 44, y: 64 }, { x: 48, y: 63 }, { x: 52, y: 62 }, { x: 56, y: 62 }, { x: 58, y: 58 },
@@ -21,7 +21,7 @@ export const STATQUEST_C1_BLOB = [
   { x: 32, y: 48 }, { x: 36, y: 49 }, { x: 40, y: 50 }, { x: 44, y: 49 }, { x: 47, y: 48 }
 ];
 
-export const STATQUEST_C1_TAIL = [
+export const C1_TAIL = [
   { x: 49, y: 42 }, { x: 52, y: 45 },
   { x: 53, y: 38 }, { x: 56, y: 40 }, { x: 58, y: 43 },
   { x: 57, y: 33 }, { x: 60, y: 36 }, { x: 63, y: 38 },
@@ -30,14 +30,14 @@ export const STATQUEST_C1_TAIL = [
   { x: 72, y: 21 }, { x: 76, y: 23 }, { x: 80, y: 24 }
 ];
 
-export const STATQUEST_C2 = [
+export const C2_BLOB = [
   { x: 74, y: 73 }, { x: 78, y: 70 }, { x: 82, y: 70 },
   { x: 70, y: 69 }, { x: 74, y: 67 }, { x: 78, y: 65 }, { x: 81, y: 64 },
   { x: 68, y: 63 }, { x: 72, y: 62 }, { x: 76, y: 60 }, { x: 80, y: 59 }, { x: 83, y: 57 },
   { x: 67, y: 56 }, { x: 71, y: 54 }, { x: 75, y: 54 }, { x: 79, y: 53 }
 ];
 
-export const STATQUEST_NOISE = [
+export const NOISE_PTS = [
   { x: 13, y: 80 },
   { x: 32, y: 85 },
   { x: 13, y: 35 },
@@ -47,16 +47,16 @@ export const STATQUEST_NOISE = [
 
 // 2. Canonical Datasets for Interactive Benchmarking
 export const DATASETS = {
-  statquest: {
-    name: 'StatQuest Hook & Blob',
+  hook: {
+    name: 'Curved Hook & Blob',
     desc: '74 points: a sweeping curved hook + separate round cluster + 5 lonely outliers.',
     defaultEps: 8.5,
     defaultMinPts: 4,
     points: [
-      ...STATQUEST_C1_BLOB.map((p, i) => ({ ...p, id: i, group: 'c1' })),
-      ...STATQUEST_C1_TAIL.map((p, i) => ({ ...p, id: i + STATQUEST_C1_BLOB.length, group: 'c1' })),
-      ...STATQUEST_C2.map((p, i) => ({ ...p, id: i + STATQUEST_C1_BLOB.length + STATQUEST_C1_TAIL.length, group: 'c2' })),
-      ...STATQUEST_NOISE.map((p, i) => ({ ...p, id: i + STATQUEST_C1_BLOB.length + STATQUEST_C1_TAIL.length + STATQUEST_C2.length, group: 'noise' }))
+      ...C1_BLOB.map((p, i) => ({ ...p, id: i, group: 'c1' })),
+      ...C1_TAIL.map((p, i) => ({ ...p, id: i + C1_BLOB.length, group: 'c1' })),
+      ...C2_BLOB.map((p, i) => ({ ...p, id: i + C1_BLOB.length + C1_TAIL.length, group: 'c2' })),
+      ...NOISE_PTS.map((p, i) => ({ ...p, id: i + C1_BLOB.length + C1_TAIL.length + C2_BLOB.length, group: 'noise' }))
     ]
   },
   moons: {
@@ -196,10 +196,10 @@ export function dbscanEngine(r, epsParam) {
     c: 5
   });
 
-  const c1Blob = STATQUEST_C1_BLOB.map(p => jitter(p, false));
-  const c1Tail = STATQUEST_C1_TAIL.map(p => jitter(p, false));
-  const c2 = STATQUEST_C2.map(p => jitter(p, false));
-  const noise = STATQUEST_NOISE.map(p => jitter(p, true));
+  const c1Blob = C1_BLOB.map(p => jitter(p, false));
+  const c1Tail = C1_TAIL.map(p => jitter(p, false));
+  const c2 = C2_BLOB.map(p => jitter(p, false));
+  const noise = NOISE_PTS.map(p => jitter(p, true));
 
   const c1 = [...c1Blob, ...c1Tail];
   const P = [...c1, ...c2, ...noise];
