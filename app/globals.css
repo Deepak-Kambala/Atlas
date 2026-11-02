@@ -6476,7 +6476,7 @@ svg rect {
 }
 
 /* ==========================================================================
-   DBSCAN Interactive Demo (Circles, Core, Border, Noise & 2 Clusters)
+   DBSCAN Interactive Demo (Ester et al. 1996, Schubert et al. 2017)
    ========================================================================== */
 
 .demo-dbscan-container {
@@ -6568,10 +6568,45 @@ svg rect {
 }
 
 .dbscan-card-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.6;
   color: var(--tx);
   margin: 0;
+}
+
+/* Dataset Selector Bar */
+.dbscan-dataset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.dbscan-dataset-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--mu);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.dbscan-dataset-btn:hover {
+  color: var(--tx);
+}
+
+.dbscan-dataset-btn.active {
+  background: var(--cd);
+  color: var(--tx);
+  border-color: var(--bd);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .dbscan-preset-pills {
@@ -6610,6 +6645,7 @@ svg rect {
   border-radius: 6px;
   padding: 8px 6px;
   overflow: hidden;
+  position: relative;
 }
 
 .dbscan-svg {
@@ -6623,17 +6659,30 @@ svg rect {
 }
 
 .dbscan-node-pt:hover circle:first-child {
-  stroke-width: 1.2px;
+  stroke-width: 1.4px;
+}
+
+/* Dual Controls Grid (Radius eps & MinPts) */
+.dbscan-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .dbscan-controls-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dbscan-slider-control-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 10px 12px;
 }
 
 .dbscan-slider-label-row {
@@ -6665,7 +6714,7 @@ svg rect {
   position: relative;
   display: flex;
   align-items: center;
-  height: 22px;
+  height: 20px;
   width: 100%;
 }
 
@@ -6673,7 +6722,7 @@ svg rect {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
+  height: 5px;
   border-radius: 999px;
   background: var(--bd);
   outline: none;
@@ -6690,11 +6739,11 @@ svg rect {
 .dbscan-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #ffffff;
-  border: 3px solid var(--p1);
+  border: 2.5px solid var(--p1);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   cursor: grab;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
@@ -6702,35 +6751,22 @@ svg rect {
 
 .dbscan-slider:hover::-webkit-slider-thumb {
   transform: scale(1.15);
-  box-shadow: 0 0 0 5px rgba(245, 159, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 4px rgba(245, 159, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .dbscan-slider:active::-webkit-slider-thumb {
   cursor: grabbing;
   transform: scale(1.22);
-  box-shadow: 0 0 0 8px rgba(245, 159, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .dbscan-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #ffffff;
-  border: 3px solid var(--p1);
+  border: 2.5px solid var(--p1);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   cursor: grab;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.dbscan-slider:hover::-moz-range-thumb {
-  transform: scale(1.15);
-  box-shadow: 0 0 0 5px rgba(245, 159, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-.dbscan-slider:active::-moz-range-thumb {
-  cursor: grabbing;
-  transform: scale(1.22);
-  box-shadow: 0 0 0 8px rgba(245, 159, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .dbscan-slider-scale-row {
@@ -6742,6 +6778,7 @@ svg rect {
   padding: 0 2px;
 }
 
+/* Status Cards */
 .dbscan-status-card {
   border-radius: 6px;
   padding: 10px 12px;
@@ -6760,8 +6797,8 @@ svg rect {
 }
 
 .dbscan-status-card.border {
-  border-left: 3px solid var(--p3);
-  background: rgba(255, 192, 72, 0.05);
+  border-left: 3px solid var(--p1);
+  background: rgba(245, 159, 0, 0.05);
 }
 
 .dbscan-status-card.noise {
@@ -6788,7 +6825,7 @@ svg rect {
 }
 
 .dbscan-status-card.border .dbscan-status-badge {
-  color: var(--p3);
+  color: var(--p1);
 }
 
 .dbscan-status-card.noise .dbscan-status-badge {
@@ -6808,138 +6845,301 @@ svg rect {
   color: var(--tx);
 }
 
-/* Tab 2: Point Types Grid */
-.dbscan-type-grid {
-  display: flex;
-  flex-direction: column;
+/* Tab 1: Live Summary Pills Row */
+.dbscan-summary-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-.dbscan-type-card {
+@media (max-width: 600px) {
+  .dbscan-summary-pill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dbscan-summary-pill {
   background: var(--bg);
   border: 1px solid var(--bd);
   border-radius: 6px;
-  padding: 9px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.dbscan-type-card.core {
-  border-left: 3px solid var(--p2);
-}
-
-.dbscan-type-card.border {
-  border-left: 3px solid var(--p3);
-}
-
-.dbscan-type-card.noise {
-  border-left: 3px solid var(--p6);
-}
-
-.dbscan-type-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dbscan-type-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.dbscan-type-dot.core {
-  background: var(--p2);
-}
-
-.dbscan-type-dot.border {
-  background: transparent;
-  border: 2px solid var(--p3);
-}
-
-.dbscan-type-dot.noise {
-  background: var(--p6);
-}
-
-.dbscan-type-title {
-  font-size: 12px;
-  font-weight: 650;
-  color: var(--tx);
-}
-
-.dbscan-type-count {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--mu);
-  margin-left: auto;
-}
-
-.dbscan-type-math {
-  font-family: var(--mono);
-  font-size: 11px;
-  background: var(--cd);
-  border: 1px solid var(--bd);
-  padding: 2.5px 6px;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.dbscan-type-desc {
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: var(--tx);
-  margin: 0;
-}
-
-/* Tab 3: Cluster Stat Grid */
-.dbscan-cluster-stat-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dbscan-cluster-box {
-  background: var(--bg);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.dbscan-cluster-box.c1 {
-  border-left: 3px solid var(--p1);
+.dbscan-summary-pill-title {
+  font-size: 10.5px;
+  font-family: var(--sans);
+  color: var(--mu);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.dbscan-cluster-box.c2 {
-  border-left: 3px solid var(--p2);
-}
-
-.dbscan-cluster-box.noise {
-  border-left: 3px solid var(--p6);
-}
-
-.dbscan-cluster-title {
-  font-size: 11.5px;
-  font-weight: 650;
-  color: var(--tx);
-}
-
-.dbscan-cluster-val {
-  font-size: 13.5px;
+.dbscan-summary-pill-val {
+  font-size: 14px;
   font-family: var(--mono);
   font-weight: 700;
   color: var(--tx);
 }
 
-.dbscan-cluster-sub {
-  font-size: 11px;
-  color: var(--mu);
+/* Tab 2: Step-by-Step BFS Expansion */
+.dbscan-stepper-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 8px 10px;
+  flex-wrap: wrap;
 }
 
+.dbscan-step-btn {
+  padding: 5px 10px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid var(--bd);
+  background: var(--cd);
+  color: var(--tx);
+  cursor: pointer;
+  transition: all .15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dbscan-step-btn:hover:not(:disabled) {
+  background: var(--tx);
+  color: var(--bg);
+  border-color: var(--tx);
+}
+
+.dbscan-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dbscan-step-btn.play {
+  background: var(--p1);
+  color: #000;
+  border-color: var(--p1);
+}
+
+.dbscan-step-scrubber {
+  flex: 1 1 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dbscan-step-counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mu);
+  white-space: nowrap;
+}
+
+.dbscan-telemetry-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.dbscan-telemetry-chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  color: var(--tx);
+}
+
+.dbscan-telemetry-chip b {
+  color: var(--p1);
+}
+
+.dbscan-step-log {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-left: 3px solid var(--p1);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--tx);
+}
+
+.dbscan-queue-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.dbscan-queue-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(0, 180, 216, 0.12);
+  color: var(--p0);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+}
+
+/* Tab 3: Reachability & Connectivity Lab */
+.dbscan-pair-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.dbscan-pair-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mu);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dbscan-point-btn {
+  padding: 4px 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 1px solid var(--bd);
+  background: var(--cd);
+  color: var(--tx);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.dbscan-point-btn.ptA {
+  border-color: var(--p0);
+  color: var(--p0);
+}
+
+.dbscan-point-btn.ptB {
+  border-color: var(--p1);
+  color: var(--p1);
+}
+
+.dbscan-point-btn.active {
+  background: var(--tx);
+  color: var(--bg);
+}
+
+.dbscan-relation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 680px) {
+  .dbscan-relation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dbscan-relation-box {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dbscan-relation-box.true {
+  border-left: 3px solid var(--p2);
+}
+
+.dbscan-relation-box.false {
+  border-left: 3px solid var(--p6);
+}
+
+.dbscan-relation-tag {
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.dbscan-relation-box.true .dbscan-relation-tag {
+  color: var(--p2);
+}
+
+.dbscan-relation-box.false .dbscan-relation-tag {
+  color: var(--p6);
+}
+
+.dbscan-relation-title {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--tx);
+}
+
+.dbscan-relation-desc {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--mu);
+  margin: 0;
+}
+
+/* Tab 4: Parameter Tuning (k-Distance Knee Plot) */
+.dbscan-kdist-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.dbscan-kdist-svg {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.dbscan-kdist-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--mu);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dbscan-kdist-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dbscan-kdist-badge.knee {
+  color: var(--p1);
+  font-weight: 700;
+}
+
+/* General Insight Box */
 .dbscan-insight-box {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--bd);
