@@ -8,7 +8,7 @@ import { cp, G, dist } from '../common';
  * 1. Neighborhood Circle: Circle of radius ε drawn around every point.
  * 2. Core Point: A crowded point with at least MinPts neighbors inside its circle.
  * 3. Border Point: Sits on the edge. Has fewer neighbors, but touches a Core point, so it joins the cluster.
- * 4. Noise Point: Lonely outlier. Too far from any crowded point.
+ * 4. Outlier / Noise Point: A point which is neither a Core Point nor a Border Point.
  * 5. Chain Reaction: Core points pull in their neighbors; crowded neighbors pull in theirs, growing any shape!
  */
 
@@ -349,8 +349,8 @@ export function dbscanEngine(r, epsParam) {
   // Frame 7: Final Result & Noise Isolation
   S.push({
     t: '8. Final Result: Natural Shapes & Isolated Noise',
-    d: `DBSCAN found both natural clusters without being told how many to look for! The 5 isolated grey points never touched any crowded circle, so they are cleanly flagged as NOISE (label = -1) rather than pulling clusters off course.`,
-    math: `\\text{Result: } 2 \\text{ Natural Clusters} + 5 \\text{ Isolated Outliers (Noise)}`,
+    d: `DBSCAN found both natural clusters without being told how many to look for! The 5 isolated points are neither Core Points nor Border Points, so they are cleanly identified as Outliers / Noise (label = -1) rather than pulling clusters off course.`,
+    math: `p \\notin \\text{Core}(D) \\land p \\notin \\text{Border}(D) \\implies \\text{label}(p) = -1 \\text{ (Noise)}`,
     pts: P.map((p, i) => {
       if (L[i] === 0) return { ...p, c: 2, big: isCore[i], h: !isCore[i] };
       if (L[i] === 1) return { ...p, c: 1, big: isCore[i], h: !isCore[i] };
