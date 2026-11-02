@@ -6912,44 +6912,6 @@ svg rect {
   color: var(--tx);
 }
 
-.hier-playback-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hier-mini-btn {
-  padding: 5px 8px;
-  font-size: 11px;
-  font-family: var(--sans);
-  font-weight: 600;
-  border: 1px solid var(--bd);
-  border-radius: 5px;
-  background: var(--bg);
-  color: var(--tx);
-  cursor: pointer;
-  transition: all .15s ease;
-  white-space: nowrap;
-}
-
-.hier-mini-btn:hover:not(:disabled) {
-  border-color: var(--p1);
-  color: var(--p1);
-}
-
-.hier-mini-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.hier-step-slider {
-  flex: 1;
-  accent-color: var(--p1);
-  height: 4px;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
 .hier-slider-box {
   display: flex;
   flex-direction: column;

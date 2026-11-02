@@ -487,34 +487,6 @@ export default function HierarchicalInteractive({
               </div>
             )}
           </div>
-
-          {/* Quick Playback Bar */}
-          <div className="hier-playback-bar">
-            <button
-              type="button"
-              className="hier-mini-btn"
-              onClick={() => onStepChange && onStepChange(Math.max(0, currentStep - 1))}
-              disabled={currentStep === 0}
-            >
-              ◀ Prev Merge
-            </button>
-            <input
-              type="range"
-              min="0"
-              max={merges.length}
-              value={currentStep}
-              onChange={e => onStepChange && onStepChange(Number(e.target.value))}
-              className="hier-step-slider"
-            />
-            <button
-              type="button"
-              className="hier-mini-btn"
-              onClick={() => onStepChange && onStepChange(Math.min(merges.length, currentStep + 1))}
-              disabled={currentStep >= merges.length}
-            >
-              Next Merge ▶
-            </button>
-          </div>
         </div>
       )}
 
