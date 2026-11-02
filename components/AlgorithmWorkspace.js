@@ -252,7 +252,9 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           )}
 
           <div className="canvas-footer-legend">
-            {meta.type === 'Supervised'
+            {meta.slug === 'k-medoids'
+              ? '◉ Double Ring: Real Medoids · ◌ Points: Cluster Members · ⨂ Red: Distant Outliers'
+              : meta.type === 'Supervised'
               ? 'Training data · Current model fit'
               : 'Unlabelled data · Clustering iteration'}
           </div>

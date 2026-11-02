@@ -23,7 +23,7 @@ const BASE_CENTROID_Y = BASE_CLUSTER_POINTS.reduce((s, p) => s + p.y, 0) / BASE_
 
 export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
   const [activeTab, setActiveTab] = useState('outliers'); // 'outliers' | 'swap' | 'metric'
-  const [outlierDist, setOutlierDist] = useState(65); // Outlier distance offset: 0 to 100
+  const [outlierDist, setOutlierDist] = useState(65); // Outlier distance offset: 0 to 95
   const [metricType, setMetricType] = useState('manhattan'); // 'manhattan' | 'euclidean'
   const [selectedPointId, setSelectedPointId] = useState(5); // Active candidate medoid in swap tester
 
@@ -99,7 +99,7 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
 
   return (
     <div className="kmedoids-interactive-card">
-      <div className="telemetry-eyebrow">INTERACTIVE EXPLORER · K-MEDOIDS (PAM)</div>
+      <div className="telemetry-eyebrow">INTERACTIVE EXPLORER · K-MEDOIDS</div>
 
       {/* Navigation Tabs */}
       <div className="kmedoids-tab-bar">
@@ -108,14 +108,14 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           className={`kmedoids-tab-btn ${activeTab === 'outliers' ? 'active' : ''}`}
           onClick={() => setActiveTab('outliers')}
         >
-          Outlier Resilience
+          Outlier Shield
         </button>
         <button
           type="button"
           className={`kmedoids-tab-btn ${activeTab === 'swap' ? 'active' : ''}`}
           onClick={() => setActiveTab('swap')}
         >
-          PAM Swap Tester
+          Captain Swap Test
         </button>
         <button
           type="button"
@@ -132,22 +132,21 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
       {activeTab === 'outliers' && (
         <div className="kmedoids-tab-content">
           <div className="kmedoids-card-header">
-            <h4 className="kmedoids-card-title">Centroid vs. Medoid: Resistance to Outliers</h4>
+            <h4 className="kmedoids-card-title">Centroid vs. Medoid: Outlier Test</h4>
             <span className="kmedoids-pill-badge">
-              Outlier Offset: <b>+{outlierDist}px</b>
+              Outlier Distance: <b>+{outlierDist}px</b>
             </span>
           </div>
 
           <p className="kmedoids-card-desc">
-            Drag the slider to move the outlier farther away. Notice how the <b>K-Means Centroid</b> gets pulled
-            straight out of the cluster into empty space, while the <b>K-Medoids Medoid</b> stays rock-solid on the
-            true exemplar data point.
+            Drag the slider to move the outlier farther away. Watch how the <b>K-Means Centroid</b> gets pulled
+            out into empty space, while the <b>K-Medoids Medoid</b> stays locked onto real point #5.
           </p>
 
           {/* Interactive Slider */}
           <div className="kmedoids-slider-control-group">
             <div className="kmedoids-slider-label-row">
-              <span className="kmedoids-slider-title">Outlier Distance from Cluster:</span>
+              <span className="kmedoids-slider-title">Drag Outlier Position:</span>
               <span className="kmedoids-slider-val">{outlierDist} px</span>
             </div>
             <input
@@ -161,7 +160,23 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
             />
           </div>
 
-          {/* Interactive Visual SVG Canvas */}
+          {/* Visual Legend Bar above SVG */}
+          <div className="kmedoids-visual-legend">
+            <div className="kmedoids-legend-badge medoid">
+              <span className="kmedoids-legend-dot medoid" />
+              <span><b>K-Medoids:</b> Point #5 (Zero drift)</span>
+            </div>
+            <div className="kmedoids-legend-badge kmeans">
+              <span className="kmedoids-legend-dot kmeans" />
+              <span><b>K-Means:</b> Average (Dragged)</span>
+            </div>
+            <div className="kmedoids-legend-badge outlier">
+              <span className="kmedoids-legend-dot outlier" />
+              <span><b>Outlier:</b> Far point</span>
+            </div>
+          </div>
+
+          {/* Clean Visual SVG Canvas */}
           <div className="kmedoids-svg-container">
             <svg viewBox="10 20 145 80" className="kmedoids-svg" aria-label="K-Means vs K-Medoids Outlier Comparison">
               {/* Subtle coordinate grid */}
@@ -180,7 +195,7 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                 strokeDasharray="2 2"
               />
 
-              {/* Data points */}
+              {/* Cluster Data Points */}
               {BASE_CLUSTER_POINTS.map(p => (
                 <circle
                   key={p.id}
@@ -193,45 +208,13 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                 />
               ))}
 
-              {/* Outlier Point */}
-              <g className="kmedoids-outlier-pt">
-                <circle
-                  cx={outlierX}
-                  cy={outlierY}
-                  r="3.2"
-                  fill="var(--p6)"
-                  stroke="var(--tx)"
-                  strokeWidth="0.8"
-                />
-                <circle
-                  cx={outlierX}
-                  cy={outlierY}
-                  r="6.5"
-                  fill="none"
-                  stroke="var(--p6)"
-                  strokeWidth="0.75"
-                  strokeDasharray="2 2"
-                />
-                <text
-                  x={outlierX}
-                  y={outlierY - 8.5}
-                  textAnchor="middle"
-                  fill="var(--p6)"
-                  fontSize="4.2"
-                  fontFamily="var(--mono)"
-                  fontWeight="700"
-                >
-                  Extreme Outlier
-                </text>
-              </g>
-
               {/* Baseline Center indicator */}
               <circle
                 cx={BASE_CENTROID_X}
                 cy={BASE_CENTROID_Y}
-                r="1.2"
+                r="1.5"
                 fill="var(--mu)"
-                opacity="0.6"
+                opacity="0.4"
               />
 
               {/* Centroid Drift Vector Arrow */}
@@ -242,33 +225,45 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                   x2={kmeansCentroid.x}
                   y2={kmeansCentroid.y}
                   stroke="var(--p0)"
-                  strokeWidth="0.85"
-                  strokeDasharray="1.5 1.5"
+                  strokeWidth="0.9"
+                  strokeDasharray="2 2"
                 />
               )}
 
-              {/* K-Means Centroid (Orange Diamond) */}
+              {/* K-Means Centroid (Orange Diamond) with masked pill badge */}
               <g transform={`translate(${kmeansCentroid.x}, ${kmeansCentroid.y})`}>
                 <polygon
-                  points="0,-4 4,0 0,4 -4,0"
+                  points="0,-4.5 4.5,0 0,4.5 -4.5,0"
                   fill="var(--p0)"
                   stroke="var(--tx)"
                   strokeWidth="0.75"
                 />
-                <text
-                  x="0"
-                  y="8.5"
-                  textAnchor="middle"
-                  fill="var(--p0)"
-                  fontSize="3.8"
-                  fontFamily="var(--mono)"
-                  fontWeight="700"
-                >
-                  K-Means Centroid
-                </text>
+                <g transform="translate(0, 9)">
+                  <rect
+                    x="-16"
+                    y="-5"
+                    width="32"
+                    height="10"
+                    rx="3"
+                    fill="var(--cd)"
+                    stroke="var(--p0)"
+                    strokeWidth="0.7"
+                  />
+                  <text
+                    x="0"
+                    y="1.2"
+                    textAnchor="middle"
+                    fill="var(--p0)"
+                    fontSize="3.6"
+                    fontFamily="var(--mono)"
+                    fontWeight="700"
+                  >
+                    Centroid
+                  </text>
+                </g>
               </g>
 
-              {/* K-Medoids Medoid (Green Double Ring on Real Member) */}
+              {/* K-Medoids Medoid (Green Double Ring on Real Member #5) with masked pill badge */}
               <g transform={`translate(${kmedoidsMedoid.x}, ${kmedoidsMedoid.y})`}>
                 <circle
                   cx="0"
@@ -286,17 +281,76 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                   stroke="var(--bg)"
                   strokeWidth="0.6"
                 />
+              </g>
+
+              {/* Fixed Medoid Pill pinned cleanly above the cluster */}
+              <g transform="translate(46, 30)">
+                <line x1="0" y1="5.5" x2="0" y2="19" stroke="var(--p2)" strokeWidth="0.6" strokeDasharray="1.5 1.5" />
+                <rect
+                  x="-18"
+                  y="-5.5"
+                  width="36"
+                  height="11"
+                  rx="3"
+                  fill="var(--cd)"
+                  stroke="var(--p2)"
+                  strokeWidth="0.8"
+                />
                 <text
                   x="0"
-                  y="-6.5"
+                  y="1.2"
                   textAnchor="middle"
                   fill="var(--p2)"
                   fontSize="3.8"
                   fontFamily="var(--mono)"
                   fontWeight="700"
                 >
-                  K-Medoids (Real Sample #{kmedoidsMedoid.id ?? '5'})
+                  Medoid #5
                 </text>
+              </g>
+
+              {/* Outlier Point with masked pill badge */}
+              <g className="kmedoids-outlier-pt" transform={`translate(${outlierX}, ${outlierY})`}>
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="3.2"
+                  fill="var(--p6)"
+                  stroke="var(--tx)"
+                  strokeWidth="0.8"
+                />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="6.5"
+                  fill="none"
+                  stroke="var(--p6)"
+                  strokeWidth="0.75"
+                  strokeDasharray="2 2"
+                />
+                <g transform="translate(0, -10)">
+                  <rect
+                    x="-14"
+                    y="-5"
+                    width="28"
+                    height="10"
+                    rx="3"
+                    fill="var(--cd)"
+                    stroke="var(--p6)"
+                    strokeWidth="0.7"
+                  />
+                  <text
+                    x="0"
+                    y="1.2"
+                    textAnchor="middle"
+                    fill="var(--p6)"
+                    fontSize="3.6"
+                    fontFamily="var(--mono)"
+                    fontWeight="700"
+                  >
+                    Outlier
+                  </text>
+                </g>
               </g>
             </svg>
           </div>
@@ -304,24 +358,24 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           {/* Real-time Telemetry Grid */}
           <div className="kmedoids-telemetry-grid">
             <div className="kmedoids-telemetry-box kmeans-box">
-              <div className="kmedoids-box-eyebrow">K-MEANS (CENTROID)</div>
+              <div className="kmedoids-box-eyebrow">K-MEANS (AVERAGE)</div>
               <div className="kmedoids-box-val-row">
-                <span className="kmedoids-drift-label">Centroid Drift:</span>
+                <span className="kmedoids-drift-label">Drift from Cluster:</span>
                 <span className="kmedoids-drift-val warning">+{centroidDrift.toFixed(1)} px</span>
               </div>
               <div className="kmedoids-box-sub">
-                Dragged into empty space by squared error <Tex f="d^2" inline />. Center is an imaginary synthetic coordinate.
+                The outlier drags the average out into empty space. The center becomes a meaningless synthetic point.
               </div>
             </div>
 
             <div className="kmedoids-telemetry-box kmedoids-box">
-              <div className="kmedoids-box-eyebrow">K-MEDOIDS (PAM MEDOID)</div>
+              <div className="kmedoids-box-eyebrow">K-MEDOIDS (TEAM CAPTAIN)</div>
               <div className="kmedoids-box-val-row">
-                <span className="kmedoids-drift-label">Medoid Drift:</span>
+                <span className="kmedoids-drift-label">Drift from Cluster:</span>
                 <span className="kmedoids-drift-val success">{medoidDrift.toFixed(1)} px (0.0)</span>
               </div>
               <div className="kmedoids-box-sub">
-                Center is strictly locked to actual data sample #{kmedoidsMedoid.id ?? '5'}. The distant outlier has 0 influence on position.
+                Center is locked to real member #5. The faraway outlier has zero leverage to move the captain.
               </div>
             </div>
           </div>
@@ -334,20 +388,19 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
       {activeTab === 'swap' && (
         <div className="kmedoids-tab-content">
           <div className="kmedoids-card-header">
-            <h4 className="kmedoids-card-title">PAM Candidate Swap Tester</h4>
+            <h4 className="kmedoids-card-title">Captain Swap Tester</h4>
             <span className="kmedoids-pill-badge">
-              Active: <b>Sample #{currentCandidate.id}</b>
+              Selected: <b>Point #{currentCandidate.id}</b>
             </span>
           </div>
 
           <p className="kmedoids-card-desc">
-            <b>Click any point</b> in the cluster to evaluate it as a candidate medoid. The spider web shows the distance
-            lines from every observation to that point. PAM swaps medoids whenever a candidate yields a lower total dissimilarity.
+            <b>Click any numbered point</b> to test it as the cluster captain. The spider lines calculate walking distance to all members. The true medoid minimizes this total distance.
           </p>
 
-          {/* Interactive SVG Canvas */}
+          {/* Interactive SVG Canvas with numbers INSIDE circles (No colliding text) */}
           <div className="kmedoids-svg-container">
-            <svg viewBox="20 30 50 50" className="kmedoids-svg" aria-label="Interactive PAM Candidate Swap Tester">
+            <svg viewBox="20 34 46 44" className="kmedoids-svg" aria-label="Interactive PAM Candidate Swap Tester">
               {/* Spider lines from candidate medoid to all other points */}
               {swapPoints.map(p => (
                 <line
@@ -357,13 +410,13 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                   x2={p.x}
                   y2={p.y}
                   stroke={isCandidateOptimal ? 'var(--p2)' : 'var(--p0)'}
-                  strokeWidth="0.4"
-                  strokeDasharray="1.2 1.5"
-                  opacity="0.8"
+                  strokeWidth="0.38"
+                  strokeDasharray="1.2 1.2"
+                  opacity="0.75"
                 />
               ))}
 
-              {/* Data points */}
+              {/* Data points with numbers neatly inside circles */}
               {swapPoints.map(p => {
                 const isSelected = p.id === currentCandidate.id;
                 const isOptimal = p.id === optimalMedoid.id;
@@ -375,12 +428,12 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                     onClick={() => setSelectedPointId(p.id)}
                     style={{ cursor: 'pointer' }}
                   >
-                    {/* Outer halo if selected */}
+                    {/* Outer glow ring when selected */}
                     {isSelected && (
                       <circle
                         cx={p.x}
                         cy={p.y}
-                        r="3.5"
+                        r="4.2"
                         fill="none"
                         stroke={isOptimal ? 'var(--p2)' : 'var(--p0)'}
                         strokeWidth="0.8"
@@ -388,25 +441,36 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
                       />
                     )}
 
+                    {/* Point Circle */}
                     <circle
                       cx={p.x}
                       cy={p.y}
-                      r={isSelected ? '2.4' : '1.6'}
-                      fill={isSelected ? (isOptimal ? 'var(--p2)' : 'var(--p0)') : 'var(--p1)'}
-                      stroke="var(--tx)"
-                      strokeWidth={isSelected ? '0.6' : '0.2'}
+                      r={isSelected ? '2.9' : '2.3'}
+                      fill={
+                        isSelected
+                          ? isOptimal
+                            ? 'var(--p2)'
+                            : 'var(--p0)'
+                          : isOptimal
+                          ? 'var(--p2)'
+                          : 'var(--cd)'
+                      }
+                      stroke={isOptimal ? 'var(--p2)' : 'var(--tx)'}
+                      strokeWidth={isSelected ? '0.7' : '0.4'}
                     />
 
-                    {/* Point index label */}
+                    {/* Number label centered INSIDE circle */}
                     <text
                       x={p.x}
-                      y={p.y - 3}
+                      y={p.y}
                       textAnchor="middle"
-                      fill="var(--mu)"
-                      fontSize="2.4"
+                      dominantBaseline="central"
+                      fill={isSelected || isOptimal ? 'var(--bg)' : 'var(--tx)'}
+                      fontSize="1.9"
                       fontFamily="var(--mono)"
+                      fontWeight="700"
                     >
-                      #{p.id}
+                      {p.id}
                     </text>
                   </g>
                 );
@@ -418,36 +482,36 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           <div className={`kmedoids-swap-status-box ${isCandidateOptimal ? 'optimal' : 'suboptimal'}`}>
             <div className="kmedoids-status-header">
               <span className="kmedoids-status-tag">
-                {isCandidateOptimal ? '✓ OPTIMAL MEDOID' : '✕ SUBOPTIMAL CANDIDATE'}
+                {isCandidateOptimal ? '✓ OPTIMAL MEDOID (#5)' : `✕ SUBOPTIMAL POINT (#${currentCandidate.id})`}
               </span>
               <span className="kmedoids-cost-badge">
-                Total Dissimilarity: <b>{currentCandidateCost.toFixed(1)}</b>
+                Total Walking Distance: <b>{currentCandidateCost.toFixed(1)}</b>
               </span>
             </div>
 
             <p className="kmedoids-status-desc">
               {isCandidateOptimal ? (
                 <>
-                  Sample #{currentCandidate.id} minimizes the sum of absolute distances to all cluster members. Any swap
-                  away from this medoid increases total dissimilarity (<Tex f="\Delta J > 0" inline />), so PAM terminates here.
+                  Point #5 is the true center of the cluster. Swapping to any other point increases the total walking distance for the group, so PAM locks this as the optimal medoid.
                 </>
               ) : (
                 <>
-                  If PAM swaps to this point, cost increases by <Tex f={`\\Delta J = +${deltaCost.toFixed(1)}`} inline /> above
-                  optimal. PAM evaluates candidate points and swaps toward the dense center (Sample #{optimalMedoid.id}).
+                  Choosing Point #{currentCandidate.id} increases total distance by <Tex f={`\\Delta J = +${deltaCost.toFixed(1)}`} inline /> above optimal. PAM rejects points like this and swaps toward the dense center (Point #5).
                 </>
               )}
             </p>
 
-            <div className="kmedoids-swap-actions">
-              <button
-                type="button"
-                className="kmedoids-action-btn primary"
-                onClick={() => setSelectedPointId(optimalMedoid.id)}
-              >
-                ★ Snap to Optimal Medoid (Sample #{optimalMedoid.id})
-              </button>
-            </div>
+            {!isCandidateOptimal && (
+              <div className="kmedoids-swap-actions">
+                <button
+                  type="button"
+                  className="kmedoids-action-btn primary"
+                  onClick={() => setSelectedPointId(optimalMedoid.id)}
+                >
+                  ★ Snap to Optimal Medoid (Point #5)
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -478,41 +542,35 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
           </div>
 
           <p className="kmedoids-card-desc">
-            A major advantage of K-Medoids over K-Means is <b>metric freedom</b>. Because K-Means computes an arithmetic mean
-            (<Tex f="\boldsymbol{\mu} = \frac{1}{|C|}\sum \mathbf{x}" inline />), it is mathematically constrained to Euclidean coordinate spaces.
-            K-Medoids works with <b>any arbitrary distance metric</b> or precomputed dissimilarity matrix.
+            K-Means is mathematically forced to use straight-line Euclidean distance because it needs to compute an arithmetic average. <b>K-Medoids works with any distance metric</b> or even non-coordinate pairwise distances.
           </p>
 
           <div className="kmedoids-metric-compare-grid">
             <div className={`kmedoids-metric-card ${metricType === 'manhattan' ? 'highlight' : ''}`}>
-              <div className="kmedoids-metric-title">Manhattan Distance (<Tex f="L_1" inline />)</div>
+              <div className="kmedoids-metric-title">Manhattan Distance (L1)</div>
               <div className="kmedoids-metric-math">
-                <Tex f="d_1(\mathbf{x}, \mathbf{y}) = \sum_j |x_j - y_j|" inline />
+                <Tex f="d_1(\mathbf{x}, \mathbf{y}) = \sum |x_j - y_j|" inline />
               </div>
               <p className="kmedoids-metric-text">
-                Measures rectilinear grid / city-block distances. Minimizing <Tex f="L_1" inline /> dissimilarity yields the <b>geometric median</b>,
-                providing the strongest possible robustness against heavy-tailed outliers.
+                Measures city-block grid walking distance. Gives the absolute highest resistance against extreme outlier corruption.
               </p>
             </div>
 
             <div className={`kmedoids-metric-card ${metricType === 'euclidean' ? 'highlight' : ''}`}>
-              <div className="kmedoids-metric-title">Euclidean Distance (<Tex f="L_2" inline />)</div>
+              <div className="kmedoids-metric-title">Euclidean Distance (L2)</div>
               <div className="kmedoids-metric-math">
-                <Tex f="d_2(\mathbf{x}, \mathbf{y}) = \sqrt{\sum_j (x_j - y_j)^2}" inline />
+                <Tex f="d_2(\mathbf{x}, \mathbf{y}) = \sqrt{\sum (x_j - y_j)^2}" inline />
               </div>
               <p className="kmedoids-metric-text">
-                Measures straight-line distance. When used with K-Medoids, the center is still forced to be an actual sample point,
-                preventing outlier pull without squaring errors.
+                Measures straight-line distance. In K-Medoids, the center is still forced to be an actual sample point rather than an average.
               </p>
             </div>
           </div>
 
           <div className="kmedoids-insight-box">
-            <span className="kmedoids-insight-tag">REAL-WORLD APPLICATION</span>
+            <span className="kmedoids-insight-tag">SUPERPOWER: NON-COORDINATE DATA</span>
             <p className="kmedoids-insight-text">
-              In genomics, text analysis, and graph theory, coordinates often don&apos;t exist. You only have pairwise
-              dissimilarities (e.g. edit distance between DNA sequences, Jaccard distance between text documents, or shortest
-              paths on a graph). <b>K-Means is impossible here</b>, but <b>K-Medoids runs natively</b> on the distance matrix.
+              In DNA genetics, text similarity, or network routing, coordinates often do not exist. You only have pairwise distances (like text edit distance or hops on a network). <b>K-Means is impossible here</b>, but <b>K-Medoids runs natively</b> on the distance matrix!
             </p>
           </div>
         </div>
@@ -520,4 +578,3 @@ export default function KMedoidsInteractive({ activeK = 3, onSelectK }) {
     </div>
   );
 }
-

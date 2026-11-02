@@ -1,8 +1,8 @@
-import { blobs, dist, f2, f3, cp } from '../common';
+import { blobs, dist, f2, cp } from '../common';
 
 /**
  * k-Medoids Clustering (PAM - Partitioning Around Medoids) Simulation Engine
- * Medoids are actual members of the dataset, making clustering robust to outliers.
+ * Medoids are actual members of the dataset (team captains), making clustering robust to outliers.
  */
 export function kmedoids(r, kClusters = 3) {
   const K = Math.max(2, Math.min(4, Math.round(kClusters || 3)));
@@ -33,7 +33,7 @@ export function kmedoids(r, kClusters = 3) {
   const ptsPerCluster = 9;
   const rawBlobs = blobs(r, centers, ptsPerCluster, 6.2);
 
-  // Add 2 extreme distant outliers in opposite corners
+  // 2 extreme distant outliers in opposite corners
   const outliers = [
     { x: 92, y: 90, isOutlier: true },
     { x: 10, y: 88, isOutlier: true }
@@ -42,7 +42,7 @@ export function kmedoids(r, kClusters = 3) {
   const P = [...rawBlobs, ...outliers];
   const N = P.length;
 
-  // Initial medoid choices: pick non-optimal samples from each cluster to demonstrate PAM swaps
+  // Initial medoid choices: pick non-central samples from each cluster to show PAM improvement
   let medoids = Array.from({ length: K }, (_, k) => k * ptsPerCluster + 1);
 
   // Dissimilarity helper: total sum of distances from every point to its closest medoid
@@ -75,21 +75,20 @@ export function kmedoids(r, kClusters = 3) {
     });
   };
 
-  // Helper to construct a simulation frame for the SVG renderer
+  // Helper to construct a clean simulation frame without text-graphic collisions
   const buildFrame = (t, d, medIds, options = {}) => {
     const {
       cost = totalCost(medIds),
       math = null,
       candidateIdx = null,
       testedMedIdx = null,
-      bannerText = null,
       isOverview = false,
       isConverged = false
     } = options;
 
     const assign = isOverview ? P.map(() => 5) : getAssignments(medIds);
 
-    // Voronoi assignment lines connecting points to their assigned medoid
+    // Clean assignment lines connecting points to their assigned medoid
     const lines = isOverview
       ? []
       : P.map((p, i) => {
@@ -98,33 +97,33 @@ export function kmedoids(r, kClusters = 3) {
             a: [p.x, p.y],
             b: [mPoint.x, mPoint.y],
             col: p.isOutlier ? '--p6' : `--p${assign[i]}`,
-            w: p.isOutlier ? 0.45 : 0.28,
+            w: p.isOutlier ? 0.35 : 0.22,
             dash: '1.5 2'
           };
         });
 
-    // If candidate swap is currently under evaluation, draw dashed line between old medoid and candidate
+    // If candidate swap is currently under evaluation, draw crisp dashed line
     if (candidateIdx !== null && testedMedIdx !== null) {
       lines.push({
         a: [P[medIds[testedMedIdx]].x, P[medIds[testedMedIdx]].y],
         b: [P[candidateIdx].x, P[candidateIdx].y],
         col: '--tx',
-        w: 0.9,
+        w: 0.85,
         dash: '2 2'
       });
     }
 
-    // Circles: halos around active medoids & warning halos around outliers
+    // Circles: clean halos around active medoids, candidate under test & warning halos around outliers
     const circles = [];
     if (!isOverview) {
       medIds.forEach((mIdx, k) => {
         circles.push({
           x: P[mIdx].x,
           y: P[mIdx].y,
-          rx: 5.5,
-          ry: 5.5,
+          rx: 4.8,
+          ry: 4.8,
           col: `--p${k}`,
-          w: 1.2
+          w: 1.0
         });
       });
     }
@@ -134,10 +133,10 @@ export function kmedoids(r, kClusters = 3) {
       circles.push({
         x: P[candidateIdx].x,
         y: P[candidateIdx].y,
-        rx: 6.2,
-        ry: 6.2,
+        rx: 5.2,
+        ry: 5.2,
         col: '--tx',
-        w: 1.2,
+        w: 1.1,
         dash: '2 1.5'
       });
     }
@@ -147,15 +146,15 @@ export function kmedoids(r, kClusters = 3) {
       circles.push({
         x: o.x,
         y: o.y,
-        rx: 4.5,
-        ry: 4.5,
+        rx: 4.2,
+        ry: 4.2,
         col: '--p6',
-        w: 0.75,
+        w: 0.8,
         dash: '1.5 1.5'
       });
     });
 
-    // Point representation
+    // Point representation: medoids have distinct double rings, outliers colored red
     const pts = P.map((p, i) => {
       const isMed = !isOverview && medIds.includes(i);
       const isCand = i === candidateIdx;
@@ -168,65 +167,6 @@ export function kmedoids(r, kClusters = 3) {
       };
     });
 
-    // Text annotations on the canvas
-    const texts = [
-      {
-        x: 50,
-        y: 95,
-        text: `Total Dissimilarity Cost: ${f2(cost)}`,
-        col: '--mu',
-        size: 3.2,
-        weight: 600
-      }
-    ];
-
-    if (!isOverview) {
-      medIds.forEach((mIdx, k) => {
-        texts.push({
-          x: P[mIdx].x,
-          y: Math.max(5, Math.min(95, P[mIdx].y - 4.5)),
-          text: `M${k + 1}`,
-          col: `--p${k}`,
-          size: 3.2,
-          weight: 700
-        });
-      });
-    }
-
-    if (candidateIdx !== null) {
-      texts.push({
-        x: P[candidateIdx].x,
-        y: Math.max(5, Math.min(95, P[candidateIdx].y - 4.5)),
-        text: `Candidate #${candidateIdx}`,
-        col: '--tx',
-        size: 2.8,
-        weight: 600
-      });
-    }
-
-    // Outlier text badges
-    outliers.forEach(o => {
-      texts.push({
-        x: o.x < 50 ? o.x + 9 : o.x - 9,
-        y: o.y,
-        text: 'Outlier',
-        col: '--p6',
-        size: 2.5,
-        weight: 600
-      });
-    });
-
-    if (bannerText) {
-      texts.push({
-        x: 50,
-        y: 5.5,
-        text: bannerText,
-        col: isConverged ? '--p2' : '--tx',
-        size: 2.9,
-        weight: 700
-      });
-    }
-
     return {
       t,
       d,
@@ -236,7 +176,7 @@ export function kmedoids(r, kClusters = 3) {
       pts,
       lines,
       circles,
-      texts,
+      texts: [], // Canvas stays 100% clean and collision-free; metrics are in telemetry cards
       field: isOverview
         ? null
         : (x, y) => {
@@ -249,7 +189,7 @@ export function kmedoids(r, kClusters = 3) {
                 bestK = k;
               }
             });
-            return [bestK, 0.4];
+            return [bestK, 0.22];
           }
     };
   };
@@ -260,28 +200,26 @@ export function kmedoids(r, kClusters = 3) {
   const initialCost = totalCost(medoids);
   S.push(
     buildFrame(
-      'The Dataset & Extreme Outliers',
-      `We have ${N} data observations arranged in natural clusters, plus 2 extreme corner outliers (marked in red). If we ran standard K-Means here, the centroids would be dragged out into empty space by squared error penalties. K-Medoids restricts cluster centers to be actual representative data points (medoids), neutralizing outlier corruption.`,
+      '1. The Data & Extreme Outliers',
+      `We have ${N} data points in natural clusters, plus 2 extreme outliers in the far corners (shown in red). If we used standard K-Means, those two outliers would pull the cluster centers far out into empty space. K-Medoids fixes this by requiring centers to be actual real data points (medoids).`,
       medoids,
       {
         cost: initialCost,
-        math: 'J = \\sum_{i=1}^n \\min_{k=1\\dots K} d(\\mathbf{x}_i, \\mathbf{m}_k)',
-        isOverview: true,
-        bannerText: 'Raw Dataset with 2 Distant Outliers'
+        math: '\\mathbf{m}_k \\in \\{\\mathbf{x}_1, \\dots, \\mathbf{x}_n\\} \\quad (\\text{Centers are real points})',
+        isOverview: true
       }
     )
   );
 
-  // Frame 1: Initial Medoid Selection (BUILD Phase)
+  // Frame 1: Initial Medoid Selection
   S.push(
     buildFrame(
-      `Initialize K = ${K} Starting Medoids`,
-      `Select ${K} actual data samples to serve as our starting medoids (marked with double rings and labeled M1..M${K}). Unlike K-Means centroids, medoids are real observations—like actual patient records, representative customer profiles, or exemplar documents.`,
+      `2. Pick Starting Medoids (Team Captains)`,
+      `We pick ${K} real data points to start as cluster centers (marked with double rings). Think of a medoid as an elected "team captain"—an actual representative member of the group, not an imaginary average coordinate.`,
       medoids,
       {
         cost: initialCost,
-        math: '\\mathbf{m}_k \\in \\{\\mathbf{x}_1, \\dots, \\mathbf{x}_n\\} \\quad (k = 1, \\dots, K)',
-        bannerText: `Initial Medoids Chosen (K = ${K})`
+        math: `K = ${K} \\text{ initial medoids chosen}`
       }
     )
   );
@@ -289,13 +227,12 @@ export function kmedoids(r, kClusters = 3) {
   // Frame 2: Initial Voronoi Distance Assignment
   S.push(
     buildFrame(
-      'Assign Observations to Closest Medoid',
-      `Every observation computes its Euclidean distance to all ${K} medoids and joins whichever one is closest. The dashed lines show the dissimilarity distances. Initial total absolute distance cost is ${f2(initialCost)}. Next, PAM will search for point swaps that reduce this cost.`,
+      '3. Connect Points to Nearest Medoid',
+      `Every point joins whichever medoid is closest to it (shown by the dashed lines). The total walking distance for all points is ${f2(initialCost)}. Next, PAM will search for point swaps that reduce this total distance.`,
       medoids,
       {
         cost: initialCost,
-        math: 'C_k = \\{\\mathbf{x}_i : d(\\mathbf{x}_i, \\mathbf{m}_k) \\le d(\\mathbf{x}_i, \\mathbf{m}_j) \\quad \\forall j\\}',
-        bannerText: `Initial Total Cost: ${f2(initialCost)}`
+        math: `\\text{Total Distance } J = ${f2(initialCost)}`
       }
     )
   );
@@ -332,7 +269,7 @@ export function kmedoids(r, kClusters = 3) {
       }
     }
 
-    // If no swap achieves a meaningful reduction (ΔJ >= 0), PAM has converged
+    // If no swap achieves a reduction (ΔJ >= 0), PAM has converged
     if (!bestSwap || bestDelta >= -0.4) {
       break;
     }
@@ -340,15 +277,14 @@ export function kmedoids(r, kClusters = 3) {
     // Step A: Evaluate Candidate Swap
     S.push(
       buildFrame(
-        `PAM Round ${iter}: Evaluate Candidate Swap`,
-        `PAM tests swapping Medoid M${bestSwap.k + 1} with non-medoid sample #${bestSwap.newMedIdx}. If swapped, total dissimilarity drops from ${f2(curCost)} to ${f2(bestSwap.candCost)} (ΔJ = ${f2(bestSwap.delta)}). Because ΔJ < 0, this swap successfully improves the clustering!`,
+        `Round ${iter}: Test Swapping Medoid ${bestSwap.k + 1}`,
+        `PAM tests replacing Medoid ${bestSwap.k + 1} with candidate point #${bestSwap.newMedIdx} (connected by the white dashed line). Swapping reduces total walking distance from ${f2(curCost)} down to ${f2(bestSwap.candCost)} (saving ${f2(-bestSwap.delta)}). Since distance decreases, this swap is approved!`,
         medoids,
         {
           cost: curCost,
           candidateIdx: bestSwap.newMedIdx,
           testedMedIdx: bestSwap.k,
-          math: `\\Delta J = J_{\\text{swap}(m_${bestSwap.k + 1} \\leftrightarrow o_{${bestSwap.newMedIdx}})} - J_{\\text{current}} = ${f2(bestSwap.delta)} < 0`,
-          bannerText: `Testing Swap: M${bestSwap.k + 1} ↔ #${bestSwap.newMedIdx} (ΔJ = ${f2(bestSwap.delta)})`
+          math: `\\Delta J = ${f2(bestSwap.delta)} < 0 \\quad (\\text{Distance Reduced})`
         }
       )
     );
@@ -359,13 +295,12 @@ export function kmedoids(r, kClusters = 3) {
 
     S.push(
       buildFrame(
-        `PAM Round ${iter}: Swap Accepted — New Medoid M${bestSwap.k + 1}`,
-        `Sample #${bestSwap.newMedIdx} is now the new official medoid for Cluster ${bestSwap.k + 1}. All cluster members reconnect to this more central exemplar. Total dissimilarity has decreased to ${f2(curCost)}.`,
+        `Round ${iter}: Swap Complete — New Medoid ${bestSwap.k + 1}`,
+        `Point #${bestSwap.newMedIdx} is now the official medoid for Cluster ${bestSwap.k + 1}. Cluster members reconnect to this more central representative, lowering total distance to ${f2(curCost)}.`,
         medoids,
         {
           cost: curCost,
-          math: `\\mathbf{m}_{${bestSwap.k + 1}} \\leftarrow \\mathbf{x}_{${bestSwap.newMedIdx}}`,
-          bannerText: `Swap Accepted · Cost reduced to ${f2(curCost)}`
+          math: `\\mathbf{m}_{${bestSwap.k + 1}} \\leftarrow \\mathbf{x}_{${bestSwap.newMedIdx}} \\quad (J = ${f2(curCost)})`
         }
       )
     );
@@ -374,14 +309,13 @@ export function kmedoids(r, kClusters = 3) {
   // Final Frame: Convergence Reached
   S.push(
     buildFrame(
-      'Optimal Medoids Converged',
-      `PAM evaluated all remaining non-medoid swaps and found none that reduce total distance (all ΔJ ≥ 0). The medoids are optimal true exemplars of their clusters. Notice that the 2 distant corner outliers had ZERO leverage on medoid coordinates—the cluster centers remained completely clean and robust!`,
+      'Optimal Medoids Found (Converged)',
+      `PAM tested swapping with every other point, and no swap reduced the total distance. The clustering is complete! Notice that the two far-corner outliers had ZERO pull on the medoids—the centers stayed purely focused on the real clusters.`,
       medoids,
       {
         cost: curCost,
-        math: '\\forall m \\in \\mathcal{M},\\, \\forall o \\notin \\mathcal{M} : \\Delta J(m \\leftrightarrow o) \\ge 0',
-        isConverged: true,
-        bannerText: `Converged · Final Cost: ${f2(curCost)}`
+        math: '\\Delta J \\ge 0 \\quad (\\text{Optimal clustering achieved})',
+        isConverged: true
       }
     )
   );
