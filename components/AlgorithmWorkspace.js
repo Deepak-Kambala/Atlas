@@ -593,7 +593,11 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                     >
                       <div className="step-item-num">{stepIdx + 1}</div>
                       <div className="step-item-body">
-                        {title && <div className="step-item-title">{title}</div>}
+                        {title && (
+                          <div className="step-item-title">
+                            <Rich t={title} />
+                          </div>
+                        )}
                         <div className="step-item-desc">
                           <Rich t={text} />
                         </div>
