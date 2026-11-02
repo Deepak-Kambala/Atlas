@@ -705,8 +705,9 @@ export default function HierarchicalInteractive({
                   />
                   <span className="hier-cluster-chip-title">Cluster {idx + 1}:</span>
                   <span className="hier-cluster-chip-members">
-                    {cl.map(id => `P${id}`).join(', ')} ({cl.length} pts)
+                    {cl.map(id => `P${id}`).join(', ')}
                   </span>
+                  <span className="hier-cluster-chip-count">({cl.length} pts)</span>
                 </div>
               ))}
             </div>
