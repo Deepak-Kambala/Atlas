@@ -559,20 +559,6 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                   })}
                 </div>
               )}
-
-              {/* Algorithm-Specific Interactive Module for DBSCAN */}
-              {meta.slug === 'dbscan' && algorithmVisuals['dbscan']?.interactiveDemo && (
-                <div className="demo-dbscan-container">
-                  {React.createElement(algorithmVisuals['dbscan'].interactiveDemo, {
-                    activeEps: pm,
-                    onSelectEps: newEps => {
-                      setPv({ ...pv, [ai]: newEps });
-                      setI(0);
-                      setPlay(false);
-                    }
-                  })}
-                </div>
-              )}
             </div>
           )}
 

@@ -37,7 +37,7 @@ import { crossValidation } from './cross-validation/index.js';
 import { kmeans, KMeansSeedSensitivity, KMeansOutliers, KMeansNonConvex, KMeansElbowMethod } from './k-means/index.js';
 import { kmedoidsCluster, KMedoidsInteractive } from './k-medoids/index.js';
 import { hierarchicalClustering, HierarchicalInteractive } from './hierarchical-clustering/index.js';
-import { dbscan, DBSCANInteractive } from './dbscan/index.js';
+import { dbscan } from './dbscan/index.js';
 import { pca } from './pca/index.js';
 
 // Map of algorithm-specific visual components (for limitations, interactive modules, etc.)
@@ -53,9 +53,6 @@ export const algorithmVisuals = {
   },
   'hierarchical-clustering': {
     interactiveDemo: HierarchicalInteractive
-  },
-  'dbscan': {
-    interactiveDemo: DBSCANInteractive
   }
 };
 

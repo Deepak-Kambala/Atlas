@@ -403,8 +403,6 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
 
   return (
     <div className="dbscan-interactive-card">
-      <div className="telemetry-eyebrow">INTERACTIVE EXPLORER · DBSCAN</div>
-
       {/* Dataset Picker Pill Bar */}
       <div className="dbscan-dataset-bar">
         {Object.entries(DATASETS).map(([key, ds]) => (
