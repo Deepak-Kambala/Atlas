@@ -532,7 +532,9 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
               <h3 className="panel-heading">Formulations &amp; Gradients</h3>
               {meta.math.map(([title, latex, note, breakdown]) => (
                 <div className="math-entry-box" key={title}>
-                  <div className="math-entry-title">{title}</div>
+                  <div className="math-entry-title">
+                    <Rich t={title} />
+                  </div>
                   <div className="math-latex-render">
                     <Tex f={latex} />
                   </div>
