@@ -4058,6 +4058,82 @@ svg rect {
   letter-spacing: 0.02em;
   flex-shrink: 0;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 28px;
+}
+
+.hier-linkage-button-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.hier-linkage-bar-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--mu);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hier-linkage-pill-group {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 7px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.hier-linkage-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-family: var(--sans);
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--mu);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.hier-linkage-pill-btn:hover {
+  color: var(--tx);
+  background: var(--cd);
+}
+
+.hier-linkage-pill-btn.active {
+  background: var(--cd);
+  color: var(--p1);
+  border-color: var(--p1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.hier-linkage-pill-btn .pill-title {
+  font-weight: 650;
+}
+
+.hier-linkage-pill-btn .pill-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  opacity: 0.75;
+}
+
+.hier-linkage-pill-btn.active .pill-sub {
+  opacity: 1;
+  color: var(--p1);
 }
 
 /* Compact Toolbar Directly Below Canvas */

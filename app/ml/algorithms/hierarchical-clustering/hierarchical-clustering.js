@@ -210,6 +210,6 @@ export const hierarchicalClustering = {
   n: 'Hierarchical Clustering',
   g: 'Unsupervised',
   gen: hierEngine,
-  pm: ['Linkage (1:Single, 2:Complete, 3:Average, 4:Divisive)', 1, 4, 1],
+  pm: ['Linkage', 1, 4, 1],
   i: 'Builds nested clusters bottom-up or top-down with selectable linkage.'
 };

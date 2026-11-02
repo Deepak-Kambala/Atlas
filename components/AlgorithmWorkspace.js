@@ -252,15 +252,44 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           )}
 
           <div className="canvas-footer-legend">
-            {meta.slug === 'k-medoids'
-              ? '◉ Double Ring: Real Medoids · ◌ Points: Cluster Members · ⨂ Red: Distant Outliers'
-              : meta.slug === 'dbscan'
-              ? '● Solid: Core Points · ◌ Hollow: Border Points · ⨂ Red: Noise / Outliers'
-              : meta.slug === 'hierarchical-clustering'
-              ? '● P0–P14: Data Points · — Amber: Active Merge · Dendrogram constructed in parallel'
-              : meta.type === 'Supervised'
-              ? 'Training data · Current model fit'
-              : 'Unlabelled data · Clustering iteration'}
+            {meta.slug === 'k-medoids' ? (
+              '◉ Double Ring: Real Medoids · ◌ Points: Cluster Members · ⨂ Red: Distant Outliers'
+            ) : meta.slug === 'dbscan' ? (
+              '● Solid: Core Points · ◌ Hollow: Border Points · ⨂ Red: Noise / Outliers'
+            ) : meta.slug === 'hierarchical-clustering' ? (
+              <div className="hier-linkage-button-bar">
+                <span className="hier-linkage-bar-label">Linkage Strategy:</span>
+                <div className="hier-linkage-pill-group">
+                  {[
+                    { id: 1, label: 'Single', sub: 'Min' },
+                    { id: 2, label: 'Complete', sub: 'Max' },
+                    { id: 3, label: 'Average', sub: 'Mean' },
+                    { id: 4, label: 'Divisive', sub: 'Top-Down' }
+                  ].map(opt => {
+                    const isActive = Math.round(pm) === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        className={`hier-linkage-pill-btn ${isActive ? 'active' : ''}`}
+                        onClick={() => {
+                          setPv({ ...pv, [ai]: opt.id });
+                          setI(0);
+                          setPlay(false);
+                        }}
+                      >
+                        <span className="pill-title">{opt.label}</span>
+                        <span className="pill-sub">({opt.sub})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : meta.type === 'Supervised' ? (
+              'Training data · Current model fit'
+            ) : (
+              'Unlabelled data · Clustering iteration'
+            )}
           </div>
         </div>
 
@@ -341,7 +370,7 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           </div>
 
           {/* Parameter Tuning Control (if supported by algorithm) */}
-          {a.pm && (
+          {a.pm && meta.slug !== 'hierarchical-clustering' && (
             <>
               <div className="toolbar-divider" />
               <div className="toolbar-param-group">
