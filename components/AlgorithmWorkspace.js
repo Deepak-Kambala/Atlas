@@ -254,6 +254,8 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
           <div className="canvas-footer-legend">
             {meta.slug === 'k-medoids'
               ? '◉ Double Ring: Real Medoids · ◌ Points: Cluster Members · ⨂ Red: Distant Outliers'
+              : meta.slug === 'dbscan'
+              ? '● Solid: Core Points · ◌ Hollow: Border Points · ⨂ Red: Noise / Outliers'
               : meta.type === 'Supervised'
               ? 'Training data · Current model fit'
               : 'Unlabelled data · Clustering iteration'}
@@ -496,6 +498,20 @@ export default function AlgorithmWorkspace({ meta, ai, prev, next }) {
                     activeK: pm,
                     onSelectK: newK => {
                       setPv({ ...pv, [ai]: newK });
+                      setI(0);
+                      setPlay(false);
+                    }
+                  })}
+                </div>
+              )}
+
+              {/* Algorithm-Specific Interactive Module for DBSCAN */}
+              {meta.slug === 'dbscan' && algorithmVisuals['dbscan']?.interactiveDemo && (
+                <div className="demo-dbscan-container">
+                  {React.createElement(algorithmVisuals['dbscan'].interactiveDemo, {
+                    activeEps: pm,
+                    onSelectEps: newEps => {
+                      setPv({ ...pv, [ai]: newEps });
                       setI(0);
                       setPlay(false);
                     }
