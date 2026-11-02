@@ -22,13 +22,13 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const [minPts, setMinPts] = useState(4);
   const [selectedPointId, setSelectedPointId] = useState(10); // Center point in StatQuest blob
 
-  // Tab 2: Step-by-Step BFS state
+  // Tab 2: Step-by-Step Chain Reaction state
   const [stepIdx, setStepIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playSpeed, setPlaySpeed] = useState(1); // 1x or 2x
   const playTimerRef = useRef(null);
 
-  // Tab 3: Reachability & Connectivity state
+  // Tab 3: Reachability state
   const [ptAId, setPtAId] = useState(10);
   const [ptBId, setPtBId] = useState(31);
   const [pickingTarget, setPickingTarget] = useState(null); // 'A' | 'B' | null
@@ -79,7 +79,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       P.reduce((acc, q, j) => (j !== i && dist(p, q) <= eps ? acc.concat(j) : acc), [])
     );
 
-    // 2. Core points condition: |N_ε(p)| ≥ minPts other points
+    // 2. Core points: has at least minPts other neighbors inside its circle
     const core = nb.map(a => a.length >= minPts);
 
     // 3. Cluster formation via BFS over core points
@@ -129,7 +129,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const selectedCluster = clustering.clusterLabels[selectedPoint.id];
 
   // =========================================================================
-  // TAB 2: Precomputed Step-by-Step BFS Execution Steps (Ester et al. 1996)
+  // TAB 2: Step-by-Step Chain Reaction Walkthrough
   // =========================================================================
   const bfsSteps = useMemo(() => {
     const P = points;
@@ -149,7 +149,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       clusterId: -1,
       queue: [],
       labels: [...labels],
-      desc: `Algorithm initialized with N = ${N} unvisited points, ε = ${eps.toFixed(1)}, and MinPts = ${minPts}.`
+      desc: `Ready to start! We have ${N} unvisited points with circle radius ε = ${eps.toFixed(1)}px and MinPts = ${minPts} neighbors.`
     });
 
     for (let i = 0; i < N; i++) {
@@ -164,7 +164,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
           clusterId: -1,
           queue: [],
           labels: [...labels],
-          desc: `Point #${i} has only ${nb[i].length} neighbors (< MinPts ${minPts}). Provisionally flagged as NOISE.`
+          desc: `Checking Point #${i}: has only ${nb[i].length} neighbors (needs ${minPts}). For now, it stands alone as noise.`
         });
         continue;
       }
@@ -181,7 +181,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
         clusterId: currentC,
         queue: [...queue],
         labels: [...labels],
-        desc: `Point #${i} is a CORE point with ${nb[i].length} neighbors (≥ ${minPts}). Initiating Cluster ${currentC + 1} and queuing all ${queue.length} neighbors.`
+        desc: `Point #${i} is crowded with ${nb[i].length} neighbors (≥ ${minPts})! Starting Cluster ${currentC + 1} and adding all its neighbors to the waiting list.`
       });
 
       let qIdx = 0;
@@ -204,7 +204,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
               clusterId: currentC,
               queue: queue.slice(qIdx),
               labels: [...labels],
-              desc: `Frontier point #${q} is also a CORE point (${nb[q].length} neighbors). Appending ${newNeighbors.length} new neighbors to the expansion queue.`
+              desc: `Neighbor #${q} is ALSO crowded (${nb[q].length} neighbors)! It pulls in ${newNeighbors.length} more neighbors to keep expanding.`
             });
           } else {
             // Frontier point is Border: joins cluster without expanding queue
@@ -215,7 +215,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
               clusterId: currentC,
               queue: queue.slice(qIdx),
               labels: [...labels],
-              desc: `Frontier point #${q} has only ${nb[q].length} neighbors (< ${minPts}). Assigned as a BORDER point to Cluster ${currentC + 1} (does not expand).`
+              desc: `Neighbor #${q} is on the edge (only ${nb[q].length} neighbors). It joins Cluster ${currentC + 1}, but has no more neighbors to pull in.`
             });
           }
         } else if (labels[q] === -1) {
@@ -228,7 +228,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             clusterId: currentC,
             queue: queue.slice(qIdx),
             labels: [...labels],
-            desc: `Point #${q} was previously flagged as noise, but falls within a Core point's circle! Rescued as a BORDER point for Cluster ${currentC + 1}.`
+            desc: `Point #${q} was previously thought to be noise, but touches a Core Point! Rescued as an edge (border) point for Cluster ${currentC + 1}.`
           });
         }
       }
@@ -240,7 +240,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
         clusterId: currentC,
         queue: [],
         labels: [...labels],
-        desc: `Expansion queue empty! Cluster ${currentC + 1} completely formed with ${labels.filter(l => l === currentC).length} points.`
+        desc: `Waiting list empty! Cluster ${currentC + 1} is fully assembled with ${labels.filter(l => l === currentC).length} points.`
       });
 
       clusterCount++;
@@ -253,7 +253,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       clusterId: -1,
       queue: [],
       labels: [...labels],
-      desc: `DBSCAN complete! Found ${clusterCount} clusters and flagged ${labels.filter(l => l < 0).length} noise outliers.`
+      desc: `All points checked! Found ${clusterCount} natural clusters and left ${labels.filter(l => l < 0).length} lonely outliers as noise.`
     });
 
     return steps;
@@ -279,7 +279,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   const currentBfsStep = bfsSteps[Math.min(stepIdx, bfsSteps.length - 1)] || bfsSteps[0];
 
   // =========================================================================
-  // TAB 3: Formal Reachability & Connectivity Graph (Ester et al. 1996)
+  // TAB 3: How Points Connect (Reachability & Connectivity)
   // =========================================================================
   const reachabilityAnalysis = useMemo(() => {
     const P = points;
@@ -289,13 +289,11 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
     const pA = points.find(p => p.id === ptAId) || points[0];
     const pB = points.find(p => p.id === ptBId) || points[1];
 
-    // 1. Direct Density-Reachability (Asymmetric)
-    // p is directly density-reachable from q iff p ∈ N_ε(q) AND q is Core
+    // 1. Direct Touch (Asymmetric): p is directly reachable from q iff p ∈ N_ε(q) AND q is Core
     const aDirectFromB = nb[pB.id]?.includes(pA.id) && core[pB.id];
     const bDirectFromA = nb[pA.id]?.includes(pB.id) && core[pA.id];
 
-    // 2. Density-Reachability (Chain of core points, Asymmetric for border)
-    // Find shortest directed path of core hops from start to target
+    // 2. Chain Connection: Find shortest directed path of core hops from start to target
     function findDirectedPath(startId, targetId) {
       if (startId === targetId) return [startId];
       if (!core[startId]) return null;
@@ -321,14 +319,12 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
     const pathToAFromB = findDirectedPath(pB.id, pA.id);
     const pathToBFromA = findDirectedPath(pA.id, pB.id);
 
-    // 3. Density-Connectivity (Symmetric equivalence relation)
-    // ∃ common ancestor core point o such that o ~> pA AND o ~> pB
+    // 3. Same Cluster (Common Ancestor): ∃ common ancestor core point o such that o ~> pA AND o ~> pB
     let commonAncestor = null;
     let pathToAFromO = null;
     let pathToBFromO = null;
 
     if (clustering.clusterLabels[pA.id] >= 0 && clustering.clusterLabels[pA.id] === clustering.clusterLabels[pB.id]) {
-      // Points belong to the same cluster, therefore they MUST be density-connected!
       const coreIds = P.map((_, i) => i).filter(i => core[i] && clustering.clusterLabels[i] === clustering.clusterLabels[pA.id]);
 
       for (const c of coreIds) {
@@ -358,7 +354,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
   }, [points, ptAId, ptBId, clustering]);
 
   // =========================================================================
-  // TAB 4: Parameter Selection: Sorted k-Distance Knee Plot (Ester et al. §4.2)
+  // TAB 4: Finding Best Radius: Sorted k-Distance Elbow Plot
   // =========================================================================
   const kDistAnalysis = useMemo(() => {
     const P = points;
@@ -374,7 +370,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
     // Sort ascending
     const sorted = [...rawKDist].sort((a, b) => a.d - b.d);
 
-    // Kneedle algorithm to detect optimal elbow/knee point
+    // Kneedle elbow detector
     let kneeIdx = Math.floor(N * 0.7);
     if (N >= 3) {
       const p1 = { x: 0, y: sorted[0].d };
@@ -430,33 +426,33 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
           className={`dbscan-tab-btn ${activeTab === 'inspect' ? 'active' : ''}`}
           onClick={() => setActiveTab('inspect')}
         >
-          Neighborhood &amp; Core
+          Point Types &amp; Circles
         </button>
         <button
           type="button"
           className={`dbscan-tab-btn ${activeTab === 'expansion' ? 'active' : ''}`}
           onClick={() => setActiveTab('expansion')}
         >
-          BFS Expansion Queue
+          How Clusters Grow
         </button>
         <button
           type="button"
           className={`dbscan-tab-btn ${activeTab === 'reachability' ? 'active' : ''}`}
           onClick={() => setActiveTab('reachability')}
         >
-          Reachability Theory
+          How Points Connect
         </button>
         <button
           type="button"
           className={`dbscan-tab-btn ${activeTab === 'kdist' ? 'active' : ''}`}
           onClick={() => setActiveTab('kdist')}
         >
-          k-Distance Knee (§4.2)
+          Finding Best Radius (ε)
         </button>
       </div>
 
       {/* =========================================================================
-          TAB 1: Neighborhood & Core Point Inspector
+          TAB 1: Point Types & Circles Inspector
           ========================================================================= */}
       {activeTab === 'inspect' && (
         <div className="dbscan-tab-content">
@@ -468,10 +464,10 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
           </div>
 
           <p className="dbscan-card-desc">
-            <b>Click any point below</b> to draw its translucent ε-circle. Points needing at least <b>MinPts = {minPts} neighbors</b> inside their circle become Core Points.
+            <b>Click any point below</b> to draw its circle. If a point has at least <b>{minPts} neighbors</b> inside its circle, it becomes a crowded <b>Core Point</b>. Edge points join the crowd, and lonely points become <b>Noise</b>.
           </p>
 
-          {/* Quick preset buttons for active dataset */}
+          {/* Quick preset buttons */}
           <div className="dbscan-preset-pills">
             <button
               type="button"
@@ -481,7 +477,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 if (firstCore) setSelectedPointId(firstCore.id);
               }}
             >
-              ● Sample Core Point
+              ● Try Core Point (Crowded)
             </button>
             <button
               type="button"
@@ -491,7 +487,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 if (firstBorder) setSelectedPointId(firstBorder.id);
               }}
             >
-              ◌ Sample Border Point
+              ◌ Try Border Point (On Edge)
             </button>
             <button
               type="button"
@@ -501,14 +497,13 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 if (firstNoise) setSelectedPointId(firstNoise.id);
               }}
             >
-              ⨂ Sample Noise Outlier
+              ⨂ Try Noise Point (Lonely)
             </button>
           </div>
 
           {/* Interactive SVG Canvas */}
           <div className="dbscan-svg-container">
-            <svg viewBox="0 0 100 100" className="dbscan-svg" aria-label="DBSCAN interactive scatter plot">
-              {/* Subtle coordinate grid lines */}
+            <svg viewBox="0 0 102 102" className="dbscan-svg" aria-label="DBSCAN interactive scatter plot">
               <line x1="5" y1="50" x2="95" y2="50" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
               <line x1="50" y1="5" x2="50" y2="95" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
 
@@ -620,7 +615,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
           <div className="dbscan-controls-grid">
             <div className="dbscan-slider-control-group">
               <div className="dbscan-slider-label-row">
-                <span className="dbscan-slider-title">Radius (ε):</span>
+                <span className="dbscan-slider-title">Circle Radius (ε):</span>
                 <span className="dbscan-slider-val">{eps.toFixed(1)} px</span>
               </div>
               <div className="dbscan-slider-track-wrap">
@@ -636,15 +631,15 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 />
               </div>
               <div className="dbscan-slider-scale-row">
-                <span>Tight (3.0px)</span>
-                <span>Wide (16.0px)</span>
+                <span>Small Circle (3.0px)</span>
+                <span>Large Circle (16.0px)</span>
               </div>
             </div>
 
             <div className="dbscan-slider-control-group">
               <div className="dbscan-slider-label-row">
-                <span className="dbscan-slider-title">MinPts (Threshold):</span>
-                <span className="dbscan-slider-val">{minPts} other pts</span>
+                <span className="dbscan-slider-title">Crowd Threshold (MinPts):</span>
+                <span className="dbscan-slider-val">{minPts} neighbors</span>
               </div>
               <div className="dbscan-slider-track-wrap">
                 <input
@@ -659,13 +654,13 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 />
               </div>
               <div className="dbscan-slider-scale-row">
-                <span>Sparse (2 pts)</span>
-                <span>Dense (8 pts)</span>
+                <span>Easy to Join (2)</span>
+                <span>Hard to Join (8)</span>
               </div>
             </div>
           </div>
 
-          {/* Live Classification Status Box */}
+          {/* Simple Status Box */}
           <div
             className={`dbscan-status-card ${
               selectedIsCore ? 'core' : selectedIsBorder ? 'border' : 'noise'
@@ -674,49 +669,49 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             <div className="dbscan-status-header">
               <span className="dbscan-status-badge">
                 {selectedIsCore
-                  ? `● CORE POINT (CLUSTER ${selectedCluster + 1})`
+                  ? `● CROWDED CORE POINT (CLUSTER ${selectedCluster + 1})`
                   : selectedIsBorder
-                  ? `◌ BORDER POINT (JOINED CLUSTER ${selectedCluster + 1})`
-                  : '⨂ NOISE OUTLIER (-1)'}
+                  ? `◌ BORDER POINT (JOINS CLUSTER ${selectedCluster + 1})`
+                  : '⨂ LONELY NOISE OUTLIER (-1)'}
               </span>
               <span className="dbscan-count-badge">
-                Neighbors within ε: <b>{selectedNb.length} points</b> (MinPts = {minPts})
+                Neighbors in circle: <b>{selectedNb.length} points</b> (Goal: {minPts})
               </span>
             </div>
 
             <p className="dbscan-status-text">
               {selectedIsCore ? (
                 <>
-                  Point #{selectedPoint.id} overlaps <b>{selectedNb.length} other points</b> (&ge; {minPts}). Because it satisfies <Tex f="|N_\varepsilon(\mathbf{p})| \ge \text{MinPts}" inline />, it is a dense <b>Core Point</b> that seeds and propagates cluster expansion!
+                  Point #{selectedPoint.id} touches <b>{selectedNb.length} other points</b> (&ge; {minPts}). Because it has enough neighbors, it is a crowded <b>Core Point</b> that can start or expand a cluster!
                 </>
               ) : selectedIsBorder ? (
                 <>
-                  Point #{selectedPoint.id} overlaps only <b>{selectedNb.length} other points</b> (&lt; {minPts}). It is non-core, but because it falls within distance &epsilon; of a Core Point, it is density-reachable and joins the cluster border.
+                  Point #{selectedPoint.id} only touches <b>{selectedNb.length} other points</b> (&lt; {minPts}). It is not crowded enough to be a Core Point, but because it sits inside a Core Point&apos;s circle, it joins the cluster edge.
                 </>
               ) : (
                 <>
-                  Point #{selectedPoint.id} overlaps only <b>{selectedNb.length} other points</b> (&lt; {minPts}) and does not touch any Core Point. DBSCAN safely flags it as unassigned <b>Noise (Label -1)</b>.
+                  Point #{selectedPoint.id} only touches <b>{selectedNb.length} other points</b> (&lt; {minPts}) and does not touch any Core Point. DBSCAN leaves it alone as unclustered <b>Noise</b>.
                 </>
               )}
             </p>
           </div>
 
-          {/* Live Summary Pills */}
+          {/* Simple Summary Pills */}
           <div className="dbscan-summary-pill-grid">
             <div className="dbscan-summary-pill">
-              <span className="dbscan-summary-pill-title">Core Points</span>
+              <span className="dbscan-summary-pill-title">Core Points (Crowded)</span>
               <span className="dbscan-summary-pill-val" style={{ color: 'var(--p2)' }}>{clustering.coreCount}</span>
             </div>
             <div className="dbscan-summary-pill">
-              <span className="dbscan-summary-pill-title">Border Points</span>
+              <span className="dbscan-summary-pill-title">Border Points (Edges)</span>
               <span className="dbscan-summary-pill-val" style={{ color: 'var(--p1)' }}>{clustering.borderCount}</span>
             </div>
             <div className="dbscan-summary-pill">
-              <span className="dbscan-summary-pill-title">Noise Outliers</span>
+              <span className="dbscan-summary-pill-title">Noise (Lonely Outliers)</span>
               <span className="dbscan-summary-pill-val" style={{ color: 'var(--p6)' }}>{clustering.noiseCount}</span>
             </div>
             <div className="dbscan-summary-pill">
-              <span className="dbscan-summary-pill-title">Clusters Discovered</span>
+              <span className="dbscan-summary-pill-title">Clusters Found</span>
               <span className="dbscan-summary-pill-val" style={{ color: 'var(--tx)' }}>{clustering.numClusters}</span>
             </div>
           </div>
@@ -724,19 +719,19 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       )}
 
       {/* =========================================================================
-          TAB 2: Step-by-Step BFS Expansion Queue (Ester et al. 1996)
+          TAB 2: How Clusters Grow (Step-by-Step Chain Reaction)
           ========================================================================= */}
       {activeTab === 'expansion' && (
         <div className="dbscan-tab-content">
           <div className="dbscan-card-header">
-            <h4 className="dbscan-card-title">Algorithmic Queue Walkthrough</h4>
+            <h4 className="dbscan-card-title">Step-by-Step Chain Reaction</h4>
             <span className="dbscan-pill-badge">
               Step {stepIdx + 1} of {bfsSteps.length}
             </span>
           </div>
 
           <p className="dbscan-card-desc">
-            Visualizing the exact breadth-first frontier queue ($S$) from Ester et al. (1996). Core points push new neighbors to the queue; border points join the cluster without expanding.
+            Watch how DBSCAN discovers clusters point-by-point. A crowded Core Point pulls in all its neighbors. Any neighbor that is also crowded pulls in its own neighbors—spreading the cluster like falling dominoes!
           </p>
 
           {/* Stepper Playback Controls */}
@@ -763,7 +758,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
               disabled={stepIdx === 0}
               title="Previous step"
             >
-              ◀ Step
+              ◀ Back
             </button>
             <button
               type="button"
@@ -783,7 +778,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
               disabled={stepIdx >= bfsSteps.length - 1}
               title="Next step"
             >
-              Step ▶
+              Next ▶
             </button>
             <button
               type="button"
@@ -813,22 +808,22 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             </div>
           </div>
 
-          {/* Telemetry Row */}
+          {/* Simple Telemetry Row */}
           <div className="dbscan-telemetry-row">
             <div className="dbscan-telemetry-chip">
-              Active Cluster: <b>{currentBfsStep.clusterId >= 0 ? `C${currentBfsStep.clusterId + 1}` : 'None'}</b>
+              Active Cluster: <b>{currentBfsStep.clusterId >= 0 ? `Cluster ${currentBfsStep.clusterId + 1}` : 'None'}</b>
             </div>
             <div className="dbscan-telemetry-chip">
-              Queue Size |S|: <b>{currentBfsStep.queue?.length || 0} pts</b>
+              Waiting List: <b>{currentBfsStep.queue?.length || 0} pts</b>
             </div>
             <div className="dbscan-telemetry-chip">
-              Clustered: <b>{currentBfsStep.labels?.filter(l => l >= 0).length || 0} pts</b>
+              Points Clustered: <b>{currentBfsStep.labels?.filter(l => l >= 0).length || 0} pts</b>
             </div>
           </div>
 
-          {/* Canvas for BFS Step View */}
+          {/* Canvas for Chain Reaction */}
           <div className="dbscan-svg-container">
-            <svg viewBox="0 0 100 100" className="dbscan-svg" aria-label="DBSCAN BFS step animation">
+            <svg viewBox="0 0 102 102" className="dbscan-svg" aria-label="DBSCAN chain reaction step animation">
               <line x1="5" y1="50" x2="95" y2="50" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
               <line x1="50" y1="5" x2="50" y2="95" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
 
@@ -854,7 +849,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
 
                 return (
                   <g key={p.id}>
-                    {/* Active point pulsing halo */}
+                    {/* Active point halo */}
                     {isActive && (
                       <circle
                         cx={p.x}
@@ -866,7 +861,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                       />
                     )}
 
-                    {/* Queue member highlight */}
+                    {/* Waiting list highlight */}
                     {inQueue && !isActive && (
                       <circle
                         cx={p.x}
@@ -902,16 +897,16 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             </svg>
           </div>
 
-          {/* Algorithmic Log Box */}
+          {/* Simple Step Explanation Log */}
           <div className="dbscan-step-log">
             <span style={{ color: 'var(--p1)', fontWeight: 'bold' }}>&gt; </span>
             {currentBfsStep.desc}
           </div>
 
-          {/* Queue Items Chips */}
+          {/* Waiting List Chips */}
           {currentBfsStep.queue?.length > 0 && (
             <div className="dbscan-queue-chips">
-              <span style={{ fontSize: '11px', color: 'var(--mu)', marginRight: '4px' }}>Queue S:</span>
+              <span style={{ fontSize: '11px', color: 'var(--mu)', marginRight: '4px' }}>Waiting to Explore:</span>
               {currentBfsStep.queue.slice(0, 15).map(qId => (
                 <span key={qId} className="dbscan-queue-pill">
                   #{qId}
@@ -928,22 +923,22 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       )}
 
       {/* =========================================================================
-          TAB 3: Reachability & Connectivity Theory Lab (Ester et al. 1996)
+          TAB 3: How Points Connect (Reachability & Chains)
           ========================================================================= */}
       {activeTab === 'reachability' && (
         <div className="dbscan-tab-content">
           <div className="dbscan-card-header">
-            <h4 className="dbscan-card-title">Formal Density-Reachability Lab</h4>
-            <span className="dbscan-pill-badge">Ester et al. (1996) Theorems</span>
+            <h4 className="dbscan-card-title">Can Point A Reach Point B?</h4>
+            <span className="dbscan-pill-badge">Connecting Chains</span>
           </div>
 
           <p className="dbscan-card-desc">
-            Test the 3 foundational mathematical definitions of DBSCAN between <b>Point A</b> and <b>Point B</b>. Notice how direct reachability is <i>asymmetric</i> for border points, while density-connectivity is symmetric and reflexive!
+            A cluster is formed by chaining crowded points together. Pick any two points to see whether they touch directly, connect through a chain of crowded hops, or are completely separated!
           </p>
 
           {/* Point Selection Controls */}
           <div className="dbscan-pair-row">
-            <span className="dbscan-pair-label">Selected Pair:</span>
+            <span className="dbscan-pair-label">Compare Pair:</span>
             <button
               type="button"
               className={`dbscan-point-btn ptA ${pickingTarget === 'A' ? 'active' : ''}`}
@@ -951,7 +946,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             >
               Point A: #{reachabilityAnalysis.pA.id} ({clustering.isCore[reachabilityAnalysis.pA.id] ? 'Core' : clustering.isBorder[reachabilityAnalysis.pA.id] ? 'Border' : 'Noise'})
             </button>
-            <span style={{ color: 'var(--mu)', fontSize: '11px' }}>vs</span>
+            <span style={{ color: 'var(--mu)', fontSize: '11px' }}>and</span>
             <button
               type="button"
               className={`dbscan-point-btn ptB ${pickingTarget === 'B' ? 'active' : ''}`}
@@ -961,12 +956,12 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             </button>
             {pickingTarget && (
               <span style={{ fontSize: '11px', color: 'var(--p1)', marginLeft: 'auto' }}>
-                Click any point in the SVG to assign Point {pickingTarget}!
+                Click any point in the plot to assign Point {pickingTarget}!
               </span>
             )}
           </div>
 
-          {/* Preset Pair Scenarios */}
+          {/* Simple Preset Scenarios */}
           <div className="dbscan-preset-pills">
             <button
               type="button"
@@ -979,7 +974,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 }
               }}
             >
-              Core ↔ Core
+              Core ↔ Core (Inside Cluster)
             </button>
             <button
               type="button"
@@ -993,7 +988,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 }
               }}
             >
-              Core ↔ Border (Asymmetric!)
+              Core ↔ Border (One-Way Touch!)
             </button>
             <button
               type="button"
@@ -1007,13 +1002,13 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 }
               }}
             >
-              Cluster ↔ Noise (Disconnected)
+              Cluster ↔ Noise (Separated)
             </button>
           </div>
 
           {/* Canvas with Directed Reachability Arrows */}
           <div className="dbscan-svg-container">
-            <svg viewBox="0 0 100 100" className="dbscan-svg" aria-label="DBSCAN reachability directed graph">
+            <svg viewBox="0 0 102 102" className="dbscan-svg" aria-label="DBSCAN reachability directed graph">
               <defs>
                 <marker id="dbscan-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--p1)" />
@@ -1021,32 +1016,34 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                 <marker id="dbscan-arrow-cyan" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--p0)" />
                 </marker>
+                <marker id="dbscan-arrow-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--p2)" />
+                </marker>
               </defs>
 
               <line x1="5" y1="50" x2="95" y2="50" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
               <line x1="50" y1="5" x2="50" y2="95" stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.4" />
 
-              {/* Directed paths from B to A if density-reachable */}
-              {reachabilityAnalysis.pathToAFromB && reachabilityAnalysis.pathToAFromB.length > 1 && (
-                reachabilityAnalysis.pathToAFromB.slice(0, -1).map((nodeId, idx) => {
-                  const nextId = reachabilityAnalysis.pathToAFromB[idx + 1];
+              {/* Case 1: Both paths exist (Mutual Core-to-Core connection in same cluster) */}
+              {reachabilityAnalysis.pathToBFromA && reachabilityAnalysis.pathToAFromB && (
+                reachabilityAnalysis.pathToBFromA.slice(0, -1).map((nodeId, idx) => {
+                  const nextId = reachabilityAnalysis.pathToBFromA[idx + 1];
                   return (
                     <line
-                      key={`path-ba-${idx}`}
+                      key={`path-mutual-${idx}`}
                       x1={points[nodeId].x}
                       y1={100 - points[nodeId].y}
                       x2={points[nextId].x}
                       y2={100 - points[nextId].y}
-                      stroke="var(--p1)"
-                      strokeWidth="1.0"
-                      markerEnd="url(#dbscan-arrow)"
+                      stroke="var(--p2)"
+                      strokeWidth="1.2"
                     />
                   );
                 })
               )}
 
-              {/* Directed paths from A to B if density-reachable */}
-              {reachabilityAnalysis.pathToBFromA && reachabilityAnalysis.pathToBFromA.length > 1 && (
+              {/* Case 2: One-way path from A to B (B is border point) */}
+              {reachabilityAnalysis.pathToBFromA && !reachabilityAnalysis.pathToAFromB && (
                 reachabilityAnalysis.pathToBFromA.slice(0, -1).map((nodeId, idx) => {
                   const nextId = reachabilityAnalysis.pathToBFromA[idx + 1];
                   return (
@@ -1057,30 +1054,70 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                       x2={points[nextId].x}
                       y2={100 - points[nextId].y}
                       stroke="var(--p0)"
-                      strokeWidth="1.0"
+                      strokeWidth="1.2"
                       markerEnd="url(#dbscan-arrow-cyan)"
                     />
                   );
                 })
               )}
 
-              {/* Common Ancestor Branches if density-connected */}
-              {reachabilityAnalysis.commonAncestor !== null && reachabilityAnalysis.pathToAFromO && (
-                reachabilityAnalysis.pathToAFromO.slice(0, -1).map((nodeId, idx) => {
-                  const nextId = reachabilityAnalysis.pathToAFromO[idx + 1];
+              {/* Case 3: One-way path from B to A (A is border point) */}
+              {reachabilityAnalysis.pathToAFromB && !reachabilityAnalysis.pathToBFromA && (
+                reachabilityAnalysis.pathToAFromB.slice(0, -1).map((nodeId, idx) => {
+                  const nextId = reachabilityAnalysis.pathToAFromB[idx + 1];
                   return (
                     <line
-                      key={`path-oa-${idx}`}
+                      key={`path-ba-${idx}`}
                       x1={points[nodeId].x}
                       y1={100 - points[nodeId].y}
                       x2={points[nextId].x}
                       y2={100 - points[nextId].y}
-                      stroke="var(--p2)"
-                      strokeWidth="0.8"
-                      strokeDasharray="2 2"
+                      stroke="var(--p1)"
+                      strokeWidth="1.2"
+                      markerEnd="url(#dbscan-arrow)"
                     />
                   );
                 })
+              )}
+
+              {/* Case 4: Neither reaches directly, but density-connected via common ancestor o */}
+              {!reachabilityAnalysis.pathToBFromA && !reachabilityAnalysis.pathToAFromB && reachabilityAnalysis.commonAncestor !== null && (
+                <>
+                  {reachabilityAnalysis.pathToAFromO && (
+                    reachabilityAnalysis.pathToAFromO.slice(0, -1).map((nodeId, idx) => {
+                      const nextId = reachabilityAnalysis.pathToAFromO[idx + 1];
+                      return (
+                        <line
+                          key={`path-oa-${idx}`}
+                          x1={points[nodeId].x}
+                          y1={100 - points[nodeId].y}
+                          x2={points[nextId].x}
+                          y2={100 - points[nextId].y}
+                          stroke="var(--p0)"
+                          strokeWidth="0.9"
+                          strokeDasharray="2 2"
+                        />
+                      );
+                    })
+                  )}
+                  {reachabilityAnalysis.pathToBFromO && (
+                    reachabilityAnalysis.pathToBFromO.slice(0, -1).map((nodeId, idx) => {
+                      const nextId = reachabilityAnalysis.pathToBFromO[idx + 1];
+                      return (
+                        <line
+                          key={`path-ob-${idx}`}
+                          x1={points[nodeId].x}
+                          y1={100 - points[nodeId].y}
+                          x2={points[nextId].x}
+                          y2={100 - points[nextId].y}
+                          stroke="var(--p1)"
+                          strokeWidth="0.9"
+                          strokeDasharray="2 2"
+                        />
+                      );
+                    })
+                  )}
+                </>
               )}
 
               {/* Data points */}
@@ -1108,7 +1145,6 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                     }}
                     style={{ cursor: 'pointer' }}
                   >
-                    {/* Ring for A or B */}
                     {(isA || isB) && (
                       <circle
                         cx={p.x}
@@ -1120,7 +1156,6 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                       />
                     )}
 
-                    {/* Common ancestor marker */}
                     {isAncestor && !isA && !isB && (
                       <circle
                         cx={p.x}
@@ -1157,59 +1192,59 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
             </svg>
           </div>
 
-          {/* Formal Relation Verdict Cards */}
+          {/* Simple Relation Verdict Cards */}
           <div className="dbscan-relation-grid">
             <div className={`dbscan-relation-box ${reachabilityAnalysis.aDirectFromB || reachabilityAnalysis.bDirectFromA ? 'true' : 'false'}`}>
               <span className="dbscan-relation-tag">
                 {reachabilityAnalysis.aDirectFromB && reachabilityAnalysis.bDirectFromA
-                  ? 'MUTUAL DIRECT REACHABLE'
+                  ? 'MUTUAL DIRECT TOUCH'
                   : reachabilityAnalysis.bDirectFromA
-                  ? 'A → B (ASYMMETRIC DIRECT)'
+                  ? 'A → B (ONE-WAY TOUCH)'
                   : reachabilityAnalysis.aDirectFromB
-                  ? 'B → A (ASYMMETRIC DIRECT)'
-                  : 'NOT DIRECTLY REACHABLE'}
+                  ? 'B → A (ONE-WAY TOUCH)'
+                  : 'NO DIRECT TOUCH'}
               </span>
-              <div className="dbscan-relation-title">1. Direct Density-Reachability</div>
+              <div className="dbscan-relation-title">1. Direct Touch</div>
               <p className="dbscan-relation-desc">
                 {reachabilityAnalysis.bDirectFromA && !reachabilityAnalysis.aDirectFromB
-                  ? `Point B is directly reachable from Core Point A (B ∈ N_ε(A)). But because B is a Border point, A is NOT directly reachable from B!`
+                  ? `Point B sits inside crowded Core Point A's circle. But because B is an edge point, A cannot be reached from B!`
                   : reachabilityAnalysis.aDirectFromB && !reachabilityAnalysis.bDirectFromA
-                  ? `Point A is directly reachable from Core Point B (A ∈ N_ε(B)). But because A is a Border point, B is NOT reachable from A!`
+                  ? `Point A sits inside crowded Core Point B's circle. But because A is an edge point, B cannot be reached from A!`
                   : reachabilityAnalysis.aDirectFromB && reachabilityAnalysis.bDirectFromA
-                  ? `Both points are Core Points within distance ε, so direct reachability holds symmetrically.`
-                  : `Neither point lies within the other's ε-neighborhood with Core status.`}
+                  ? `Both points are crowded Core Points inside each other's circle. They touch directly!`
+                  : `Neither point sits inside the other's circle as a crowded Core Point.`}
               </p>
             </div>
 
             <div className={`dbscan-relation-box ${reachabilityAnalysis.pathToBFromA || reachabilityAnalysis.pathToAFromB ? 'true' : 'false'}`}>
               <span className="dbscan-relation-tag">
                 {reachabilityAnalysis.pathToBFromA && reachabilityAnalysis.pathToAFromB
-                  ? 'MUTUAL DENSITY-REACHABLE'
+                  ? 'CONNECTED BOTH WAYS'
                   : reachabilityAnalysis.pathToBFromA
-                  ? 'A ⤳ B (ASYMMETRIC CHAIN)'
+                  ? 'A ⤳ B (ONE-WAY CHAIN)'
                   : reachabilityAnalysis.pathToAFromB
-                  ? 'B ⤳ A (ASYMMETRIC CHAIN)'
-                  : 'NOT DENSITY-REACHABLE'}
+                  ? 'B ⤳ A (ONE-WAY CHAIN)'
+                  : 'NOT CONNECTED'}
               </span>
-              <div className="dbscan-relation-title">2. Density-Reachability</div>
+              <div className="dbscan-relation-title">2. Chain Connection</div>
               <p className="dbscan-relation-desc">
                 {reachabilityAnalysis.pathToBFromA
-                  ? `Connected via directed chain of ${reachabilityAnalysis.pathToBFromA.length} core hops from A to B.`
+                  ? `Connected across a chain of ${reachabilityAnalysis.pathToBFromA.length} crowded hops from A to B.`
                   : reachabilityAnalysis.pathToAFromB
-                  ? `Connected via directed chain of ${reachabilityAnalysis.pathToAFromB.length} core hops from B to A.`
-                  : `No directed path of Core hops connects Point A and Point B.`}
+                  ? `Connected across a chain of ${reachabilityAnalysis.pathToAFromB.length} crowded hops from B to A.`
+                  : `No chain of crowded points connects Point A and Point B.`}
               </p>
             </div>
 
             <div className={`dbscan-relation-box ${reachabilityAnalysis.isDensityConnected ? 'true' : 'false'}`}>
               <span className="dbscan-relation-tag">
-                {reachabilityAnalysis.isDensityConnected ? 'DENSITY-CONNECTED (TRUE)' : 'NOT CONNECTED (FALSE)'}
+                {reachabilityAnalysis.isDensityConnected ? 'SAME CLUSTER (YES)' : 'SEPARATE (NO)'}
               </span>
-              <div className="dbscan-relation-title">3. Density-Connectivity</div>
+              <div className="dbscan-relation-title">3. Same Cluster</div>
               <p className="dbscan-relation-desc">
                 {reachabilityAnalysis.isDensityConnected
-                  ? `Symmetric and reflexive! Both points share common ancestor Core Point #${reachabilityAnalysis.commonAncestor}, making them belong to the same cluster.`
-                  : `No common core ancestor reaches both points. They belong to separate clusters or noise.`}
+                  ? `Yes! Both points share crowded center #${reachabilityAnalysis.commonAncestor}, meaning they belong to the same cluster.`
+                  : `No common crowded point reaches both points. They belong to different clusters or one is lonely noise.`}
               </p>
             </div>
           </div>
@@ -1217,42 +1252,48 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
       )}
 
       {/* =========================================================================
-          TAB 4: Parameter Selection: Sorted k-Distance Knee Plot (Ester et al. §4.2)
+          TAB 4: Finding the Best Radius (The Elbow / Knee Plot)
           ========================================================================= */}
       {activeTab === 'kdist' && (
         <div className="dbscan-tab-content">
           <div className="dbscan-card-header">
-            <h4 className="dbscan-card-title">Sorted k-Distance Plot (k = {minPts})</h4>
+            <h4 className="dbscan-card-title">The Elbow / Knee Plot</h4>
             <span className="dbscan-pill-badge">
-              Recommended Knee ε*: <b>{kDistAnalysis.kneeVal.toFixed(1)}px</b>
+              Best Radius ε*: <b>{kDistAnalysis.kneeVal.toFixed(1)}px</b>
             </span>
           </div>
 
           <p className="dbscan-card-desc">
-            Section 4.2 of Ester et al. (1996) introduces the <b>sorted k-dist plot</b> to eliminate trial-and-error. Plotting the distance of each point to its $k$-th nearest neighbor reveals a sharp <b>knee / elbow</b>: points before the knee belong to dense clusters; points after shoot up into noise!
+            How do you choose the circle radius ε without guessing? We measure each point&apos;s distance to its 4th nearest neighbor, then sort them from closest to farthest. Points inside dense crowds have short distances; lonely outliers shoot up sharply. The <b>bend (elbow)</b> in the curve marks the ideal radius!
           </p>
 
           {/* Interactive k-Distance Line Chart */}
           <div className="dbscan-kdist-wrap">
             <svg viewBox="0 0 320 160" className="dbscan-kdist-svg" aria-label="Sorted k-distance plot">
-              {/* Plot Margins: left=35, right=15, top=15, bottom=25 */}
               {/* Axes and Grid Lines */}
               <line x1="35" y1="135" x2="305" y2="135" stroke="var(--bd)" strokeWidth="0.8" />
               <line x1="35" y1="15" x2="35" y2="135" stroke="var(--bd)" strokeWidth="0.8" />
 
-              {/* Y-axis Ticks */}
-              {[0, 5, 10, 15].map(tick => {
-                const yPos = 135 - (tick / kDistAnalysis.maxVal) * 120;
-                return (
-                  <g key={`ytick-${tick}`}>
-                    <line x1="30" y1={yPos} x2="35" y2={yPos} stroke="var(--bd)" strokeWidth="0.6" />
-                    <text x="26" y={yPos + 3} fill="var(--mu)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">
-                      {tick}
-                    </text>
-                    <line x1="35" y1={yPos} x2="305" y2={yPos} stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.3" />
-                  </g>
-                );
-              })}
+              {/* Dynamic Y-axis Ticks */}
+              {(() => {
+                const maxV = Math.ceil(kDistAnalysis.maxVal / 5) * 5;
+                const step = maxV > 25 ? 10 : 5;
+                const ticks = [];
+                for (let t = 0; t <= maxV; t += step) ticks.push(t);
+                return ticks.map(tick => {
+                  const yPos = 135 - (tick / kDistAnalysis.maxVal) * 120;
+                  if (yPos < 10) return null;
+                  return (
+                    <g key={`ytick-${tick}`}>
+                      <line x1="30" y1={yPos} x2="35" y2={yPos} stroke="var(--bd)" strokeWidth="0.6" />
+                      <text x="26" y={yPos + 3} fill="var(--mu)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">
+                        {tick}
+                      </text>
+                      <line x1="35" y1={yPos} x2="305" y2={yPos} stroke="var(--bd)" strokeWidth="0.3" strokeDasharray="2 3" opacity="0.3" />
+                    </g>
+                  );
+                });
+              })()}
 
               {/* Interactive Horizontal Line for Active ε */}
               {(() => {
@@ -1269,7 +1310,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                       strokeDasharray="3 2"
                     />
                     <text x="303" y={epsY - 4} fill="var(--p1)" fontSize="8.5" textAnchor="end" fontFamily="var(--mono)" fontWeight="bold">
-                      Active ε = {eps.toFixed(1)}px
+                      Current Radius ε = {eps.toFixed(1)}px
                     </text>
                   </g>
                 );
@@ -1284,7 +1325,7 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
                     <circle cx={kneeX} cy={kneeY} r="4" fill="none" stroke="var(--p2)" strokeWidth="1.2" />
                     <circle cx={kneeX} cy={kneeY} r="2" fill="var(--p2)" />
                     <text x={kneeX} y={kneeY - 7} fill="var(--p2)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)" fontWeight="bold">
-                      Elbow Knee ({kDistAnalysis.kneeVal.toFixed(1)}px)
+                      Elbow Bend ({kDistAnalysis.kneeVal.toFixed(1)}px)
                     </text>
                   </g>
                 );
@@ -1328,30 +1369,30 @@ export default function DBSCANInteractive({ activeEps = 8.5, onSelectEps }) {
 
               {/* Axis Labels */}
               <text x="170" y="152" fill="var(--mu)" fontSize="8.5" textAnchor="middle" fontFamily="var(--sans)">
-                Points Sorted by k-Distance (Ascending) →
+                Points Sorted from Closest Neighbor to Farthest →
               </text>
               <text x="15" y="75" fill="var(--mu)" fontSize="8" textAnchor="middle" fontFamily="var(--sans)" transform="rotate(-90 15 75)">
-                k-Distance to {minPts}th Neighbor (px)
+                Distance to 4th Neighbor (px)
               </text>
             </svg>
 
             <div className="dbscan-kdist-legend">
               <span className="dbscan-kdist-badge knee">
-                ● Optimal Elbow Knee: ε ≈ {kDistAnalysis.kneeVal.toFixed(1)}px
+                ● Recommended Radius (Elbow): ε ≈ {kDistAnalysis.kneeVal.toFixed(1)}px
               </span>
               <span>
-                Points with k-dist ≤ ε: <b>{kDistAnalysis.sorted.filter(s => s.d <= eps).length}</b> / {points.length} (Cluster Core)
+                Points inside clusters: <b>{kDistAnalysis.sorted.filter(s => s.d <= eps).length}</b> / {points.length}
               </span>
             </div>
           </div>
 
-          {/* Practical Heuristic Insight */}
+          {/* Simple Practical Insight */}
           <div className="dbscan-insight-box">
-            <span className="dbscan-insight-tag">ESTER ET AL. (1996) PARAMETER HEURISTIC</span>
+            <span className="dbscan-insight-tag">HOW TO READ THIS PLOT</span>
             <p className="dbscan-insight-text">
-              1. Fix <Tex f="k = \text{MinPts}" inline /> (default 4 for 2D data).<br />
-              2. Compute the distance to the $k$-th nearest neighbor for every data point and sort ascending.<br />
-              3. Set &epsilon; equal to the value at the <b>elbow / knee</b> of the curve. Points below the knee have stable intra-cluster density; points above shoot up into background noise!
+              1. Points on the flat left side have close neighbors—they form tight clusters.<br />
+              2. Look for the <b>elbow bend</b> where the line suddenly shoots upward.<br />
+              3. Setting the radius ε at this bend captures the natural clusters while leaving lonely outliers as noise!
             </p>
           </div>
         </div>

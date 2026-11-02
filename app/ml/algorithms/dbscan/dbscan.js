@@ -4,15 +4,12 @@ import { cp, G, dist } from '../common';
  * DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
  * Theoretical foundations from Ester, Kriegel, Sander, Xu (KDD 1996) and Schubert et al. (ACM TODS 2017).
  *
- * Key Concepts:
- * 1. ε-Neighborhood: N_ε(p) = { q ∈ D | dist(p, q) ≤ ε }
- * 2. Core Point: |N_ε(p)| ≥ MinPts
- * 3. Border Point: |N_ε(p)| < MinPts, but falls in N_ε of some Core point
- * 4. Noise Point: Neither Core nor Border
- * 5. Direct Density-Reachability: p is directly density-reachable from q iff p ∈ N_ε(q) and q is Core (asymmetric)
- * 6. Density-Reachability: Transitive chain of directly density-reachable points (asymmetric for border points)
- * 7. Density-Connectivity: p and q are density-connected iff ∃ o such that o ~> p and o ~> q (symmetric equivalence relation)
- * 8. Parameter Selection (§4.2 of Ester et al.): Sorted k-distance plot knee determines optimal ε
+ * Core Intuition:
+ * 1. Neighborhood Circle: Circle of radius ε drawn around every point.
+ * 2. Core Point: A crowded point with at least MinPts neighbors inside its circle.
+ * 3. Border Point: Sits on the edge. Has fewer neighbors, but touches a Core point, so it joins the cluster.
+ * 4. Noise Point: Lonely outlier. Too far from any crowded point.
+ * 5. Chain Reaction: Core points pull in their neighbors; crowded neighbors pull in theirs, growing any shape!
  */
 
 // 1. StatQuest 74-point Reference Coordinates
@@ -52,7 +49,7 @@ export const STATQUEST_NOISE = [
 export const DATASETS = {
   statquest: {
     name: 'StatQuest Hook & Blob',
-    desc: '74 points: large sweeping curved tail + separate compact circular cluster + 5 isolated noise outliers.',
+    desc: '74 points: a sweeping curved hook + separate round cluster + 5 lonely outliers.',
     defaultEps: 8.5,
     defaultMinPts: 4,
     points: [
@@ -64,7 +61,7 @@ export const DATASETS = {
   },
   moons: {
     name: 'Two Interlocking Moons',
-    desc: '61 points: non-convex crescent arcs illustrating non-spherical clusters where K-Means fails catastrophically.',
+    desc: '61 points: two curved crescents. K-Means fails completely, but DBSCAN traces both effortlessly.',
     defaultEps: 7.0,
     defaultMinPts: 4,
     points: (() => {
@@ -104,7 +101,7 @@ export const DATASETS = {
   },
   rings: {
     name: 'Concentric Rings (Bullseye)',
-    desc: '85 points: inner dense circle wrapped inside an outer concentric ring, separated by an empty density chasm.',
+    desc: '85 points: an inner circle inside an outer ring, separated by an empty density gap.',
     defaultEps: 7.5,
     defaultMinPts: 4,
     points: (() => {
@@ -144,7 +141,7 @@ export const DATASETS = {
   },
   densities: {
     name: 'Varying Densities (Limitation)',
-    desc: '53 points: one ultra-dense compact cluster and one loose sparse cluster. Demonstrates the single global ε bottleneck.',
+    desc: '53 points: one tightly packed group and one loosely spread group. Shows how a single radius struggles.',
     defaultEps: 5.0,
     defaultMinPts: 4,
     points: (() => {
@@ -191,7 +188,7 @@ export const DATASETS = {
  */
 export function dbscanEngine(r, epsParam) {
   const eps = typeof epsParam === 'number' ? epsParam : 8.5;
-  const MP = 4; // MinPts = 4 other points (5 total including self)
+  const MP = 4; // MinPts = 4 other points
 
   const jitter = (pt, isOutlier) => ({
     x: cp(pt.x + (isOutlier ? G(r) * 0.5 : G(r) * 0.4)),
@@ -208,7 +205,7 @@ export function dbscanEngine(r, epsParam) {
   const P = [...c1, ...c2, ...noise];
   const N = P.length;
 
-  // Neighbors calculation: point itself + neighbors within radius eps
+  // Neighbors calculation
   const nb = P.map(p => P.reduce((acc, q, j) => (dist(p, q) <= eps ? acc.concat(j) : acc), []));
   const isCore = nb.map(a => a.length >= MP + 1);
 
@@ -234,7 +231,7 @@ export function dbscanEngine(r, epsParam) {
     nc++;
   });
 
-  const sampleIndices = [10, 17, 37, 42, 49, 73];
+  const sampleIndices = [10, 17, 37, 42, 27, 73];
   const coreSamples = [10, 17, 37, 42];
 
   const orangeCircle = (p, rx = eps) => ({
@@ -251,17 +248,17 @@ export function dbscanEngine(r, epsParam) {
 
   // Frame 0: The Raw Dataset
   S.push({
-    t: '1. The Unlabelled Data (Non-Convex Clusters + Outliers)',
-    d: `We have ${N} data points: a large sweeping hook cluster on the left, a compact circular cluster on the right, plus 5 isolated background outliers. Traditional K-Means fails here because it forces every outlier into a cluster and assumes spherical partitions. DBSCAN discovers clusters naturally based on local density neighborhoods.`,
-    math: `\\text{Parameters: } \\varepsilon = ${eps}, \\quad \\text{MinPts} = ${MP} \\text{ (neighbors)}`,
+    t: '1. The Raw Data: Any Shape + Outliers',
+    d: `We have ${N} data points: a large sweeping hook on the left, a compact circle on the right, and 5 lonely outliers. K-Means struggles here because it assumes round spherical blobs and forces every outlier into a group. DBSCAN instead discovers groups naturally by looking for crowded neighborhoods.`,
+    math: `\\text{Parameters: } \\varepsilon = ${eps} \\text{ (circle radius)}, \\quad \\text{MinPts} = ${MP} \\text{ (neighbors needed)}`,
     pts: P.map(p => ({ ...p, c: 5, big: false, ring: false }))
   });
 
   // Frame 1: Define ε-Neighborhoods
   S.push({
-    t: '2. The ε-Neighborhoods (MinPts = 4 Neighbors)',
-    d: `We draw an ε-neighborhood circle of radius ε = ${eps} around candidate points. According to Ester et al. (1996), a point is dense enough to be a Core Point if its neighborhood contains at least MinPts other points (|N_ε(p)| ≥ 4). Notice dense interior circles overlap many points, while boundary and noise points overlap fewer.`,
-    math: `N_\\varepsilon(\\mathbf{p}) = \\{ \\mathbf{q} \\in D \\mid \\|\\mathbf{p} - \\mathbf{q}\\| \\le \\varepsilon \\}, \\quad |N_\\varepsilon(\\mathbf{p})| \\ge 4`,
+    t: '2. Drawing the Neighborhood Circle (Radius ε)',
+    d: `Imagine drawing an orange circle of radius ε = ${eps} around each point. If a point's circle contains at least ${MP} other points, it is crowded enough to be a "Core Point". Notice that points deep inside a cluster have crowded circles, while edge points and outliers do not.`,
+    math: `\\text{Core Point Rule: Circle must touch at least } ${MP} \\text{ other points}`,
     pts: P.map((p, i) => {
       const isCenter = sampleIndices.includes(i);
       const isCovered = sampleIndices.some(s => dist(P[s], p) <= eps);
@@ -277,9 +274,9 @@ export function dbscanEngine(r, epsParam) {
 
   // Frame 2: Core Points Identified
   S.push({
-    t: '3. Core Points Identified (Turn Red)',
-    d: `These 4 points meet the Core Point condition because their ε-circles overlap at least 4 other points. Their centers turn RED to designate them as cluster seeds. Edge points and noise outliers fail the density threshold and cannot expand clusters.`,
-    math: `\\mathbf{p} \\in \\text{Core}(D) \\iff |N_\\varepsilon(\\mathbf{p})| \\ge 4 \\implies \\text{Marked Red}`,
+    t: '3. Crowded Centers Turn Red (Core Points)',
+    d: `These 4 points have at least ${MP} neighbors inside their circle, so their centers turn RED! They are verified Core Points that can start and expand clusters. Edge points and stray outliers don't have enough neighbors, so they cannot start clusters.`,
+    math: `\\text{Core Points: } |N_\\varepsilon(\\mathbf{p})| \\ge 4 \\implies \\text{Turn Red (Cluster Seeds)}`,
     pts: P.map((p, i) => {
       const isCoreSample = coreSamples.includes(i);
       const isNonCoreSample = sampleIndices.includes(i) && !isCoreSample;
@@ -297,9 +294,9 @@ export function dbscanEngine(r, epsParam) {
   const seedIdx = 10;
   const seedNeighbors = nb[seedIdx].filter(j => j !== seedIdx);
   S.push({
-    t: '4. Direct Density-Reachability & Seed Expansion',
-    d: `DBSCAN picks Core Point #10 as the initial cluster seed (Green). Every point within its ε-neighborhood is directly density-reachable from #10. Core neighbors turn red as they join the BFS expansion queue to continue propagating the density chain outward.`,
-    math: `\\mathbf{q} \\in N_\\varepsilon(\\mathbf{p}) \\land \\mathbf{p} \\in \\text{Core} \\implies \\mathbf{q} \\text{ is directly density-reachable from } \\mathbf{p}`,
+    t: '4. Starting the Chain Reaction (Cluster 1)',
+    d: `We start Cluster 1 at Core Point #10 (Green). It pulls in all neighbors inside its circle. Any neighbor that is ALSO a crowded Core Point turns red, ready to pull in its own neighbors next!`,
+    math: `\\text{Neighbors inside Core circle join Cluster 1}`,
     pts: P.map((p, i) => {
       if (i === seedIdx) return { ...p, c: 2, big: true, ring: true };
       if (seedNeighbors.includes(i)) return { ...p, c: 0, big: true };
@@ -309,26 +306,26 @@ export function dbscanEngine(r, epsParam) {
   });
 
   // Frame 4: Border Points on the Perimeter
-  const edgeCoreIdx = 27;
-  const borderPtIdx = 31;
+  const edgeCoreIdx = 28; // Core Point { x: 36, y: 49 } in the blob
+  const borderPtIdx = 27; // Border Point { x: 32, y: 48 } on the blob edge
   S.push({
-    t: '5. Non-Core (Border) Points on Cluster Perimeter',
-    d: `When expanding along the cluster perimeter, we encounter Non-Core points. Point #31 overlaps only 2 points (< MinPts), so it is not a Core point. However, because it falls inside Core Point #27's ε-circle, it joins Cluster 1 as a Border Point without adding its own neighbors to the queue.`,
-    math: `|N_\\varepsilon(\\mathbf{p})| < 4 \\ \\land \\ \\mathbf{p} \\in N_\\varepsilon(\\mathbf{core}) \\implies \\text{Border Point (Non-Expanding)}`,
+    t: '5. Edge Points (Border Points) Join In',
+    d: `As the cluster spreads to the boundary, it reaches edge points like #27. Point #27 has only 3 neighbors (not enough to be a crowded Core Point). But because it sits directly inside Core Point #28's orange circle, it gets to join Cluster 1 as an edge (Border) point! Border points do not expand the search further.`,
+    math: `\\text{Touches Core circle, but } < 4 \\text{ neighbors} \\implies \\text{Border Point}`,
     pts: P.map((p, i) => {
-      if (i < 28) return { ...p, c: 2, big: false };
       if (i === edgeCoreIdx) return { ...p, c: 2, big: true, ring: true };
-      if (i === borderPtIdx) return { ...p, c: 5, big: true, ring: true, h: true };
-      return { ...p, c: 5, big: false };
+      if (i === borderPtIdx) return { ...p, c: 2, big: true, ring: true, h: true };
+      if (i < 32) return { ...p, c: 2, big: false }; // Entire blob is part of Cluster 1 (Green)
+      return { ...p, c: 5, big: false }; // Tail, C2, and noise remain unvisited (Grey)
     }),
     circles: [orangeCircle(P[edgeCoreIdx])]
   });
 
   // Frame 5: Cluster 1 Fully Formed
   S.push({
-    t: '6. Cluster 1 Fully Formed: Non-Convex Sweeping Hook',
-    d: `By chaining across overlapping Core Point neighborhoods, DBSCAN flows seamlessly through the dense blob and all the way down the sweeping curved tail. All ${c1.length} points on the left are unified into Cluster 1 (Green) purely via density-connectivity!`,
-    math: `C_1 = \\{ \\mathbf{p} \\mid \\mathbf{p} \\text{ is density-connected to seed } \\mathbf{p}_{10} \\}`,
+    t: '6. Cluster 1 Fully Assembled (Green Hook)',
+    d: `Like falling dominoes, DBSCAN chained from circle to circle all the way through the dense blob and down the long curved tail. All ${c1.length} points on the left are unified into Cluster 1 (Green) purely by following density!`,
+    math: `\\text{Cluster 1 Formed: } ${c1.length} \\text{ points connected}`,
     pts: P.map((p, i) => {
       if (i < c1.length) return { ...p, c: 2, big: isCore[i], h: !isCore[i] };
       return { ...p, c: 5, big: false };
@@ -338,9 +335,9 @@ export function dbscanEngine(r, epsParam) {
   // Frame 6: Discover Cluster 2
   const c2SeedIdx = c1.length + 4;
   S.push({
-    t: '7. Discover Cluster 2 Across the Density Gap',
-    d: `The BFS queue for Cluster 1 is now empty. DBSCAN visits the next unvisited Core Point in the upper-right group. Because the spatial gap between the two groups exceeds ε, the density chain terminates! A new, separate Cluster 2 (Blue) is initiated.`,
-    math: `\\text{dist}(C_1, C_2) > \\varepsilon \\implies \\text{New Cluster } C_2 \\text{ Created}`,
+    t: '7. Jumping Across the Empty Gap (Cluster 2)',
+    d: `Cluster 1 has no more neighbors to add. DBSCAN jumps across the empty gap to another unvisited crowded point in the upper-right. Because the gap between the two groups is wider than the circle radius ε, they stay separate! Cluster 2 (Blue) is born.`,
+    math: `\\text{Gap between groups} > \\varepsilon \\implies \\text{Separate Cluster 2 Created}`,
     pts: P.map((p, i) => {
       if (i < c1.length) return { ...p, c: 2, big: false };
       if (i < c1.length + c2.length) return { ...p, c: 1, big: isCore[i], h: !isCore[i] };
@@ -351,9 +348,9 @@ export function dbscanEngine(r, epsParam) {
 
   // Frame 7: Final Result & Noise Isolation
   S.push({
-    t: '8. Final Result: 2 Arbitrary Clusters + 5 Noise Outliers',
-    d: `Final output: DBSCAN discovered exactly 2 natural clusters without specifying K! The 5 isolated grey points never overlapped any Core Point's ε-circle, so they are cleanly flagged as NOISE (label = -1) rather than corrupting cluster boundaries.`,
-    math: `\\text{Result: } 2 \\text{ Clusters (Green & Blue)} \\ + \\ 5 \\text{ Noise Outliers } (\\text{Label} = -1)`,
+    t: '8. Final Result: Natural Shapes & Isolated Noise',
+    d: `DBSCAN found both natural clusters without being told how many to look for! The 5 isolated grey points never touched any crowded circle, so they are cleanly flagged as NOISE (label = -1) rather than pulling clusters off course.`,
+    math: `\\text{Result: } 2 \\text{ Natural Clusters} + 5 \\text{ Isolated Outliers (Noise)}`,
     pts: P.map((p, i) => {
       if (L[i] === 0) return { ...p, c: 2, big: isCore[i], h: !isCore[i] };
       if (L[i] === 1) return { ...p, c: 1, big: isCore[i], h: !isCore[i] };
@@ -361,11 +358,11 @@ export function dbscanEngine(r, epsParam) {
     })
   });
 
-  // Diagnostic sorted k-distance curve (Ester et al. Section 4.2)
+  // Diagnostic sorted k-distance curve
   const kd = P.map(p => P.map(o => dist(p, o)).sort((a, b) => a - b)[MP]).sort((a, b) => a - b);
   S.curve = {
-    t: 'Sorted k-distance plot (k = 4, Ester et al. §4.2)',
-    xl: 'points, sorted by k-distance',
+    t: 'Sorted k-distance plot (k = 4)',
+    xl: 'points, sorted by distance to neighbor',
     yl: 'distance to 4th nearest neighbor',
     x: kd.map((_, i) => i),
     s: [{ n: 'k-distance', y: kd }],
